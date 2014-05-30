@@ -1,0 +1,18 @@
+---
+title: 'There are (at least) two things wrong with this Dart code'
+layout: post
+published: '2014-04-26T15:45:00-07:00'
+feed: Kevin@Work
+link: 'http://work.j832.com/2014/04/there-are-at-least-two-things-wrong.html'
+author:
+    name: 'Kevin Moore'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/110066012384188006594'
+tags:
+    - dart
+    - dartlang
+    - Programming
+
+---
+
+<div class="separator" style="clear: both; text-align: center;"><a href="http://4.bp.blogspot.com/-Xj6x0dbVPxA/U1wrVMg0RZI/AAAAAAAALek/CcKw-Go-lqk/s1600/dart_logo_simple.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-Xj6x0dbVPxA/U1wrVMg0RZI/AAAAAAAALek/CcKw-Go-lqk/s1600/dart_logo_simple.png" /></a></div><br />Specifically with <code>operator ==</code>.<br /><br /><pre>class Foo {<br />  int _a;<br />  int _b;<br /><br />  int get a =&gt; _a;<br />  int get b =&gt; _b;<br /><br />  ...<br /><br />  bool operator ==(Foo other) {<br />    return other._a == this._a &amp;&amp; other._b == this._b;<br />  }<br />}<br /></pre><br />Any guesses?
