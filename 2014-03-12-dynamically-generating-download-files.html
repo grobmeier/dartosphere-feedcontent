@@ -1,0 +1,77 @@
+---
+title: 'Dynamically Generating Download Files'
+layout: post
+published: '2014-03-12T18:11:11+00:00'
+feed: 'Matt''s Blog » Dart'
+link: 'http://blog.butlermatt.me/2014/03/dynamically-generating-download-files/'
+author:
+    name: 'Matthew Butler'
+    email: null
+    url: null
+tags:
+    - Dart
+    - blob
+    - 'data url'
+    - download
+    - HTML5
+
+---
+
+<p><img src="http://blog.butlermatt.me/wp-content/uploads/2014/03/DownloadNow.png" alt="Download Now Img" width="600" height="164" class="aligncenter size-full wp-image-129" /></p>
+<p>It may come as no surprise to many of you, that I love Dart. With this love, I&#8217;ve made a significant change in the way I handle some of the tasks I get on a day-to-day basis. One of the tasks which would inevitably come up is the take some kind of data or input, handle and manipulate it in some way (internally they like to call it massaging the data, but its rarely that relaxing) and create an output file (usually text).</p>
+<p>In the past, normally I would have accomplished this by writing a little Ruby script, or even a Perl script. This often presented a few problems however. First would be that if I wrote the script on my Linux PC, then I&#8217;m the one who had to constantly be emailed the data, or generate it myself. Then e-mail off the results. It also meant that if I wasn&#8217;t in the office, it wasn&#8217;t done. So an option was to my script on a server, then any of the server admins could run the script (once I documented where it was, how to run it, etc). But it still meant that they would have to go through the same process I would need to.</p>
+<p><span id="more-130"></span></p>
+<p>Of course, the perfect solution is to just create a web-app. Before Dart, I would create a PHP page and script to upload the input information, parse it on the server and provide a download link for the results. It was better, as then at least anyone could run the scripts themselves without needing to go through me or the server admins. But there was one big problem&#8230; it was PHP.</p>
+<p>Now with Dart, I don&#8217;t need to go through all of that, and in many cases I only need a server to host the page itself for others to access. No need to transfer the data back and forth to the server for the parsing. One of the major factors in making this easy for me is <a href="http://updates.html5rocks.com/2011/08/Downloading-resources-in-HTML5-a-download">HTML5 Download Attribute</a>.</p>
+<p>My first step in dynamically creating a downloadable file is to create a <a href="https://api.dartlang.org/dart_html/Blob">Blob</a> object with the contents of my file. This is really quite simple as the Blob just takes a list of parts which make up the blob, in my case, it&#8217;s usually a list of lines of the final text file. Additional arguments are the MIME encoding for the blob (or rather the final output file, such as &#8220;text/plain&#8221;), and the format of the line endings, which can be either <em>&#8220;transparent&#8221;</em> or <em>&#8220;native&#8221;</em>. Transparent will leave new line endings just as they are passed into the blob, and Native will specify that the file should use the line ending specific to the native operating environment. This means you don&#8217;t have to worry about if your user is on Linux, Mac, or Windows when downloading the file.</p>
+<p>Next up, we need to create a <a href="https://developer.mozilla.org/en/docs/data_URIs">Data URI</a> which contains the data from our blob object. Again this is really easy with the Dart <a href="https://api.dartlang.org/dart_html/Url">Url class</a>. In particular using the <a href="https://api.dartlang.org/dart_html/Url.createObjectUrlFromBlob">createObjectUrlFromBlob()</a> method. We just pass in our Blob and receive our URL.</p>
+<p>The final step, involves creating our link, and assigning the various properties we need. In the example below I decided to create an entirely new element, however it&#8217;s equally valid to grab a link already in the page and just update its properties and maybe toggle the visibility. In particular we need to set the <a href="https://api.dartlang.org/dart_html/AnchorElement.download">download property</a>. This will be the filename that is automatically used to save the file on the user&#8217;s computer. And we need to set the <a href="https://api.dartlang.org/dart_html/AnchorElement.href">href property</a> to be the Blob URL we just created.</p>
+<p>You can see all of this in action below:</p>
+<p>test.dart</p>
+<pre class="prettyprint linenums"><code class="language-dart">import 'dart:html';
+
+void main() {
+  // Our imaginary dynamically generated data
+  List body = [ 'This list is the text\n',
+                'which our final output\n',
+                'file will contain.\n\n',
+                "It's really nothing\n",
+                'special in any way.\n',
+                'Normally this stuff would\n',
+                'be dynamically generated\n',
+                'in some way.\n\n'];
+  
+  // Create a new blob from the data.
+  Blob blob = new Blob(body, 'text/plain', 'native');
+  // Create a data:url which points to that data.
+  String url = Url.createObjectUrlFromBlob(blob);
+  // Create a link to navigate to that data and download it.
+  AnchorElement link = new AnchorElement()
+      ..href = url
+      ..download = 'random_file.txt'
+      ..text = 'Download Now!';
+  
+  // Insert the link into the DOM.
+  var p = querySelector('#text');
+  p.append(link);
+}
+</code></pre>
+<p>test.html</p>
+<pre class="prettyprint linenums"><code class="language-html">&lt;!DOCTYPE html&gt;
+
+&lt;html&gt;
+  &lt;head&gt;
+  	&lt;meta charset="utf-8"&gt;
+  	&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    
+  &lt;/head&gt;
+ 
+  &lt;body&gt;   
+    &lt;p id="text"&gt;&lt;/p&gt;
+    &lt;script type="application/dart" src="test.dart"&gt;&lt;/script&gt;
+    &lt;!-- for this next line to work, your pubspec.yaml file must have a dependency on 'browser' --&gt;
+    &lt;script src="packages/browser/dart.js"&gt;&lt;/script&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+

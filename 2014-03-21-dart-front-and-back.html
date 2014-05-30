@@ -1,0 +1,36 @@
+---
+title: 'Dart Front and Back'
+layout: post
+published: '2014-03-21T19:37:13+00:00'
+feed: 'Matt''s Blog » Dart'
+link: 'http://blog.butlermatt.me/2014/03/dart-front-and-back/'
+author:
+    name: 'Matthew Butler'
+    email: null
+    url: null
+tags:
+    - Dart
+    - 'client side'
+    - 'server side'
+
+---
+
+<p>I&#8217;ve been asked to describe/talk about my current setup involving Dart at work. In order to properly do that, I need to provide a little background information as to where I work, what I do, and what I started with. </p>
+<p>I work at an ISP. Our company is small enough that I can take certain liberties in how I accomplish my task or goal, and yet large enough that those tasks and goals are constantly shifting. Early on I started in the technical support department, and having some programming experience I was provided with the opportunity to help maintain some of our internal web applications.</p>
+<p><span id="more-139"></span></p>
+<p>Without getting into all the details of my employment history here, I am now a System Administrator and Programmer. I&#8217;m not the only System Administrator, but I still do deal with things like customer email accounts, keeping services up-to-date, customer web space, etc. I also am the primary developer for many/most of the in-house tools.</p>
+<p>When I first started working on the internal web applications, everything was written in PHP and totally server side. Most of the code had been touched by at least 3 other individuals before me. I know it was at least that many, because there was no project coding standard so it was clear to tell where one developer started and another took over.</p>
+<p>Due to the nature of my tasks with maintaining the code, as the others appeared to have, it was always secondary to my primary work (manning the phones originally). So it was always just small patch jobs, sometimes patching the patches. They never received the attention they needed to be completely re-written. </p>
+<p>Eventually my job role changed towards more System administration, and then as my boss realized how quickly and efficiently I could script, to write custom scripts to either parse, aggregate, or collect data. Initially I continued to use the resources that were already in place, and most of my work was done with PHP. Most of these scripts were only one time use, or maybe used once a week by only one individual. It wasn&#8217;t vital that they look pretty so long as they worked.</p>
+<p>One project eventually arouse that would be used by all of the current technical support and customer service departments. Something that hand to be a little more rich and immersive to the users than just a plain vanilla page. This was my start on client-side scripting to provide a much more rich and responsive interface. The project was originally written with jQuery and still runs to this day (though plans on that changing soon, more on that later). The backend was still handled in PHP, which worked pretty well for pulling data from the database and just dumping it as text for an ajax response.</p>
+<p>While I enjoyed the client-side work, I was never completely happy working with Javascript in general an while jQuery helped some it still felt awkward in some situation. When I first heard of Dart even before it was released (the infamous leaked internal memo on Dash), my curiosity was peaked and I couldn&#8217;t wait to see what Google had to offer. When the result of their efforts was eventually released, and I saw the size of initial compiled Javascript I was a little disappointed.</p>
+<p>I continued with jQuery for several more months after the release of Dart, but I did keep my eyes on Dart and pretty quickly the compiled JavaScript sizes came down significantly. I started playing with the language more and more, and eventually even started contributing back to the project. My first patch landing prior to the M1 release of Dart. Simultaneously I started using Dart on internal projects as well. </p>
+<p>My first launched Dart project was implementing a web page which is broadcasted to all of our customers via CATV. It was a very simple project all-in-all, just hourly reloading an ajax stream of news and automatically scrolling it. It was first deployed May 7th, 2012 and has been running since (only a few minor updates to add new functionality). The backend in use was once again PHP.</p>
+<p>Since that time, all my internal apps have used Dart on the front end and PHP on the backend (if required at all, some were purely client-side apps). Dart has always provided me with a great editor, type checking sanity and a comfortable and familiar language with class based inheritance and scoping I understood immediately. Eventually when <a href="api.dartlang.org/dart_async/Future">Futures</a> and <a href="api.dartlang.org/dart_async/Stream">Streams</a> came and relieved me from callback hell I was so happy. Polymer and AngularDart have since made even my HTML markup efficient and work for me.</p>
+<p>But on the backend, I&#8217;ve always had Apache and PHP running. And truthfully, they&#8217;ve always been heavier than what I really need. Most of my apps have very limited number of users. Anytime a new project would come up, I&#8217;d either tack it into a subfolder of an existing project or spin up a new VM with Apache, PHP and MySQL. It always struck me as a waste of very good resources, plus right from day one, I&#8217;ve wanted to have my backend running in Dart. I&#8217;d choose Dart over PHP any day.</p>
+<p>Recently I have begun moving from MySQL databases over to MongoDB simply because it works better with the type of data I&#8217;m storing from my apps. And only just within the last few days have I had the opportunity to start working towards getting Dart running on the backend server proxied by NginX. My very first configuration for NginX started with this gist (note, not my gist, but one I came across while searching):</p>
+<p><script src="https://gist.github.com/maryo/4745914.js"></script></p>
+<p>From there I began working on a Dart HttpServer which connects to MongoDB with <a href="http://pub.dartlang.org/packages/mongo_dart">mongo_dart</a>. Programming like this, I admit I&#8217;m totally in love. NginX does a great job of serving my static files, and anything that&#8217;s not a static file it passes on to the Dart server. Using mongo_dart, it was incredibly easy to setup a RESTful API.</p>
+<p>I&#8217;m still in the process of fully implementing the HttpServer and APIs I want for the backend server. However once I&#8217;ve gotten everything completed, I am planning on moving all of my off of Apache servers onto some smaller VMs with NginX, Mongo and Dart (no more LAMP, now LNMD?? Doesn&#8217;t roll off the tongue quite as easily.) Currently my plan is to have one NginX instance running with multiple locations configured for each of my apps. Each app will proxy pass to a different Dart server specific to each app.</p>
+<p>I may write another post once I&#8217;ve completed the transition of the first app to comment on any pitfalls or issues I run into. But now you know how and where I run dart!</p>
+
