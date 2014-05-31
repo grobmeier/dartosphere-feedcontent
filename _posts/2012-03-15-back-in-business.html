@@ -1,0 +1,19 @@
+---
+title: 'Back In Business'
+layout: post
+published: '2012-03-15T09:46:00-05:00'
+feed: 'phylotic connections'
+link: 'http://phylotic.blogspot.com/2012/03/back-in-business.html'
+author:
+    name: 'John Evans'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/115427174005651655317'
+tags:
+    - dart
+    - dartlang
+    - 'luca ui'
+    - 'reactive dart'
+
+---
+
+Took a little hiatus from my Dart projects so I could focus my energy on other priorities. &nbsp;Now that I'm past that, it's back to LUCA UI and Reactive Dart.<br /><br />Speaking of LUCA UI, I'm trying to think of a better name for it; open to any suggestions.<br /><br />Also speaking of LUCA UI. &nbsp;The latest incarnation of Dart has broken the project completely. &nbsp;One of the necessities of a framework like LUCA is that it needs to know when elements are inserted or removed from the visual tree. &nbsp;There are some not-so-well supported DOM events for this ("mutation events"), however the dart:html library does not implement them. &nbsp;My quick solution was to hack around the Dart abstraction and access the mutation events directly, but that is no longer working. &nbsp;I'm now faced with two choices:<br /><br /><ol><li>Find another hack.</li><li>Write my own mutation handler.</li></ol><br />This time, I'm opting for option #2. &nbsp;This will require a fairly significant face-lift for the project. &nbsp;It will also mean the code will remain broken for quite some time so I'm going to keep it in a separate branch until it is working again.

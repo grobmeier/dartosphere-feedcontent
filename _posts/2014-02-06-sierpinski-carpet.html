@@ -1,0 +1,20 @@
+---
+title: 'Sierpinski Carpet'
+layout: post
+published: '2014-02-06T12:42:00-08:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2014/02/sierpinski-carpet.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Dart
+    - Fractals
+    - HTML5
+    - Web
+
+---
+
+<p>Returning to the world of fractals, we travel back nearly 100 years to the <a href="http://en.wikipedia.org/wiki/Sierpinski_carpet">Sierpinski Carpet</a> which was first described in 1916. <a href="http://en.wikipedia.org/wiki/Wac%C5%82aw_Sierpi%C5%84ski">Wacław Sierpinski</a> was a Polish mathematician who made a great contribution to Set Theory. Not just carpets - the <a href="http://en.wikipedia.org/wiki/Sierpinski_curve">Sierpinski Curve</a> and <a href="http://en.wikipedia.org/wiki/Sierpinski_triangle">Sierpinski Triangle</a> are the the other two famous fractals that carry his name.</p> <div class="separator" style="clear: both; text-align: center;"><a href="http://1.bp.blogspot.com/-QPn6UPPLzww/UvPuriyFYVI/AAAAAAAAxw4/VREzd18b4jg/s1600/sierpinskicarpet.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://1.bp.blogspot.com/-QPn6UPPLzww/UvPuriyFYVI/AAAAAAAAxw4/VREzd18b4jg/s400/sierpinskicarpet.png" /></a></div> <p>This recursive function is quite intensive involving dividing the X,Y values repeatedly until they hit a multiple of 3 or 0. At this point X,Y can be determined to be Carpet or non-Carpet. As this blog requires it's demo's to be colourful, the colour is determined based on the raw X,Y values rather than the Carpet factor! To add some interactivity, the colour can be shifted and the size of the output adjusted.</p> <p>Live example is <a href="http://daftspaniel.com/dart/demo/sierpinksicarpet/carpet.html">visible here</a> and you can get the Dart code on <a href="https://github.com/daftspaniel/DartSierpinskiCarpet">GitHub</a>.</p>

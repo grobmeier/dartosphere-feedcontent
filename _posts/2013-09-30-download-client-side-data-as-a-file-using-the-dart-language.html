@@ -1,0 +1,19 @@
+---
+title: 'Download Client Side Data As A File Using The Dart Language'
+layout: post
+published: '2013-09-30T11:02:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2013/09/download-client-side-data-as-file-using.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Dart
+    - HTML5
+    - Tip
+    - Web
+
+---
+
+<p>A quick Dart tip! I am working on an update to the <a href="http://daftspaniel.com/dart/class/out/daftclass.html">Dart Class Generator</a> and wanted to improve the User experience from <b>COPY + PASTE</b>. In HTML5, it is possible to send data from a variable to the client as a file download from client side code. Best of all it is really easy to code - this example is for text.To use put a call to this in your button handling code.</p> <pre><br />  void downloadFileToClient(String filename, String text){<br />    AnchorElement tl = document.createElement('a');<br />    tl..attributes['href'] = 'data:text/plain;charset=utf-8,' + Uri.encodeComponent(text)<br />      ..attributes['download'] = filename<br />      ..click();   <br />  }<br /></pre> <p>That's it - nothing server side required at all! I should emphasise this is also possible in pure JS - can't comment on browser support.</p>
