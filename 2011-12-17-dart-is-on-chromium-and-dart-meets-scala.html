@@ -1,0 +1,66 @@
+---
+title: 'Dart is on Chromium - and Dart meets Scala'
+layout: post
+published: '2011-12-17T00:00:00+01:00'
+feed: ''
+link: 'http://www.grobmeier.de/dart-on-chromium-and-dart-meets-scala-17122011.html'
+author: {  }
+
+---
+
+<p>Today  there were two good news in my inbox. First, a
+<a href="http://bit.ly/sefTzD">Chromium branch</a> has arrived with the
+integrated Multi-VM which has been proposed to
+<a title="Google Dart native on WebKit?" href="http://www.grobmeier.de/google-dart-native-on-webkit-08122011.html">WebKit</a>!
+It was only a matter of time this happens. For now you need to
+<a href="http://code.google.com/p/dart/wiki/BuildingDartium" target="_blank">build this browser</a> yourself.
+At the moment the build is tested on Mac OS X and Linux - be aware,
+there were no security tests so far, use at own risk. What is it
+actually? A browser which supports native Dart and therefore can
+run the new script type &quot;application/dart&quot;, like this:</p>
+
+<div class="highlight"><pre><code class="html"><span class="nt">&lt;html&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;application/dart&quot;</span><span class="nt">&gt;</span>
+      <span class="err">#</span><span class="kr">import</span><span class="p">(</span><span class="s1">&#39;dart:dom&#39;</span><span class="p">);</span>
+      <span class="k">void</span> <span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+         <span class="kr">final</span> <span class="nx">element</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;div&#39;</span><span class="p">);</span>
+         <span class="nx">element</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;Hello from Dart&#39;</span><span class="p">;</span>
+         <span class="nb">window</span><span class="p">.</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">element</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="nt">&lt;/script&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span></code></pre></div>
+
+<p>This script creates a new div Element, writes some text in it and appends
+it to the documents body. Native - no JavaScript anymore.</p>
+
+<h2>Dart meets Scala</h2>
+
+<p>On a second note, <a href="https://twitter.com/#!/amshali" target="_blank">Amin Shali</a>
+created <a href="http://code.google.com/p/dart/source/browse/branches/bleeding_edge/dart/samples/actors/README" target="_blank">a framework which
+is similar to &quot;Actors&quot; in Scala</a>. At the moment it does not work
+with JavaScript Generation and is meant for use in the VM only
+(commandline, guys). He even
+<a href="http://code.google.com/p/dart/source/browse/branches/bleeding_edge/dart/samples/actors/samples#samples" target="_blank">wrote
+some examples</a>.</p>
+
+<p>This frameworks relies on top of
+<a href="http://www.grobmeier.de/dart-isolates-08112011.html" title="Dart Isolates" target="_blank">Darts Isolates</a> -
+the way for concurrency in Dart. Looking at it, this framework
+is a great way to use Isolates without the low level pain :-)</p>
+
+<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="kd">extends</span> <span class="n">Actor</span> <span class="p">{</span>
+  <span class="n">HelloWorld</span><span class="p">()</span> <span class="o">:</span> <span class="k">super</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">on</span><span class="p">[</span><span class="s2">&quot;say hello&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kd">var</span> <span class="n">who</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">ui</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;Hello </span><span class="si">${</span><span class="n">who</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">);</span>
+      <span class="n">halt</span><span class="p">();</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>As you can imagine, if you send the &quot;say hello&quot; command to this Actor,
+the parameter is printed. Some more classes are needed to bring
+this to fly, like the ActorManager, which creates these Actors.
+Stay tuned for a blog post on this one!</p>
+

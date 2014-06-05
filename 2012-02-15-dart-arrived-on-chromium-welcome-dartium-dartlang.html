@@ -1,0 +1,49 @@
+---
+title: 'Dart arrived on Chromium: Welcome Dartium #dartlang'
+layout: post
+published: '2012-02-15T00:00:00+01:00'
+feed: ''
+link: 'http://www.grobmeier.de/dart-arrived-on-chromium-welcome-dartium-dartlang-15022012.html'
+author: {  }
+
+---
+
+<p><strong>UPDATE: <a href="http://www.dartlang.org/dartium/index.html" target="_blank">Dartium has landed</a>.</strong></p>
+
+<p>In today&#39;s Dart G+ hangout with the Google Dart team the Developers
+announced that <a href="http://www.dartlang.org/dartium/index.html" target="_blank">Dartium is available</a>
+<del>(at least it will be available in a few hours - please stay tuned for
+changes on <a href="http://www.dartlang.org" target="_blank">Dartlang.org</a>.
+I will update this post once it has been officially released).</del></p>
+
+<p><strong>What does it mean?</strong> It means you can run native Dart inside
+the Browser - without the need to compile it to JavaScript.</p>
+
+<p>This is an important step for the Dart team as this is the first
+browser supporting Dart natively. As Dart itself is very complex
+and very young at age, the Dart team has decided to first create
+a fork of the well known Chromium browser.</p>
+
+<p>Dartium is considered to be in &quot;technical preview&quot; state - the browser
+is not recommended to be used at daily work. It might have security
+flaws and cause other  problems. Dart Team asks users to try it
+out and report all bugs back to the Dart team.</p>
+
+<p>It is expected that Dartium can run both, JavaScript and Dart,
+at the same time. Anyway problems might occur.</p>
+
+<p>Each Dart script will run as an own Isolate. Heavy Isolates in
+Dart will spawn an own process in the browser, while Darts heavy
+isolates generated to JavaScript would generate to Webworkers.</p>
+
+<p>To enable Dart script in the Dartium browser, you just need a
+script tag with &quot;application/dart&quot; and everything between these
+tag will be considered Dart script (similar to JavaScript).
+Dartium does support debugging a running Dart script which was
+hardly missed feature already. Even an experimental caching solution
+(often referred as Snapshots) is in place. Experimental, because
+it might bring up several security flaws. The Snapshot feature
+is expected to reduce Dart startup and execution time.</p>
+
+<p>The Dart team specifically asks users to work with multiple script tags and the Isolates. </p>
+

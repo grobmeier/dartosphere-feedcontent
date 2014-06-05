@@ -1,0 +1,244 @@
+---
+title: 'Dart: Creating a dynamic list with Dart, PHP and JSON'
+layout: post
+published: '2011-11-20T00:00:00+01:00'
+feed: ''
+link: 'http://www.grobmeier.de/dart-creating-a-dynamic-list-with-dart-php-and-json-20112011.html'
+author: {  }
+
+---
+
+<p><img src="/img/content/dart-basicajax.jpg" alt="Dart - Basic Ajax Example" title="Basic Ajax Example" width="258" height="300" /></p>
+
+<p>Using an ajax request to update the dom with data from a server is a standard
+use case in todays web programming. With Dart this task is pretty trivial. In
+this blog post I would like to describe how one can use Dart to connect to a
+server running a PHP script. In addition, the data returned should be filtered
+based on what the user types. This is basically what an autocomplete input box
+is doing, except you cannot choose anything from your list at the moment.</p>
+
+<p>The complete example <a href="https://github.com/grobmeier/dartexamples/tree/master/dynamiclist" target="_blank">can be found on GitHub</a>.</p>
+
+<p>A demo can be found <a href="http://code.grobmeier.de/dart/examples/dynamiclist/" target="_blank">on my own webserver</a>.</p>
+
+<p>Lets look at the PHP script first. It is nothing special.</p>
+
+<div class="highlight"><pre><code class="php"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]))</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nv">$q</span> <span class="o">=</span> <span class="nx">strtolower</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]);</span>
+
+<span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+    <span class="s2">&quot;Aberdeen&quot;</span><span class="p">,</span> <span class="o">...</span> <span class="s2">&quot;Zoar&quot;</span>
+<span class="p">);</span>
+
+<span class="nv">$first</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+<span class="nv">$put</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">;</span>
+<span class="k">echo</span> <span class="s1">&#39;[&#39;</span><span class="p">;</span>
+
+<span class="k">foreach</span><span class="p">(</span><span class="nv">$data</span> <span class="k">as</span> <span class="nv">$element</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$first</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$put</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">;</span>
+    <span class="p">}</span> 
+    <span class="k">if</span> <span class="p">(</span><span class="nb">strpos</span><span class="p">(</span><span class="nx">strtolower</span><span class="p">(</span><span class="nv">$element</span><span class="p">),</span> <span class="nv">$q</span><span class="p">)</span> <span class="o">!==</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$put</span><span class="o">.</span><span class="s1">&#39;&quot;&#39;</span><span class="o">.</span><span class="nv">$element</span><span class="o">.</span><span class="s1">&#39;&quot;&#39;</span><span class="p">;</span>
+        <span class="nv">$first</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">echo</span> <span class="s1">&#39;]&#39;</span><span class="p">;</span></code></pre></div>
+
+<p>I will explain this code only briefly, as our focus is on Dart, not on PHP.
+In line 1 to 4 the GET-parameter &quot;q&quot; is extracted. If there is none set,
+the script returns immediately as we don&#39;t want to deliver all the data at
+once. If there is one, &quot;q&quot; will be lower cased and assigned to &quot;$q&quot;.</p>
+
+<p>In line 6 - 8 there is an array holding the actual data defined. At GitHub
+you will see the full list of data. For this post I cut it down to just
+two terms.</p>
+
+<p>In line 10 - 22 I create an JSON array. JSON arrays have the form
+[&quot;element1&quot;,&quot;element2&quot;]. The $q will be searched in every element.
+If the element contains it (not only starting with it), the element
+will be added to my returning JSON array.</p>
+
+<p>That&#39;s all - pretty simple. In this example we assume it is installed
+at http://localhost/data.php. If so, http://localhost/data.php?q=ab
+should return a list of elements containing the two characters &quot;ab&quot;.</p>
+
+<p>Let&#39;s look into the Dart code then. When creating a new project with
+the Editor, you&#39;ll see DartEditor has made two files for you.
+In my case, they are called  basicajax.html and basicajax.dart.</p>
+
+<p>Opening basicajax.dart, I have added the following two libraries to my file:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="err">#</span><span class="k">import</span><span class="err">(</span><span class="s1">&#39;dart:html&#39;</span><span class="err">)</span><span class="p">;</span>
+<span class="err">#</span><span class="k">import</span><span class="err">(</span><span class="s2">&quot;dart:json&quot;</span><span class="err">)</span><span class="p">;</span></code></pre></div>
+
+<p>dart:html is a library for manipulating the dom in a very easy way. dart:json
+is being  used to work with json data which we will definitely do.</p>
+
+<p><img src="/img/content/dart-basicajax-libs.jpg" alt="Basic Ajax with Dart - Editor Libraries"></p>
+
+<p>Now we are ready to go - time to think about what we would like to happen. My
+GitHub HTML file does contain several formatting code. But if would strip it
+down to the absolute minimum, we would end up with only two elements
+which are needed for this example:</p>
+
+<div class="highlight"><pre><code class="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;input&quot;</span> <span class="na">class=</span><span class="s">&quot;search&quot;</span> <span class="na">value=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;data&quot;</span><span class="nt">&gt;&lt;/ul&gt;</span></code></pre></div>
+
+<p>The input element is the input field in which we want to enter some
+characters. The ul  element below is where we want our data to appear.</p>
+
+<p>Things defined - let&#39;s look at the Dart code finally. Here is
+the outline of our little program:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">basicajax</span> <span class="p">{</span>
+  <span class="n">basicajax</span><span class="p">()</span> <span class="p">{}</span>
+  <span class="kt">void</span> <span class="n">run</span><span class="p">()</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
+  <span class="kt">void</span> <span class="n">resetData</span><span class="p">()</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
+  <span class="kt">void</span> <span class="n">addRow</span><span class="p">(</span><span class="kt">String</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">new</span> <span class="n">basicajax</span><span class="p">().</span><span class="n">run</span><span class="p">();</span>
+<span class="p">}</span></code></pre></div>
+
+<p>We start everything from the main() method, as usual in Dart. This
+creates a new basicajax object (please apologize that I missed
+the styleguide with my naming). I am not a huge fan of putting
+much stuff in my constructor, so I created the run() method,
+in which the most important code resides, except one thing: I
+query for my two html elements here and store the result in
+private variables. With this I save multiple queries as I had
+on an earlier version of this script. The constructor looks like:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">basicajax</span> <span class="p">{</span>
+  <span class="n">InputElement</span> <span class="n">_search</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="n">Element</span> <span class="n">_data</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  
+  <span class="n">basicajax</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">_search</span> <span class="o">=</span> <span class="n">document</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;.search&#39;</span><span class="p">);</span>
+    <span class="n">_data</span> <span class="o">=</span> <span class="n">document</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;#data&#39;</span><span class="p">);</span>
+  <span class="p">}</span></code></pre></div>
+
+<p>As you can see, I query one time for a CSS class namely &quot;.search&quot;
+and store the result into a field with type InputElement,
+which shows me some more methods in my code completion as just Element.</p>
+
+<p>Then I query for the HTML id &quot;#data&quot; and store it as Element -
+I don&#39;t need more, so why should I care what specific type it is.</p>
+
+<p>Then we&#39;ll need resetData(). In this method we will put the code
+which removes the list elements from the data node. And of course
+we need the addRow() method, with which we will add list elements
+to our data node. More to these two methods later. Now let us start
+with the run() method:</p>
+
+<div class="highlight"><pre><code class="java"><span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">element</span><span class="o">.</span><span class="na">on</span><span class="o">.</span><span class="na">keyUp</span><span class="o">.</span><span class="na">add</span><span class="o">(</span> <span class="n">_</span><span class="o">(</span><span class="n">Event</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">XMLHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XMLHttpRequest</span><span class="o">();</span>
+      <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="err">&#39;</span><span class="nl">http:</span><span class="c1">//localhost/data.php?q=${_search.value}&#39;;</span>
+      <span class="n">request</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;GET&quot;</span><span class="o">,</span> <span class="n">url</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+      
+      <span class="n">request</span><span class="o">.</span><span class="na">on</span><span class="o">.</span><span class="na">load</span><span class="o">.</span><span class="na">add</span><span class="o">((</span><span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">resetData</span><span class="o">();</span>
+        <span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">responseText</span><span class="o">);</span>
+        <span class="n">result</span><span class="o">.</span><span class="na">forEach</span><span class="o">((</span><span class="n">element</span><span class="o">)</span> <span class="o">{</span>
+          <span class="k">this</span><span class="o">.</span><span class="na">addRow</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
+        <span class="o">});</span>
+      <span class="o">});</span>
+      <span class="n">request</span><span class="o">.</span><span class="na">send</span><span class="o">();</span>
+    <span class="o">});</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">addRow</span><span class="o">(</span><span class="s">&quot;Type one or more letters&quot;</span><span class="o">);</span>
+  <span class="o">}</span></code></pre></div>
+
+<p>This is probably the most interesting method. </p>
+
+<p>In line 2 we add a keyUp listener to the element. This will cause
+the anonymous function to execute once the user releases a key he
+pressed. The interesting thing here is, that all the listeners an
+bundled in the &quot;element.on&quot; getter. You can find many more there,
+just look at the code completion of your Editor (STRG - SPACE).</p>
+
+<div class="highlight"><pre><code class="java"><span class="n">element</span><span class="o">.</span><span class="na">on</span><span class="o">.</span><span class="na">keyUp</span><span class="o">.</span><span class="na">add</span><span class="o">(</span> <span class="n">_</span><span class="o">(</span><span class="n">Event</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+    <span class="err">…</span>      
+<span class="o">});</span></code></pre></div>
+
+<p>The anonymous function, which is executed on key release,
+performs the actual XMLHttpRequest. It is done very easily.</p>
+
+<p>Create a new XMLHttpRequest() object and call &quot;open&quot;, where you
+define if this is a GET/POST call, the target url and if the call
+is asynchronous or not. I want it to be async and therefore I need
+to add a new anonymous function serving as EventListener. This time
+I add it to request.on.load event. You sense a pattern, it is again
+the &quot;on&quot; getter, where all EventListeners are somehow stored.</p>
+
+<div class="highlight"><pre><code class="java"><span class="n">XMLHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XMLHttpRequest</span><span class="o">();</span>
+<span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="err">&#39;</span><span class="nl">http:</span><span class="c1">//localhost/data.php?q=${_search.value}&#39;;</span>
+<span class="n">request</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;GET&quot;</span><span class="o">,</span> <span class="n">url</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+<span class="n">request</span><span class="o">.</span><span class="na">on</span><span class="o">.</span><span class="na">load</span><span class="o">.</span><span class="na">add</span><span class="o">((</span><span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+<span class="err">…</span>
+<span class="o">});</span></code></pre></div>
+
+<p>Once this event actually happens (this is, when the request has
+been performed and the data has been loaded), we&#39;ll resetData on
+line 8. Then we get our responseText from the request (which is
+the JSON returned by the PHP script) and parse it to JSON. One must
+know, what we get from the PHP script is a String and only via
+JSON.parse it becomes actual JSON.</p>
+
+<div class="highlight"><pre><code class="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">responseText</span><span class="o">);</span></code></pre></div>
+
+<p>As we have sent back an JSON array, the result of the parsing is
+a List containing Strings. Very comfortable, because we can easily
+iterate over it:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">result</span><span class="p">.</span><span class="n">forEach</span><span class="p">((</span><span class="n">element</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+<span class="p">});</span></code></pre></div>
+
+<p>And finally we execute this XMLHttpRequest, with:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">request</span><span class="p">.</span><span class="n">send</span><span class="p">();</span></code></pre></div>
+
+<p>Once this is done and the result is loaded, the load event will occur
+and we resetData, transform the result from String to JSON and add a
+row for each JSON element.</p>
+
+<p>Now lets look at the easier resetData method:</p>
+
+<div class="highlight"><pre><code class="java"><span class="kt">void</span> <span class="nf">resetData</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">_data</span><span class="o">.</span><span class="na">nodes</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+<span class="o">}</span></code></pre></div>
+
+<p>Wow, this is easy, isn&#39;t it? We have already queried for _data,
+so we just need to get the NodeList via the nodes setter and
+clear it with a single method call: clear().</p>
+
+<p>And finally there is addRow:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="kt">void</span> <span class="n">addRow</span><span class="p">(</span><span class="kt">String</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Element</span> <span class="n">inner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Element</span><span class="p">.</span><span class="n">tag</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">);</span>
+    <span class="n">inner</span><span class="p">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="n">message</span><span class="p">;</span>
+    <span class="n">_data</span><span class="p">.</span><span class="n">elements</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">inner</span><span class="p">);</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Here we create a new li-Element with the named constructor &quot;tag&quot;.
+Then we put our message, which is our city name as plain text actually,
+to the innerHTML setter and finally we can add it already to the _data list. That&#39;s it.</p>
+
+<h2>Summary</h2>
+
+<p>But actually to the time of this writing there are some problems,
+which are already known and addressed in near future. First, the
+DartC outcome has a size of 9 MB. Trying to optimize it via the
+Editor leads to an OutOfMemoryException. But no problem,
+<a href="http://code.google.com/p/dart/issues/detail?id=537">you can increase DartEditors heap size</a></p>
+
+<p>In my first draft I had a query to the #data element each time I
+added a row. Please be careful with that as it slows down everything
+pretty much. It seems (and probably does make sense) the query
+is not cached.</p>
+

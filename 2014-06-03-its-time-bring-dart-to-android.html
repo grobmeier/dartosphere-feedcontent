@@ -1,0 +1,76 @@
+---
+title: 'It''s time: Bring Dart to Android'
+layout: post
+published: '2014-06-03T00:00:00+02:00'
+feed: ''
+link: 'http://www.grobmeier.de/bring-dart-to-android-03062014.html'
+author: {  }
+
+---
+
+<p>As one of the first users of Google&#39;s Dart language, I always felt like
+it could do more than &quot;just some webtricks&quot;. Its <a href="https://www.dartlang.org/performance/">performance is great</a>
+and the language itself is elegant and modern. I like it. Even more
+than Java&#39; which I used for a long, long time. Even more than PHP&#39; 
+which I used since I started with web programming. Even more than
+JavaScript, with which I am happy to work with.</p>
+
+<p>Dart is great, but the browser vendors didn&#39;t ask for it. Nor did
+the hardcore JavaScript users. It is and will continue to be hard for Google
+to convince other people to switch from JavaScript.</p>
+
+<p>Sure, you can do a lot of great stuff with Dart; like server side programming.
+But JavaScript has that all too. So why bother?</p>
+
+<p>I always thought there was only one chance for Google to convince
+programmers of Dart: bring it to Android, and replace the old fashioned
+Java.</p>
+
+<p>Don&#39;t get me wrong: I still think Java is a great language. But it&#39;s
+not a great language for <em>all</em> requirements.</p>
+
+<p>When I started with working on my own products, I used Java. It&#39;s something
+which I regret today, because as a single-man show, it was simply too time
+consuming. For newer products I use dynamic languages. I am quicker,
+and that&#39;s what I need right now.</p>
+
+<p>In Android-land, people started to bypass Java and work with <a href="http://cordova.apache.org">Apache Cordova</a>
+(repackaged as Phonegap).</p>
+
+<p>And just recently, Apple announced <a href="https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/">Swift</a>. 
+A language which looks pretty similar to Dart actually, as you can see here:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kr">class</span> <span class="nx">Shape</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">numberOfSides</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="nx">func</span> <span class="nx">simpleDescription</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="s2">&quot;A shape with \(numberOfSides) sides.&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>You see the &quot;var&quot; declaration? </p>
+
+<p>You can also code more in the functional way:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">func</span> <span class="nx">lessThanTen</span><span class="p">(</span><span class="nx">number</span><span class="o">:</span> <span class="nx">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nx">Bool</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">number</span> <span class="o">&lt;</span> <span class="mi">10</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Also interesting: Generics:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kr">enum</span> <span class="nx">OptionalValue</span><span class="o">&lt;</span><span class="nx">T</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="nx">None</span>
+    <span class="k">case</span> <span class="nx">Some</span><span class="p">(</span><span class="nx">T</span><span class="p">)</span>
+<span class="p">}</span></code></pre></div>
+
+<p>As with Dart, Swift seems to take modern concepts and paradigms and still looks
+like a dynamic and lightweight language.</p>
+
+<p>Swift will run on iOS and it&#39;s said to be perfect for game programming. Something
+which can also be done with Dart.</p>
+
+<p>Now with Apple having a great, nice-looking and easy-to-use language like Swift
+ready for programmers, I think it&#39;s now the perfect time to bring Dart to Android.
+I am honest: being a long time Java developer, I will not miss Java that much.</p>
+
+<p>Time to move on, Google! Give us Android-Dart!</p>
+

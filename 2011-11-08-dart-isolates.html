@@ -1,0 +1,186 @@
+---
+title: 'Dart Isolates'
+layout: post
+published: '2011-11-08T00:00:00+01:00'
+feed: ''
+link: 'http://www.grobmeier.de/dart-isolates-08112011.html'
+author: {  }
+
+---
+
+<p><a href="http://www.dartlang.org/">Dart</a> is
+very young but also a very promising language. You can write it similar
+to JavaScript, but it can also look like Java. In JavaScript there is
+<a href="http://www.sitepoint.com/multi-threading-javascript/">no real multithreading</a>.
+Just the Chrome Browser currently does some magic and spawns multiple
+threads for some tasks. But a developer cannot rely &quot;maybe&quot; and
+&quot;probably&quot;. Dart fixes the situation. With Dart you can have some kind
+of multithreading. What Java has with Threads, Dart has with so called
+&quot;Isolates&quot;. Isolates are very cool. They have been highly inspired by
+Erlang and it seems there is a collaboration between Erlang people and
+the Dart devs. To create Isolates you need to know about the following
+classes:</p>
+
+<ul>
+<li>  <a href="http://www.dartlang.org/docs/api/Isolate.html#Isolate::Isolate" title="Isolate">Isolate</a></li>
+<li>  <a href="http://www.dartlang.org/docs/api/SendPort.html#SendPort::SendPort" title="SendPort">SendPort</a></li>
+<li>  <a href="http://www.dartlang.org/docs/api/ReceivePort.html#ReceivePort::ReceivePort" title="ReceivePort">ReceivePort</a></li>
+</ul>
+
+<p>Isolates are fully independent from each other. It means, they do not share any
+variables - no static and no members or anything else. You can only communicate
+between Isolates through so called ports. This has a good benefit - you
+might be able to restart parts of your program if something goes wrong.
+But you need to take care on the two flavors of Isolates <a href="#difference">explained later</a>.</p>
+
+<p>An Isolate lives as long as its ports are open. If you close the port,
+the Isolate might go away. You cannot check if it actually goes away
+from within Dart at the moment, you&#39;ll need to trust Dart VM.</p>
+
+<p>Let&#39;s look at it more in detail now. Our plan is to let one class
+&quot;Starter&quot; start another Isolate named &quot;Worker&quot;.</p>
+
+<h2>Creating the worker class - extending Isolate</h2>
+
+<p>The Worker class is actually pretty simple. It looks like that:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">Worker</span> <span class="kd">extends</span> <span class="n">Isolate</span> <span class="p">{</span>
+  <span class="n">Worker</span><span class="p">()</span> <span class="o">:</span> <span class="k">super</span><span class="p">.</span><span class="n">heavy</span><span class="p">();</span>
+
+  <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="n">port</span><span class="p">.</span><span class="n">receive</span><span class="p">(</span>
+          <span class="kt">void</span> <span class="n">_</span><span class="p">(</span><span class="kd">var</span> <span class="n">message</span><span class="p">,</span> <span class="n">SendPort</span> <span class="n">replyTo</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">print</span> <span class="p">(</span><span class="s2">&quot;Worker receives: </span><span class="si">${</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">);</span>
+            <span class="n">replyTo</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;Pong&quot;</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">port</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+          <span class="p">}</span>
+      <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>As you can see, the Worker class extends Isolate. In the next line we
+call the super constructor. In fact it is a named constructor
+called &quot;heavy&quot;. I will care later on the
+<a href="#difference">difference between &quot;light&quot; and &quot;heavy&quot; Isolates</a>.</p>
+
+<p>Once an Isolate starts its service as an own thread (it is spawned -
+look at the Starter class below how this is done) the inherited field
+&quot;port&quot; get populated with an ReceivePort. It means, the Isolate can get
+messages from another Isolate through this port.
+Therefore it might be rather important to add a function to &quot;receive()&quot;.
+Otherwise you will just run the main() method and that&#39;s it. In worst
+case you even leave the this.port open and that newly
+created Isolate will never go away.</p>
+
+<p>Therefore it might be a good idea to put just necessary initialization
+code into the main() method and then implement a method which is called
+on receive of a message. In addition this method needs to take care
+on closing it&#39;s port.</p>
+
+<p>This is actually what I have done in my Worker class. You can see the main()
+method and that I call receive() with an anonymous function. From now on
+this function will be called when a message arrives.</p>
+
+<p>Looking at my anonymous function you see I get the &quot;message&quot; param, which
+might be anything: it is dynamic. Second parameter is a SendPort. Actually
+this gives you the chance to respond to the Caller. I actually do this,
+sending a &quot;Pong&quot; message back.</p>
+
+<p>So this was pretty straightforward. Now let&#39;s look on the other class,
+which should spawn the worker.</p>
+
+<h2>Creating the Starter class</h2>
+
+<p>Here is the code:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">Starter</span> <span class="p">{</span>
+  <span class="n">ReceivePort</span> <span class="n">_receivePort</span><span class="p">;</span>
+
+  <span class="n">Starter</span><span class="p">.</span><span class="n">start</span><span class="p">()</span> <span class="o">:</span> 
+    <span class="n">_receivePort</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReceivePort</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="n">_receivePort</span><span class="p">.</span><span class="n">receive</span><span class="p">(</span>
+        <span class="kt">void</span> <span class="n">_</span><span class="p">(</span><span class="kd">var</span> <span class="n">message</span><span class="p">,</span> <span class="n">SendPort</span> <span class="n">replyTo</span><span class="p">)</span> <span class="p">{</span>
+              <span class="n">print</span> <span class="p">(</span><span class="s2">&quot;Receiving from Worker: </span><span class="si">${</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">);</span>
+              <span class="n">_receivePort</span><span class="p">.</span><span class="n">close</span><span class="p">();</span>
+            <span class="p">}</span>
+      <span class="p">);</span>
+
+      <span class="n">Worker</span> <span class="n">worker</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Worker</span><span class="p">();</span>
+      <span class="n">worker</span><span class="p">.</span><span class="n">spawn</span><span class="p">().</span><span class="n">then</span><span class="p">((</span><span class="n">SendPort</span> <span class="n">port</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">port</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;Ping&#39;</span><span class="p">,</span> <span class="n">_receivePort</span><span class="p">.</span><span class="n">toSendPort</span><span class="p">());</span>
+    <span class="p">});</span>   
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>OK, looks a bit more complicated at first glance, but it isn&#39;t.
+I created a Standard class called &quot;Starter&quot; with a
+field _receivePort. I want to use it to get some responses
+from the Isolates I create from here.</p>
+
+<p>Then I define my named Constructor &quot;start()&quot; and initialize
+the ReceivePort in line 5. Similar to the Worker class, I put a
+function into my ReceivePort which should be called once I get a
+response to this port. In fact, the &quot;Pong&quot; message from the Worker
+will arrive here.</p>
+
+<p>In line 13 I create a new Object of the Worker. No magic, nothing
+happens. The actual Worker becomes a true Isolate when spawn()
+is called in line 14. After the spawn has created the new Isolate,
+&quot;then()&quot; will be called with a SendPort. Surprise - the SendPort is
+the port which has been populated by Dart in Worker.port.</p>
+
+<p>Now you can use this SendPort to send a message. I do this in
+line 15. I send the message and need to give a SendPort to my Worker.
+ReceiverPort fortunately has the method toSendPort() which creates
+the backchannel.</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">new</span> <span class="n">Starter</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Now you you&#39;ll see the outcome. The Program should exit after the
+messages have been sent around. If it doesn&#39;t you have probably open ports around.</p>
+
+<p><a id="difference"></a></p>
+
+<h2>Difference between light and heavy Isolates</h2>
+
+<p>If you create an Isolate, you have the choice between &quot;light&quot; and &quot;heavy&quot;.
+The first one is the default. So, what is the difference? Actually both
+start an Isolate with fresh static state and both can only communicate
+via ports. And, best of all, both flavors are asynchronous.</p>
+
+<p>The difference is, light Isolates live in the same thread as the creating
+Isolate. One could say, this is basically like in JavaScript. It means only
+one execution can happen at one time. If there is an message, then it will
+be queued until the currently running Isolate has finished and the next one can put it from the Queue.</p>
+
+<p>Heavy Isolates on the other hand create a real new Thread. It is an actual
+process and now things can be done in parallel. After all even Heavy Isolates
+get messages in their queue, but they work on the next message only after they
+have finished the current loop. This is appealing, because you don&#39;t need to
+think about threading concurrency issues.
+On the other hand, if you need some performance, you probably need some more
+Isolates. But spawning a new process does always have some kind of performance
+cost. It might make sense for some applications on the server side to create an
+Isolate pool when the VM starts.</p>
+
+<p>And hey, you should know about some more stuff, before using it...</p>
+
+<h2>Sidenotes</h2>
+
+<p>Dart is very young and you can expect changes in the area of Isolates. At the
+moment difference between light and heavy is true for DartC (and only if
+Webworkers are available).</p>
+
+<p>At the VM side every Isolate will be created as a new native thread. In other
+terms, there is no difference between light and heavy threads.</p>
+
+<p>As mentioned, there is already some discussion on the dev side about
+Isolates. It might happen that light and heavy will disappear completely
+and something else will replace it. Even the idea of using a threadpool
+for light Isolates exists (very appealing, honestly).</p>
+
+<p>Thanks very much to the friendly Google Devs who helped me
+understand Isolates better!</p>
+

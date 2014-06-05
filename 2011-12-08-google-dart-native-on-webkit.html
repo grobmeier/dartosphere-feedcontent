@@ -1,0 +1,40 @@
+---
+title: 'Google Dart native on WebKit?'
+layout: post
+published: '2011-12-08T00:00:00+01:00'
+feed: ''
+link: 'http://www.grobmeier.de/google-dart-native-on-webkit-08122011.html'
+author: {  }
+
+---
+
+<p>It looks like Dart is going to become native on the WebKit Browser. On monday
+some Googlers <a href="https://lists.webkit.org/pipermail/webkit-dev/2011-December/018775.html">sent message to the WebKit</a>
+folks proposing to add Dart bindings to the software. Google Developer
+Vijay Menon said, native bindings might be preferred over &quot;language X to
+javascript tools&quot; because</p>
+
+<ul>
+<li>  its quicker without compiling to javascript</li>
+<li>  developers don&#39;t need to use toolchains</li>
+<li>  better debugging and profiling experience</li>
+</ul>
+
+<p>That being said he added the <a href="http://codereview.chromium.org/8806015/">multi-vm
+changes</a> and the <a href="http://codereview.chromium.org/8802010/">dart
+bindings</a> to his message. It is
+planned to work on a WebKit branch, but so far not all WebKit developers
+seem to be fond of this plan, as Oliver Hunt said:</p>
+
+<blockquote>
+<p>&quot;As the 90s demonstrated such &quot;features&quot; are bad for developers, and
+bad for the open web.&quot;</p>
+</blockquote>
+
+<p>Of course, people are already using multiple languages in the web - they
+just compile to javascript. So Google still is not planning to &quot;force&quot;
+native language support for WebKit - so far it is planned to try out if
+it works well and create a patch which might help people who embed
+WebKit to run Dart natively. In other terms: it is still a long way to
+bring native Dart to the all the browser out there.</p>
+

@@ -1,0 +1,117 @@
+---
+title: 'Roadcrew.js - Page switching like a Boss.'
+layout: post
+published: '2012-11-16T00:00:00+01:00'
+feed: ''
+link: 'http://www.grobmeier.de/roadcrew-js-page-switching-like-a-boss-16112012.html'
+author: {  }
+
+---
+
+<p>When I started with mobile development I had only limited time available. The app should run on Android and iOS phones at the same time and therefore I looked into <a href="http://incubator.apache.org/cordova/" target="_blank">Apache Cordova</a> and <a href="http://jquerymobile.com/" target="_blank">jQuery mobile</a>. While the first one is enabling you to do mobile development with JavaScript and HTML5 in general (including hardware access), jQuery mobile is more or less a Widget factory and a framework to build your Apps. While jQuery mobile looked pretty nice it had one major drawback: it was slow as hell and way to complex to develop (for what it does). I need to add that I have used the versions before 1.0 and everything might be better meanwhile. But back than, it was like that.</p>
+
+<p>There were two things I loved on jQuery mobile. One was it&#39;s look. And the other thing was the &quot;single page&quot; approach. It meant, you have all your App HTML basically in one file, showing only the parts which are necessary. </p>
+
+<p>When replacing jQuery mobile I used <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>. Today I would probably look into <a href="http://maker.github.com/ratchet/" target="_blank">Ratchet</a>.</p>
+
+<p>For the page switching I didn&#39;t find anything, so I decided to write some code myself. Because I listened to &quot;We are the Roadcrew&quot; from the great Rock&#39;n&#39;Roll band Motörhead and &quot;Roadcrew&quot; is a pretty great name for mobile things, I simply named it like that: Roadcrew.</p>
+
+<p>You can find more information on the official <a href="http://grobmeier.github.com/Roadcrew.js/" target="_blank">Roadcrew-Website</a>. Or you start with cloning <a href="https://github.com/grobmeier/Roadcrew.js" target="_blank">Roadcrew from Github</a>.</p>
+
+<h2>How does it work?</h2>
+
+<p>It is pretty simple: include the Roadcrew.js files and make up your HTML, like for example:</p>
+
+<div class="highlight"><pre><code class="html"><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;page start&quot;</span> <span class="na">id=</span><span class="s">&quot;login&quot;</span><span class="nt">&gt;</span>
+...
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;page&quot;</span> <span class="na">id=</span><span class="s">&quot;content&quot;</span><span class="nt">&gt;</span>
+...
+<span class="nt">&lt;/div&gt;</span></code></pre></div>
+
+<p>Every div which is a page, gets the &quot;page&quot; class. A page is basically the div which is shown on your mobile. You could also say &quot;view&quot; to it. Every page gets an ID. This is used to navigate between your pages. For example, if you want to show the &quot;content&quot; page, you would make up an link like:</p>
+
+<div class="highlight"><pre><code class="html"><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;#content&quot;</span><span class="nt">&gt;</span>Leads to content<span class="nt">&lt;/a&gt;</span></code></pre></div>
+
+<p>To make this basic navigation work, you only need to make an instance of Roadcrew:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+   <span class="kd">var</span> <span class="nx">roadcrew</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Roadcrew</span><span class="p">();</span>
+<span class="p">}</span></code></pre></div>
+
+<p>This is jQuery code. And in fact Roadcrew.js uses jQuery. I will try to
+reduce the dependencies to a minimum in future and hopefully I can make
+it work with <a href="http://zeptojs.com" target="_blank">Zepto.js</a>.
+But for now you have to live with jQuery, which is said to be slower on
+mobiles than Zepto. Patches welcome!</p>
+
+<h2>Intercepting - show a loading page</h2>
+
+<p>On thing which really didn&#39;t work well with jQuery mobile was to show a
+loading page. This is dead simple usually, but was forced to waste a lot
+of time to deal with it. In Roadcrew it&#39;s pretty simple. You simply need
+to create an interceptor - something which is done before the actual target page is called.</p>
+
+<p>It could look like that:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">roadcrew</span><span class="p">.</span><span class="nx">intercept</span><span class="p">(</span><span class="s1">&#39;#interceptingPage&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">dispatch</span><span class="p">)</span> <span class="p">{</span>
+   <span class="nx">roadcrew</span><span class="p">.</span><span class="nx">flip</span><span class="p">(</span><span class="s1">&#39;#loadingPage&#39;</span><span class="p">);</span>
+   <span class="nx">$</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="s1">&#39;ajax/test.html&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">dispatch</span><span class="p">();</span>
+   <span class="p">});</span>
+<span class="p">});</span></code></pre></div>
+
+<p>While the &quot;flip&quot; method just &quot;flips&quot; pages around, bypassing every
+potential interceptor, the dispatch() function argument is what you can
+think of &quot;showing the actual target page&quot;. With the code above you would
+show the loading page which is then visible until $.post is ready and
+calls the dispatch() function.</p>
+
+<h2>Call to arms: Error Handling</h2>
+
+<p>If your interceptor causes an error, you might want to have an error
+handler waiting for you. You can pass it on when registering your
+interceptor.</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">roadcrew</span><span class="p">.</span><span class="nx">intercept</span><span class="p">(</span><span class="s1">&#39;#troublePage&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">dispatch</span><span class="p">)</span> <span class="p">{</span>
+   <span class="k">throw</span> <span class="k">new</span> <span class="nx">RoadcrewError</span><span class="p">(</span><span class="s2">&quot;I made trouble&quot;</span><span class="p">);</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+   <span class="nx">$</span><span class="p">(</span><span class="s1">&#39;#errorPage&#39;</span><span class="p">).</span><span class="nx">find</span><span class="p">(</span><span class="s1">&#39;.error&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>
+   <span class="nx">roadcrew</span><span class="p">.</span><span class="nx">flip</span><span class="p">(</span><span class="s1">&#39;#errorPage&#39;</span><span class="p">);</span>
+<span class="p">});</span></code></pre></div>
+
+<p>As you can see, I throw an error in my dispatcher. The second
+function is my error handler which will work with the error handler.</p>
+
+<p>There is also a chance to define a global error handler, which deals with every error.</p>
+
+<h2>Dart port available</h2>
+
+<p>I ported Roadcrew to Dart. <a href="http://www.dartlang.org" target="_blank">Dart</a>
+is a great new language for the web. It is still a pretty young
+language and not so widely spread yet. Consider this port an experiment.
+If you want to compare JavaScript to Dart Code you might find
+this interesting too.</p>
+
+<p>I will create a blog post on Roadcrew.dart and my experiences on
+the port when I find some time.</p>
+
+<h2>Future</h2>
+
+<p>The current implementation is pretty small and it gives me everything
+I need. But I have already seen some things which might be useful for
+others. For example, there is no transition animation so far. It should
+be pretty easy to implement such a thing, I just didn&#39;t do it. If
+you want to help me, send me a patch.</p>
+
+<p>As already mentioned I would like to support Zepto.js.</p>
+
+<p>There is now way to load new divs by AJAX. Currently I am unsure if
+this would just blow up the code or if it is really useful.</p>
+
+<p>And finally I need to say that there is always room to improve the current code itself.</p>
+
+<p>That all said, I hope that you&#39;ll find it useful. If you have some
+feedback, let me know - either by mail or - if appropriate as feature
+wish or issue in the <a href="https://github.com/grobmeier/Roadcrew.js/issues" target="_blank">issue tracker</a>.</p>
+

@@ -1,0 +1,104 @@
+---
+title: 'Darts new Isolate API'
+layout: post
+published: '2012-04-17T00:00:00+02:00'
+feed: ''
+link: 'http://www.grobmeier.de/darts-new-isolate-api-dartlang-17042012.html'
+author: {  }
+
+---
+
+<p>When I found out that Google Dart supports Isolates (which is
+some kind of multithreading for Dart, if have not heard it yet)
+I was excited. Still Isolates are among my favorites.
+<a href="http://www.grobmeier.de/dart-isolates-08112011.html" title="Dart Isolates">But the
+first version of the API was pretty complex</a>. It reminded heavily on
+Java Threading and honestly it was pretty difficult to get into it. But
+the Dart developers said pretty early that they want to do some refactoring. They did.</p>
+
+<p>In the first API version you had to create an Isolate with extending the
+Isolate class. You had to choose between &quot;heavy&quot; and &quot;light&quot; Isolates
+yourself. This all is history with the new Isolates API. The Dart
+ VM decides for you if it needs heavy or light Isolates (or if it
+ can work with it). Also you don&#39;t need to extend a class for Isolates
+ anymore, you work with Functions. The result is a much more readable code.
+ Here is an example.</p>
+
+<p>First you need to import the Isolate package. This is new. Before you
+had the Isolate classes in the core.</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="err">#</span><span class="kr">import</span><span class="p">(</span><span class="s1">&#39;dart:isolate&#39;</span><span class="p">);</span></code></pre></div>
+
+<p>First I will define a function (!) which shall act as a new Isolate.</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">process</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">port</span><span class="p">.</span><span class="nx">receive</span><span class="p">((</span><span class="kd">var</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">SendPort</span> <span class="nx">replyTo</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">print</span> <span class="p">(</span><span class="s2">&quot;Got message: ${message}&quot;</span><span class="p">);</span>
+      <span class="nx">replyTo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;close&quot;</span><span class="p">);</span>
+      <span class="nx">port</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>  
+  <span class="p">});</span>
+<span class="p">}</span></code></pre></div>
+
+<p>This function is a top level function and does not have a return type. Using &quot;void&quot;
+as return type will break your code by the way. On the second line you see that I am
+accessing &quot;port&quot;. Actually this is a get-Method which return the port of this function
+to me. Via a port one can communicate with other Isolates.</p>
+
+<p>The port can take a function which is executed when a message is received. The
+arguments are the actual message, which should be a primitive value like null,
+num, bool, double or String. List and Maps containing these values are also
+allowed. Objects are allowed too, when the Isolates are running in the same
+process (formerly known as light Isolate). This is the case, if you spawn the
+new Isolate with &quot;spawnFunction&quot; - say the docs.</p>
+
+<p>In addition to the message argument you get a SendPort, which is some kind of a
+backchannel to the sending Isolate.</p>
+
+<p>In my function I print the message, send back a &quot;close&quot;-String and finally close
+the port. The Isolate is then ready for trash and the VM should clean it up then.
+Don&#39;t forget to close your ports when you are done or it is very much likely
+that your code will run forever and probably cause messes around with your memory.</p>
+
+<p>That&#39;s it for the new Isolate function so far. Let&#39;s look into how we actually spawn it.</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+   <span class="nx">port</span><span class="p">.</span><span class="nx">receive</span><span class="p">((</span><span class="kd">var</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">SendPort</span> <span class="nx">replyTo</span><span class="p">)</span> <span class="p">{</span>
+     <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;Got message: ${message}&quot;</span><span class="p">);</span>
+     <span class="nx">port</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>  
+   <span class="p">});</span>
+
+   <span class="nx">SendPort</span> <span class="nx">sender</span> <span class="o">=</span> <span class="nx">spawnFunction</span><span class="p">(</span><span class="nx">process</span><span class="p">);</span>
+   <span class="nx">sender</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="nx">port</span><span class="p">.</span><span class="nx">toSendPort</span><span class="p">());</span>
+<span class="p">}</span></code></pre></div>
+
+<p>This code runs in my main-Method. This is just another Isolate,
+therefore I have a port ready to access. I put a function as my receiver,
+which again prints the message and closes my port. Once the main
+Isolates port closes, the application is done.</p>
+
+<p>Then I call &quot;spawnFunction()&quot; and my argument is the mentioned top level
+function. You see, I don&#39;t use parenthesis here. The reason is that I
+need the reference to my function and not its result. The real execution
+should be done by the spawnFunction-Method - in its own Isolate.</p>
+
+<p>The spawnFunction-Method returns me a SendPort which I use in the last
+line to send a first message. My second argument is the back channel
+for the second Isolate. Now I can get the replies of &quot;process&quot;.</p>
+
+<p>That&#39;s it already. </p>
+
+<p>I have observed that a function is not spawned when the port.receive()
+Method didn&#39;t get a function. In addition, don&#39;t put a &quot;void&quot; to your
+top level function definition. Last but not least I saw this API can
+break when you are not sending a port or null as SendPort argument,
+even when it is marked as optional in the API Docs.</p>
+
+<p>There is support in the SendPort if you prefer to work with Futures.
+It is even possible to spawn an Isolate from an Uri.
+<a href="http://api.dartlang.org/dart_isolate.html" target="_blank">You can read more at the official docs</a>.</p>
+
+<p>For me this API has progressed well - everything is easier and one needs
+less code. Let&#39;s see how it looks in another couple of month. I have read
+somewhere about Isolates which can act on the same piece of DOM which can
+significantly speed up webapps. Wouldn&#39;t it be nice?</p>
+

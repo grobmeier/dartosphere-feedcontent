@@ -1,0 +1,189 @@
+---
+title: '10 reasons why Dart is cooler than JavaScript'
+layout: post
+published: '2012-01-03T00:00:00+01:00'
+feed: ''
+link: 'http://www.grobmeier.de/10-reasons-why-dart-is-cooler-than-javascript-03012012.html'
+author: {  }
+
+---
+
+<p><a title="Dart" href="http://www.dartlang.org" target="_blank">Dart</a> is a new programming
+language from Google and after coding JavaScript for over one year now,
+I immediately felt in love with it. Coming from the Java world I had a
+good bunch of things I had to learn before I could use JavaScript.</p>
+
+<p>Some people say, you need to dig deep into JavaScript, otherwise you are
+not allowed to speak about the pros and cons of a language. I am not a
+JavaScript Ninja. But I strongly believe a programming language should
+be easy to learn, easy to understand and should be consistent in terms
+of language constructs. Even after all the long time I dealt with
+JavaScripts weakness, and even when I meanwhile think JavaScript
+has some pretty cool ideas, I must say that I need to be very, very,
+very carefully every day when I work with it. And that&#39;s bad. A
+language must support his programmer and not vice versa.</p>
+
+<p>Here are some of the JavaScript flaws which will make me switch
+to Dart, once it is ready for production. Please keep in mind
+that Dart is in the makings.</p>
+
+<h2>1. Dart uses only one falsify</h2>
+
+<p><a href="http://11heavens.com/falsy-and-truthy-in-javascript" target="_blank">Looking at this post</a>, you
+will easily see the point. The values: false, null, undefined, &quot;&quot;, 0, NaN will
+evaluate to false. Means you can write things like this:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+   <span class="c1">// do</span>
+<span class="p">}</span></code></pre></div>
+
+<p>In Dart there is only one thing which is false. It is
+false itself. Of course you need to rewrite to this:</p>
+
+<div class="highlight"><pre><code class="java"><span class="n">var</span> <span class="n">a</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="k">if</span><span class="o">(</span><span class="n">a</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+   <span class="c1">// do</span>
+<span class="o">}</span></code></pre></div>
+
+<p>Using 6 falsifying expressions is well, let&#39;s say you need to learn about it.</p>
+
+<h2>2. Dart can work with types, if you want it</h2>
+
+<p>JavaScript devs often say types kill flexibility. OK, might be true. But too
+much flexibility will kill your software. Sometimes you want to work with
+types, and with Dart you can do it - if you want. Just enable the type
+checker and go ahead.</p>
+
+<h2>3. You need a framework to work proper with DOM</h2>
+
+<p>In JavaScript you can work with these old friend:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">getElementsById</span><span class="p">()</span>
+<span class="nx">getElementsByTagName</span><span class="p">()</span>
+<span class="nx">getElementsByName</span><span class="p">()</span>
+<span class="nx">getElementsByClassName</span><span class="p">()</span>
+<span class="nx">querySelector</span><span class="p">()</span>
+<span class="nx">querySelectorAll</span><span class="p">()</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">links</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">images</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">forms</span>
+<span class="nb">document</span><span class="p">.</span><span class="nx">scripts</span>
+<span class="nx">formElement</span><span class="p">.</span><span class="nx">elements</span>
+<span class="nx">selectElement</span><span class="p">.</span><span class="nx">options</span></code></pre></div>
+
+<p>Isn&#39;t it nice? Thanks heaven we have got jQuery (and friends)
+to help us out of this. But... should it really be necessary
+to use a framework when simply selecting from the DOM? Not today.</p>
+
+<p><a title="Improving the DOM" href="http://www.dartlang.org/articles/improving-the-dom/" target="_blank">Dart
+has looked at jQuery</a> and has stripped it down to 2 methods:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">elem</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;#foo&#39;</span><span class="p">);</span>
+<span class="n">elem</span><span class="p">.</span><span class="n">queryAll</span><span class="p">(</span><span class="s1">&#39;.foo&#39;</span><span class="p">);</span></code></pre></div>
+
+<p>Much better.</p>
+
+<h2>4. Classes and Interfaces</h2>
+
+<p>When Java developers start with JavaScript they often try to write JavaScript like they write Java-Code. There are constructors and class like elements. Of course this is not the way JavaScript should be programmed. It is prototype based, everything is an object. This is somehow cool. But you can throw away many of your Gang of Four Design Patterns and instead read about JavaScript design patterns.</p>
+
+<p>Honestly, some of the developers I have worked with have invested a long time to understand the &quot;mainstream&quot; patterns. Not everybody is a geek. Using a non-mainstream programmin language in a mainstream environment leads to the center of ultimate chaos.</p>
+
+<h2>5. Inheritance</h2>
+
+<p><a href="http://www.2ality.com/2011/11/javascript-classes.html" target="_blank">Dr. Rauschmayer explained</a> at his excellent blog post why JavaScript inheritance is easy. He is right. It is easy. But be warned: his recommendation is not the only way for JavaSCript inheritance. The Frameworks Prototype and jQuery have even created &quot;extend&quot; Methods. Instead of Dr. Rauschmayers use of <strong>proto</strong> you can <a href="http://www.bennadel.com/blog/1514-Extending-Classes-In-Object-Oriented-Javascript.htm" target="_blank">use the prototype keyword</a> (and yes this guy even speaks of classes, even when there are no classes). Of course you can <a href="http://andrewdupont.net/2009/08/28/deep-extending-objects-in-javascript/" target="_blank">implement your own extension mechanism</a> and simply copy every property yourself.</p>
+
+<p>All the results popped up when searching Google for &quot;javascript object extends&quot;. It is a confusing mass of different approaches for achieving a simple goal: extensions.</p>
+
+<p>Guess not everybody reads Dr. Rauschmayers blog. It would be so easy if.</p>
+
+<p>Dart does know classes and therefore does now the &quot;extends&quot; keyword. Pretty damn simple.</p>
+
+<h2>6. Global namespace</h2>
+
+<p>In JavaScript you need to take care that you don&#39;t put stuff in your global namespace. Honestly, this can be done so easy. If you miss a &quot;this&quot; or a &quot;var&quot; you have a variable on a global level. Every script has then access to it. This is terrible. Try to not mess up things. Thanks to <a href="http://astore.amazon.de/neoteccde-21/detail/0596806752" target="_blank">Stoyan Stefanovs Book JavaScript Patterns</a> I have learned a pattern to keep my namespace clean. I feel better now and have more control over what I do. But: I need a pattern for it. This is such a basic need and does not come out of the box.</p>
+
+<p>In Dart you develop in &quot;library&quot; scope. Means, you have a keyword &quot;library&quot; and only what is public is visible outside of it. In addition, every Dart script executes as its own Isolate. Means, it has a fresh state, without the mess of other scripts around. With Dart you should still think about visibility and libraries, but its way easier and for sure you don&#39;t need a book teaching it to you. Instead, just think about &quot;<a href="http://en.wikipedia.org/wiki/Separation_of_concerns" target="_blank">Separation of concerns</a>&quot; and you are in the game.</p>
+
+<h2>7. Dart knows concurrency</h2>
+
+<p>With JavaScript things are not really concurrent. Even when you make an &quot;asynchronous&quot; request from jQuery, you are still working with one &quot;thread&quot; only. I think there is some chance to get more from V8, but I am not sure on it. You can solve it with HTML5 and webworkers.</p>
+
+<p><a title="Dart Isolates" href="http://www.grobmeier.de/dart-isolates-08112011.html" target="_blank">Dart knows Isolates</a>. These are little beasts similar like in Erlang. They can communicate to each other. If one fails, another Isolate can simply restart it again. Isn&#39;t that cool? And of course this makes Dart very nice for server side programming too. Yes, I have heard of Node.js. But that is not my point. Dart can do that magic out of the box.</p>
+
+<h2>8. JavaScript doesn&#39;t know foreach</h2>
+
+<p>Oh wait.</p>
+
+<p><a href="http://www.naden.de/blog/javascript-foreach" target="_new">You can extend Object or the Array.prototype</a> which is pretty nice.</p>
+
+<p>Or you do the following for arrays:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">elements</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// do something</span>
+<span class="p">}</span></code></pre></div>
+
+<p>And you can even do that for objects:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">elements</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">alert</span><span class="p">(</span><span class="nx">elements</span><span class="p">[</span><span class="nx">key</span><span class="p">]);</span>
+<span class="p">}</span></code></pre></div>
+
+<p>But unfortunately Douglas Crockford (a very important guy in the JavaScript world) <a href="http://shop.oreilly.com/product/9780596517748.do">recommends not to use this statement</a>. Reason: your results are not ordered and you might members from the prototype chain or function names.</p>
+
+<p>Of course you can filter with hasOwnProperty.</p>
+
+<p>Finally you should look into your frameworks docs if they offer something like forEach. jQuery does.</p>
+
+<p>In Dart:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="k">for</span> <span class="p">(</span><span class="n">element</span> <span class="k">in</span> <span class="n">elements</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// do something</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Life can be so easy. You iterate here over a list of elements.</p>
+
+<h2>9. Weirdness intializing arrays</h2>
+
+<p><a href="http://c2.com/cgi/wiki?JavaScriptFlaws" target="_blank">This one is borrowed</a>. Look at this:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">a1</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">a2</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span></code></pre></div>
+
+<p>a1 is an array with 5 elements: [1,2,3,4,5]
+a2 is an array with 5 elements to: [undefined,undefined,undefined,undefined,undefined]</p>
+
+<p><a href="http://blog.sethladd.com/2011/12/lists-and-arrays-in-dart.html" target="_blank">Dart is much more cleaner</a>. An array is basically a List and therefore has this interface.</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">List</span> <span class="n">a1</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">];</span>
+<span class="n">List</span> <span class="n">a2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">(</span><span class="m">5</span><span class="p">);</span></code></pre></div>
+
+<p>Again, a1 contains 5 different elements. a2 contains space for 5 elements.
+In addition you get nice features like &quot;removeRange&quot; or support for sorting. Check out Seths blog.
+<h3>10. undefined and null</h3>
+There is much you need to learn when starting with JavaScript. Among them
+is the <a href="http://bonsaiden.github.com/JavaScript-Garden/#core.undefined" target="_blank">holy
+knowledge that there is not only null, there is undefined too</a>. It is a type with
+only one value: undefined. It can be overridden. And you can get it by various scenarios,
+for example if you call return but don&#39;t return any value. At the linked page you can
+even see how you can deal with a possible overwritten undefined value.</p>
+
+<p>It seems null can be replaced by undefined in pretty much scenarios.</p>
+
+<p>This is sick.</p>
+
+<p>Dart does only know one null.</p>
+
+<h2>Conclusion</h2>
+
+<p>JavaScript has some good parts, of course. There are some nice
+patterns. But for the moment, I have seen nothing I can&#39;t do
+with Dart. Dart is mostly more elegant and easier to read
+(to my taste). Some hardcore JavaScript devs will think different,
+but that&#39;s ok. You need to love JavaScript if you want to work with
+it (or arrange. Dart on the other hand is pretty mainstream. And that&#39;s good.</p>
+
+<p>PS: I missed the event handlers in this list - another thing which is
+pretty much cooler than in JavaScript. Check them out.</p>
+

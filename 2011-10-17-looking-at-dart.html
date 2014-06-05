@@ -1,0 +1,249 @@
+---
+title: 'Looking at Dart'
+layout: post
+published: '2011-10-17T00:00:00+02:00'
+feed: ''
+link: 'http://www.grobmeier.de/looking-at-dart-17102011.html'
+author: {  }
+
+---
+
+<p>Google has started to replace JavaScript with something better. It’s name
+is <a href="http://www.dartlang.org">Dart</a>. Now Dart has been made
+public and many people do not agree with Google that Dart will ever
+succeed. They say, Dart takes away the flexibility of JavaScript.
+When I think back, before 10 years everybody told me that I should
+not use JavaScript. And if I do, I should make my website run without,
+just for any case. What if people have disabled JavaScript? And well,
+thin clients, gentlemen!</p>
+
+<h2>JavaScript – devilish and godlike</h2>
+
+<p>JavaScript is simply different to Java. Every Java developer knows
+he needs a class to create an object. Object-orientation is the key –
+except when it comes to the primitive datatypes, which are not
+objects at all. Well, ok, they have class-objects but... anyway
+less people need to care on that in the Java world.</p>
+
+<p>Suddenly there were the JavaScript people arriving and said they are
+working object-oriented too. Somehow. But how do they do it without classes?
+A good JavaScript developer will then tell you the classes are pretty
+inflexible and everybody needs to add methods to an object from time to time.
+Prototype based development.</p>
+
+<p>If you give a function reference to a Java guy and explain to him that a
+simple function already is an object in JavaScript, people stop. I mean,
+hell, Java people have invested lots of time to think about classes and
+developed Design Patterns and now they are outdated? What is it, new Design Patterns?</p>
+
+<p>There is more in JavaScript which confuses plain Java Developers: the
+prototype keyword for example. Or, how can you make private members?
+There is no keyword for it!</p>
+
+<p>But you can learn JavaScript with all corners and benefits. But if you
+want to learn, you should know you’ll need some time. It is a different
+language. It seems nowadays developer think that one must be able to
+switch from language to language within a few hours. Well, this does not
+work when switching from Java to JavaScript.</p>
+
+<p>There is an own philosophy in the JavaScript world. Everything there is
+hyperagile. Types well, are so oldschool and after all, with Node.JS
+JavaScript servers are available and with CoachDB one can even get
+rid of something like Application Containers.</p>
+
+<p>Now Dart has arrived and told people they want to replace JavaScript.
+<a href="http://blogs.perl.org/users/rafael_garcia-suarez/2011/10/why-dart-is-not-the-language-of-the-future.html">It
+is pretty clear that some people are annoyed</a> while the others, who
+are used to work with app containers, are not really impressed.
+They will not switch to frontend programming just because Dart arrived.
+And nobody said anything on server programming.</p>
+
+<h2>Ideas of Mr Google</h2>
+
+<p>Uncle Google had the idea to make Browser Scripting easier. JavaScript is
+fine, but has language drawbacks. Well, who really thought JavaScript
+would became so important back in 1996? After all it is one of the less
+languages which are really platform independent. But learning JavaScript
+is not easy, especially when you come from the Java world. This are
+most people coming from University.</p>
+
+<p>How did Mr Google proceed?</p>
+
+<p>He thought it would be good to combine the best of both worlds. And he
+even looked at some other worlds too. First he introduced classes again.
+And there is a main() method again. And interfaces. And Types. But the latter
+one is only optional, if you would like to keep your flexibility.</p>
+
+<p>JavaScript Devs are usually not keen to see classes again.</p>
+
+<h2>How does Dart look today?</h2>
+
+<p>Dart is not available for Browsers at the moment, not even for Chrome.
+You need to compile your Dart code to JavaScript code if you want to use
+it. But honestly, the output of a simple „Hello World“ program is 7 MB.
+That’s not exactly high performance. This is a matter of change in future.</p>
+
+<p>There is a command line which is already very useful. With Dart you can
+create server side code, that’s pretty nice.</p>
+
+<p>You have to compile Dart yourself. This is fine with Linux and easy with
+OS X but it is a bit complicated on Windows systems. So you can’t say
+it is widely available.</p>
+
+<p>Anyway, Dart is not for production yet.</p>
+
+<h2>Script Isolation and script execution</h2>
+
+<p>In JavaScript you have some kind of global namespace. And you’ll need to
+keep it clean. Every script has the same global namespace, and therefore
+if you define something in A.js it is available in B.js.
+This is not the case with Dart. Every Dart file runs as an Isolate. Therefore
+every Dart file can have a main() method which will be executed after
+(another difference to JavaScript) the DOM tree has been fully loaded.
+If you want to communicate between isolations, you can implement
+SendPort and ReceivePort. This reminds bit on Erlang, were Isolates
+are an important part of the language.
+Definitions between Isolates are not shared. In other terms, if you
+define something in A.dart it will not be accessible in B.dart. Your namespace is clean.</p>
+
+<h2>Classes and Constructors</h2>
+
+<p>This is how Dart looks:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="n">value</span><span class="p">;</span>
+
+  <span class="n">MyClass</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">print</span> <span class="p">(</span><span class="s2">&quot;constructor&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">MyClass</span> <span class="n">my</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="s2">&quot;something&quot;</span><span class="p">);</span>
+  <span class="n">MyClass</span> <span class="n">dft</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyClass</span><span class="p">();</span>
+<span class="p">}</span></code></pre></div>
+
+<p>I have made up a class with a member called „value“. Followed by two constructors.
+The first one is very easy to explain, it is pretty much like the default constructor
+in Java. The second one is different: it is a named constructor. These act like every
+constructor, just with a name. If you would like to call it, you need to call:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="k">new</span> <span class="n">MyClass</span><span class="p">.</span><span class="n">constructorname</span><span class="p">()</span></code></pre></div>
+
+<p>This is because in dynamically typed languages it is not really
+easy to add a feature as „overloading“.
+If you look at the constructor signature, it is a bit weird:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">);</span></code></pre></div>
+
+<p>No brackets. It means that you assign the first parameter to the
+member field „value“ automatically. This is very nice and actually
+you’ll find things like this in other aspects of the language too.
+This does not prevent you to do something like:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">print</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">);</span>
+<span class="p">}</span></code></pre></div>
+
+<p>Of course you can make it look like Java too:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="kd">var</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">print</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">);</span>
+<span class="p">}</span></code></pre></div>
+
+<h2>Types</h2>
+
+<p>JavaScript developers don’t like types too much, but for Java dev,
+things are not so easy. They say, you’ll need types to build huge systems.
+There will be no answer to these questions, but how can Dart deal
+with these two different philosophies? The answer is: optional types.</p>
+
+<p>If you use types in Dart you should know they your program will not fail
+at runtime when your types are somehow wrong. It can even be compiled to
+JavaScript. That being said, types are not as strong as in Java.</p>
+
+<p><strong>Google devs say you can use types for documentation.</strong></p>
+
+<p>In addition they give you a <strong>type checker tool</strong> which finds issues
+for you and generates warnings. It is more a „Lint“ tool and you
+should not mistake it with what you get on the Eclipse problems view.
+You need to enable it manually to make it work.</p>
+
+<p>On the commandline it is:</p>
+
+<div class="highlight"><pre><code class="bash">dart --enable_type_checks myfile.dart</code></pre></div>
+
+<p>This generates warnings in the following code:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
+  <span class="kt">String</span> <span class="n">value</span><span class="p">;</span>
+  <span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="kt">String</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+     <span class="k">this</span><span class="p">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">MyClass</span> <span class="n">my</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="s2">&quot;something&quot;</span><span class="p">);</span>
+  <span class="n">print</span> <span class="p">(</span> <span class="n">my</span><span class="p">.</span><span class="n">value</span> <span class="p">);</span>
+  <span class="n">MyClass</span> <span class="n">my</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="k">new</span> <span class="n">Other</span><span class="p">());</span>
+<span class="p">}</span></code></pre></div>
+
+<h2>DOM?</h2>
+
+<p>Bob Nystrom wrote, jQuery gave us some revelations on CSS selection of
+elements. Therefore it seems the selection mechanism in Dart is pretty
+similar to jQuery. So here ist he difference, starting with JavaScript:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">elem</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="err">‚</span><span class="nx">myDiv</span><span class="err">’</span><span class="p">);</span></code></pre></div>
+
+<p>In jQuery:</p>
+
+<div class="highlight"><pre><code class="javascript"><span class="nx">$</span><span class="p">(.</span><span class="err">#</span><span class="nx">myDiv</span><span class="err">’</span><span class="p">);</span> <span class="nx">or</span> <span class="nx">like</span> <span class="nx">$</span><span class="p">().</span><span class="nx">find</span><span class="p">(</span><span class="err">‚#</span><span class="nx">myDiv</span><span class="err">’</span><span class="p">);</span></code></pre></div>
+
+<p>Finally in Dart:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">elem</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="err">‚#</span><span class="n">myDiv</span><span class="err">’</span><span class="p">);</span></code></pre></div>
+
+<p>Dart selector methods are only two: <strong>query</strong> and <strong>queryAll</strong>.
+You are able to select one element or a group of elements.
+Instead of an array like in JavaScript <strong>you get a Collections in return</strong>.
+Again it looks as this is a gift for Java developers.</p>
+
+<p>Here is another selector example:</p>
+
+<div class="highlight"><pre><code class="dart"><span class="n">elem</span><span class="p">.</span><span class="n">queryAll</span><span class="p">(</span><span class="err">‚</span><span class="p">.</span><span class="n">myClass</span> <span class="p">.</span><span class="n">otherClass</span><span class="err">’</span><span class="p">);</span></code></pre></div>
+
+<p>It selects elements with these two classes. Dart also has streamlined the
+way you can get attributes from a specific element.</p>
+
+<h2>What else?</h2>
+
+<p>There is the factory pattern build into the language. I have already read
+„Design Patterns are so outdated“. I cannot agree. Design Patterns still
+are a useful way to communicate between developers. The Factory
+pattern is a very important one and widely used. If you don’t want it,
+you are not forced to use it. But looking at it, it is really smart and nice.</p>
+
+<p>There are already very good a clean APIs for the most important
+work (like Collections). There are Exceptions and there are Generics.
+One might say, why do you need Generics when you have such a weak
+typing system? Again: it is about readability and of course you have
+the type checker doing some work for you – before you go into production.</p>
+
+<p>Isolates are there. This is powerful and I expect that there will be
+a chance to create multi-threaded apps with Dart in a while.</p>
+
+<h2>Conclusion</h2>
+
+<p>Dart is young! There is room for development and it is not ready for
+production yet. But hey, no problem. It looks GOOD. It is open source.
+The good thing is, you can make look it like JavaScript or like Java.
+Listening to the latest rumours <strong>it might be available in Android phones</strong>,
+and hey, who knows? Maybe Dart becomes the language which replaces Java in
+a few years on the phone? It is actually not the worst idea when I think on
+the performance of my Android Emulator.
+Let’s see what happens when people start to write frameworks
+and when browsers allow Dart code.</p>
+
