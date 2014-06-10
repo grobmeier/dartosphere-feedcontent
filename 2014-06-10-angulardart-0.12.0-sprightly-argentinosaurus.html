@@ -1,0 +1,14 @@
+---
+title: 'AngularDart 0.12.0 (sprightly-argentinosaurus)'
+layout: post
+published: '2014-06-10T16:29:00-07:00'
+feed: AngularDart
+link: 'http://blog.angulardart.org/2014/06/angulardart-0120-sprightly.html'
+author:
+    name: 'Naomi Black'
+    email: noreply@blogger.com
+    url: 'http://www.blogger.com/profile/16707130530024113242'
+
+---
+
+<br /><div>Version 0.12.0 (sprightly-argentinosaurus) is available. This version contains some performance improvements, support for using credentials in cross-site requests, and a breaking change to route, along with the usual bugfixes and minor improvements.<br /><br />Our next release will focus (almost) exclusively on performance. If you're working on a contribution to angular.dart that isn't performance related, please note that we are <a href="https://github.com/angular/angular.dart/tree/staging-v0.14" target="_blank">staging these for 0.14 in a separate branch</a>.<br /><br />Summary below, please <a href="https://github.com/angular/angular.dart/blob/master/CHANGELOG.md" target="_blank">see the changelog</a> for full details.</div><div><div><br /></div><div>Notable changes in 0.12.0</div><div><ul><li>A 20% performance improvement from caching interpolated expressions.</li><li>Http service can make cross-site requests (get, post, put, etc.)&nbsp;which use credentials (such as cookies or authorization headers).</li><li><b>Breaking change</b>: vetoing is no longer allowed on leave (<span style="font-family: Courier New, Courier, monospace;">RouteLeaveEvent</span>). This change corrects an issue with routes unable to recover from another route vetoing a leave event.</li><li><b>Breaking change</b>:&nbsp;&nbsp;<span style="font-family: Courier New, Courier, monospace;">Zone.defaultOnScheduleMicrotask</span> is now named <span style="font-family: Courier New, Courier, monospace;">Zone.onScheduleMicrotask</span></li><li><b>Breaking change</b>: <span style="font-family: Courier New, Courier, monospace;">OneWayOneTime</span> bindings will continue to accept value         assignments until their stablized value is non-null.</li></ul></div><div><ul></ul></div><div>Sprightly thanks to our contributors for 0.12.0: Caitlin Potter, Chirayu Krishnappa, Emily Fortuna, James deBoer, Marko Vuksanovic, Miško Hevery, Naomi Black, Paul Rohde, Pavel Jbanov, Victor Berchet, Victor Savkin, jrote1.</div></div>
