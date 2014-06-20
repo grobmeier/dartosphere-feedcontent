@@ -1,0 +1,21 @@
+---
+title: 'Testing JavaScript Polymers… With Dart'
+layout: post
+published: '2014-06-20T00:00:00-04:00'
+feed: 'japh(r) by Chris Strom'
+link: 'http://feedproxy.google.com/~r/JaphrByChrisStrom/~3/Z2FmwHfwEMw/testing-javascript-polymers-with-dart.html'
+author:
+    name: 'Chris Strom'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/117928918793969810642'
+tags:
+    - chain
+    - css
+    - dart
+    - dartlang
+    - polymer
+    - testing
+
+---
+
+<div class=top-chain-links></div><br />Look, this isn't that hard. In order to test my <code>&lt;apply-author-styles></code> <a href="http://www.polymer-project.org/">Polymer</a> element, I need a test page that:<br /><ol><li>holds a test Polymer element that uses <code>&lt;apply-author-styles></code></li><li>Can run in a server so that XHR request can be made</li><li>Has custom styles that can be pulled from the page into the test custom element</li></ol>Try as I might with grunt-contrib-jasmine and <a href="http://karma-runner.github.io">Karma</a>, I cannot do this. grunt-contrib-jasmine and Polymer <a href="http://japhr.blogspot.com/2014/02/yak-boxed-development.html">do not get along</a>. Karma refuses to allow me to add custom CSS to the test context—at least not statically.<br /><br />So you know what? I give up. I'm testing with <a href="http://dartlang.org">Dart</a>.<br /><br />I need a web envr<br /><br /><pre class=prettyprint>$ npm install --save-dev grunt-shell</pre><br /><br />I start with a test context page that *I* can write:<pre class=prettyprint></pre><br /><pre class=prettyprint>library main_test;<br /><br />import 'package:scheduled_test/scheduled_test.dart';<br />import 'dart:html';<br /><br />main(){<br />  group("[styles]", (){<br />    test('the app returns OK', (){<br />      var xFoo = query('x-foo');<br />      expect(xFoo.text, contains('orange'));<br />    });<br />  });<br />}</pre>Which does the trick.<br /><br /><span style="color: #ccc">Day #98</span>  <br /><br /><p class=bottom-chain-links><a href="http://japhr.blogspot.com/2014/06/getting-started-on-grunt-contrib.html">&lsaquo;prev</a> | <a href="http://japhr.blogspot.com/2013/11/new-chain-patterns-in-polymer.html">My Chain</a> | <span style="color: #ccc">next&rsaquo;</span> </p><script>var b_links = document.getElementsByClassName('bottom-chain-links'),      t_links = document.getElementsByClassName('top-chain-links');  if (b_links.length == 1 && t_links.length == 1) {   t_links[0].innerHTML = b_links[0].innerHTML; } </script><img src="http://feeds.feedburner.com/~r/JaphrByChrisStrom/~4/Z2FmwHfwEMw" height="1" width="1"/>
