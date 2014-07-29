@@ -1,0 +1,20 @@
+---
+title: 'Deep, Isolated Reactors in Dart'
+layout: post
+published: '2014-07-28T23:59:00-04:00'
+feed: 'japh(r) by Chris Strom'
+link: 'http://feedproxy.google.com/~r/JaphrByChrisStrom/~3/dDfQ-QzBDOE/deep-isolated-reactors-in-dart.html'
+author:
+    name: 'Chris Strom'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/117928918793969810642'
+tags:
+    - chain
+    - dart
+    - dartlang
+    - 'design patterns'
+    - 'reactor pattern'
+
+---
+
+<div class=top-chain-links></div><br />I <i>think</i> that I have decent sample code the <a href="http://en.wikipedia.org/wiki/Reactor_pattern">Reactor Pattern</a> in <a href="http://dartlang.org">Dart</a>. Furthermore, I <i>think</i> I have a decent explanation for why I cannot get closer to the C++ implementation in the <a href="http://www.cs.wustl.edu/~schmidt/PDF/reactor-siemens.pdf">original paper</a>. I think, I think, I think… What I know is that I usually get into trouble when I think.<br /><br />To have a better idea that I have replicated the spirit, if not the exact details, of the pattern described in the original paper, I would like to establish two communication channels between my isolate message sending code and the reactor loop from yesterday:<pre class=prettyprint>main() {<br />  // Spawn the message sending isolate and set its receive port as the source of<br />  // the fake select() messages<br />  var res = new ReceivePort();<br />  Select.source = res;<br />  Isolate.spawn(messageSender, res.sendPort);<br /><br />  // Create (and register in constructor) event handler<br />  new WordAcceptor();<br /><br />  // Reactor “loop” (handleEvent is recursive)<br />  new InitiationDispatcher().handleEvents();<br />}</pre>Aside from the shenanigans with the select(), this looks very much like the main loop presented in the paper. The “word acceptor” waits for the reactor to inform it of new word sending connections, at which point it creates an instance of a “word handler” which simply prints words to STDOUT.<br /><br />The problem with my current implementation is that I have the acceptor doing everything.<br /><br /><pre class=prettyprint>class WordAcceptor implements EventHandler {<br />  WordAcceptor() {<br />    new InitiationDispatcher().registerHandler(this, 'word_connect');<br />  }<br /><br />  void handleEvent(connection) {<br />    if (connection.type != 'word_connect') return;<br />    new WordPrinter(connection.value);<br />  }<br />}</pre><br /><br /><br /><span style="color: #ccc">Day #136</span>  <br /><br /><p class=bottom-chain-links><a href="http://japhr.blogspot.com/2014/07/isolated-reactors-in-dart.html">&lsaquo;prev</a> | <a href="http://japhr.blogspot.com/2013/11/new-chain-patterns-in-polymer.html">My Chain</a> | <span style="color: #ccc">next&rsaquo;</span> </p><script>var b_links = document.getElementsByClassName('bottom-chain-links'),      t_links = document.getElementsByClassName('top-chain-links');  if (b_links.length == 1 && t_links.length == 1) {   t_links[0].innerHTML = b_links[0].innerHTML; } </script><img src="http://feeds.feedburner.com/~r/JaphrByChrisStrom/~4/dDfQ-QzBDOE" height="1" width="1"/>
