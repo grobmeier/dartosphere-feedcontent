@@ -1,0 +1,131 @@
+---
+title: 'Side Effects'
+layout: post
+published: '2014-08-26T19:31:22+00:00'
+feed: 'Matt''s Blog » Dart'
+link: 'http://blog.butlermatt.me/2014/08/side-effects/'
+author:
+    name: 'Matthew Butler'
+    email: null
+    url: null
+tags:
+    - Dart
+    - pas-by-reference
+    - pass-by-value
+    - side-effects
+
+---
+
+<p><img class="aligncenter size-full wp-image-166" src="http://blog.butlermatt.me/wp-content/uploads/2014/08/side-effects1.png" alt="side-effects" width="800" height="143" /></p>
+<p>Dart, like many other languages, using pass-by-reference for complex objects, and pass-by-value for simple objects. This can occasionally be confusing or surprising to someone new to the language, as it may not always be clear when your function will have side effects or not. So I decided to create a simple project which helps highlight when you can expect your function to have side effects.</p>
+<p><span id="more-164"></span></p>
+<p>The code can be downloaded directly from my <a href="https://github.com/butlermatt/side_effects">side_effects</a> Github Repository. For the impatient of you, a table summarizing the results can be found below:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Pass-By-Value</th>
+<th>Pass-By-Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>bool</th>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<th>num</th>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<th>int</th>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<th>double</th>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<th>String</th>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<th>List</th>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<th>final List</th>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<th>Map</th>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<th>final Map</th>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<th>Class</th>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<th>List Value<br />(Eg: list[0])</th>
+<td>Dependant on<br />value&#8217;s type</td>
+<td>Dependant on<br />value&#8217;s type</td>
+</tr>
+<tr>
+<th>Map Value<br />(Eg: map['one'])</th>
+<td>Dependant on<br />value&#8217;s type</td>
+<td>Dependant on<br />value&#8217;s type</td>
+</tr>
+<tr>
+<th>Class Value<br />(Eg: myClass.prop)</th>
+<td>Dependant on<br />value&#8217;s type</td>
+<td>Dependant on<br />value&#8217;s type</td>
+</tr>
+</tbody>
+</table>
+<p>Of note in particular is the <code>final</code> version of List and Map. Both will allow new elements to be added, and existing elements to be modified</p>
+<p>In my example, I wanted to test both adding a value, as well as modifying a value. For the basic types, there really isn&#8217;t a distinction worth noting. However for more complex types like <code>List</code> and <code>Map</code> one can either change the value, or add a value to the collection so I wanted to demonstrate both, though both behave similarly. In order to accommodate multiple functions which can could be used for the tests, without being too repetitive, I used a <code>typedef</code> for a modify function, and in my testing function, accepted a modify function as an argument.</p>
+<pre class="prettyprint linenums"><code class="language-dart">library side_effects;
+
+typedef void modify(var arg);
+
+// ...
+void testFunction(var arg, modify mod) {
+  if(arg is num) print('Testing Num:'); // Num captures int, double and num types
+  if(arg is bool) print('Testing bool:');
+  if(arg is String) print('Testing String');
+  if(arg is List) print('Testing List:');
+  if(arg is Map) print('Testing Map:');
+  if(arg is SideEffect) print('Testing class SideEffect');
+  if(arg is PartialEffect) print('Testing class PartialEffect');
+  
+  print('Before call: $arg');
+  mod(arg);
+  print('After call: $arg\n');
+}</code></pre>
+<p>I then used two separate functions for testing the add or modify scenarios. I&#8217;ll just include a couple of lines from each as they are slightly verbose</p>
+<pre class="prettyprint linenums"><code class="language-dart">void addOne(var arg) {
+  if(arg is num) arg += 1; // Num captures int, double and num types
+  // ...
+}
+
+void modifyOne(var arg) {
+  if(arg is String) arg = "Completely Different";
+  // ...
+}</code></pre>
+<p>I also wanted to test classes in two different ways, I wanted to test modifying the class properties directly, as well as passing the class properties to the various <code>modify</code> functions themselves. To account for that, I created two identical classes with slightly different names which <code>addOne</code> and <code>modifyOne</code> could test for directly. Thus I created the classes <code>SideEffect</code> and <code>PartialEffect</code>. Each of these also overrides the <code>toString</code> method to provide better output than simply &#8216;<code>Instance Of...</code>&#8216;.</p>
+<p>Clone and run the application from the <a href="https://github.com/butlermatt/side_effects">Github repository</a>, look at the source in bin/side_effects.dart and let me know any thoughts you may have. For me, coming from other similar languages, the behaviour of <code>String</code> was a surprise to me. But for those unfamiliar with the language, I think side-effects of a function should be clearly understood early on, as they can cause some frustrating bugs to pop-up if you don&#8217;t consider them.</p>
+
