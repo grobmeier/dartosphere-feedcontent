@@ -1,0 +1,37 @@
+---
+title: 'Side Effects may include… being wrong!'
+layout: post
+published: '2014-08-27T13:48:29+00:00'
+feed: 'Matt''s Blog » Dart'
+link: 'http://blog.butlermatt.me/2014/08/side-effects-may-include-being-wrong/'
+author:
+    name: 'Matthew Butler'
+    email: null
+    url: null
+tags:
+    - Dart
+    - pas-by-reference
+    - pass-by-value
+
+---
+
+<p><img src="http://blog.butlermatt.me/wp-content/uploads/2014/08/side-effects1.png" alt="side-effects" width="800" height="143" class="aligncenter size-full wp-image-166" /></p>
+<p>Yesterday, I wrote a post about <a href="http://blog.butlermatt.me/2014/08/side-effects/" title="Side Effects">Side Effects</a>. My post was based on observed behaviour, as opposed to the mechanics of the Dart VM. I am happy to report that my last post was <strong>wrong</strong>. Yes I was wrong, and yes I am extremely happy about it! I received a number of comments indicating that no, Dart is a pass-by-value for everything. Additionally I received a number of comments indicating that Dart is actually always a pass-by-reference. In fact, both are correct&#8230; sort of.</p>
+<p><span id="more-181"></span></p>
+<p>The fact that the responses I received also go to show that the terminology and mechanics are actually somewhat skewed based on experiences. First, strictly speaking, Dart is considered a Pass-by-value language. Where the value is always a reference to an object. Something I didn&#8217;t specifically mention in my last post, that everything in Dart is an object. Event &#8216;primative&#8217; types like int, num, bool etc. That&#8217;s why we can do something like <code>5.toString();</code> in Dart and it will work. This may sound like a pass-by-reference, however it&#8217;s actually a lesser-known <a href="http://en.wikipedia.org/wiki/Call_by_sharing#Call_by_sharing" title="Call by Sharing">Call-by-sharing</a>.</p>
+<p>So what&#8217;s the difference between call-by-reference and call-by-sharing? Simply put, in call-by-sharing each object referenced is passed as a value. The reference itself isn&#8217;t passed, rather a value of the reference is copied to the destination. Initially this wasn&#8217;t clear to me either, why split the hairs? But as it turns out there&#8217;s one huge area where it makes a difference. If a reference was passed directly, we could change the entire instance of the original value. Which we cannot do in Dart. We can update the contents of an instance, but we can&#8217;t make a new instance altogether. Consider the following code:</p>
+<pre class="prettyprint linenums"><code class="language-dart">void reassignOne(List arg) {
+  arg = new List.from([100, 200, 300]);
+  print('In call: $arg');
+}
+
+void main() {
+  List list = [1, 2, 3];
+  print(list);
+  reassignOne(list);
+  print(list);
+}</code></pre>
+<p>If Dart was a true pass-by-reference language, then calling <code>reassignOne</code> with list would totally change list on the outside of the function. But because Dart is a pass-by-value, where all values are a reference to an Object, we can modify the list we pass (such as appending a new value) which will have side-effects outside of the function. However we cannot assign an entirely new reference and access that outside of the function.</p>
+<p>So do my observations from the previous post indicate that &#8216;primative&#8217; types are passed by value directly (as opposed to a reference to their object?) Because their objects are entirely immutable. When an immutable object reference is passed it really is no different than pass-as-value. In addition to <code>num, bool, int, double, Symbol</code> some other types in Dart are immutable such as <code>DateTime</code> and <code>Interval</code>.</p>
+<p>I want to thank everyone who corrected my previous post. I don&#8217;t mind being wrong, as it&#8217;s always a new opportunity to learn! Particular thanks go to Googlers <a href="https://plus.google.com/101539040928169035212" title="+Lasse R.H. Nielsen">+Lasse R.H. Nielsen</a> and <a href="https://plus.google.com/+JustinFagnani/" title="+Justin Fagnani">+Justin Fagnani</a> on providing links and details on the differences with Dart&#8217;s pass-by-value or call-by-sharing.</p>
+
