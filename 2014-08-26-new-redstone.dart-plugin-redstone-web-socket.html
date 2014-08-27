@@ -1,0 +1,81 @@
+---
+title: 'New Redstone.dart plugin: redstone_web_socket'
+layout: post
+published: '2014-08-26T00:00:00+00:00'
+feed: Redstone.dart
+link: 'http://redstonedart.org/2014/08/26/new-plugin-redstone-web-socket/'
+author:
+    name: 'Luiz Mineo'
+    email: luiz.mineo@gmail.com
+    url: null
+
+---
+
+<p>A new Redstone.dart plugin is available on pub: <a href="http://pub.dartlang.org/packages/redstone_web_socket">redstone_web_socket</a>.</p>
+
+<p>This plugin is a wrapper to the <a href="http://pub.dartlang.org/packages/shelf_web_socket">shelf_web_socket</a> package. It provides a <code>@WebSocketHandler</code> annotation, which can be used to define web socket handlers:</p>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="err">@</span><span class="n">WebSocketHandler</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
+<span class="n">onConnection</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">websocket</span><span class="p">.</span><span class="n">listen</span><span class="p">((</span><span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">websocket</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;echo </span><span class="si">$</span><span class="n">message</span><span class="s2">&quot;</span><span class="p">);</span>
+  <span class="p">});</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>The <code>@WebSocketHandler</code> annotation can also be used with classes:</p>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="err">@</span><span class="n">WebSocketHandler</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">)</span>
+<span class="kd">class</span> <span class="nc">ServerEndPoint</span> <span class="p">{</span>
+
+  <span class="err">@</span><span class="n">OnOpen</span><span class="p">()</span>
+  <span class="kt">void</span> <span class="n">onOpen</span><span class="p">(</span><span class="n">WebSocketSession</span> <span class="n">session</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="s2">&quot;connection established&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="err">@</span><span class="n">OnMessage</span><span class="p">()</span>
+  <span class="kt">void</span> <span class="n">onMessage</span><span class="p">(</span><span class="kt">String</span> <span class="n">message</span><span class="p">,</span> <span class="n">WebSocketSession</span> <span class="n">session</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="s2">&quot;message received: </span><span class="si">$</span><span class="n">message</span><span class="s2">&quot;</span><span class="p">);</span>
+    <span class="n">session</span><span class="p">.</span><span class="n">connection</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;echo </span><span class="si">$</span><span class="n">message</span><span class="s2">&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="err">@</span><span class="n">OnError</span><span class="p">()</span>
+  <span class="kt">void</span> <span class="n">onError</span><span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">WebSocketSession</span> <span class="n">session</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="s2">&quot;error: </span><span class="si">$</span><span class="n">error</span><span class="s2">&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="err">@</span><span class="n">OnClose</span><span class="p">()</span>
+  <span class="kt">void</span> <span class="n">onClose</span><span class="p">(</span><span class="n">WebSocketSession</span> <span class="n">session</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">print</span><span class="p">(</span><span class="s2">&quot;connection closed&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>The plugin also provides a simple mock client, which can be used to test web socket handlers:</p>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="k">import</span> <span class="s1">&#39;package:redstone/server.dart&#39;</span> <span class="k">as</span> <span class="n">app</span><span class="p">;</span>
+<span class="k">import</span> <span class="s1">&#39;package:redstone_web_socket/redstone_web_socket.dart&#39;</span><span class="p">;</span>
+<span class="k">import</span> <span class="s1">&#39;package:unittest/unittest.dart&#39;</span><span class="p">;</span>
+
+<span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="n">test</span><span class="p">(</span><span class="s2">&quot;Test echo service&quot;</span><span class="p">,</span> <span class="p">()</span> <span class="p">{</span>
+
+    <span class="kd">var</span> <span class="n">completer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Completer</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="n">socket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MockWebSocket</span><span class="p">();</span>
+
+    <span class="n">socket</span><span class="p">.</span><span class="n">listen</span><span class="p">((</span><span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+
+      <span class="n">expect</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">equals</span><span class="p">(</span><span class="s2">&quot;echo message&quot;</span><span class="p">));</span>
+
+      <span class="n">completer</span><span class="p">.</span><span class="n">complete</span><span class="p">();</span>
+    <span class="p">});</span>
+
+    <span class="n">openMockConnection</span><span class="p">(</span><span class="s2">&quot;/ws&quot;</span><span class="p">,</span> <span class="n">socket</span><span class="p">);</span>
+
+    <span class="n">socket</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">);</span>
+
+    <span class="k">return</span> <span class="n">completer</span><span class="p">.</span><span class="n">future</span><span class="p">;</span>
+
+  <span class="p">});</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>For more details, please take a look at the <a href="http://redstonedart.org/doc/redstone_web_socket.html">documentation</a>. </p>
+
