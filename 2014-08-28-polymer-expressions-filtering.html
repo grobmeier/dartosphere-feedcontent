@@ -1,0 +1,78 @@
+---
+title: 'Polymer Expressions – Filtering'
+layout: post
+published: '2014-08-28T19:26:00+00:00'
+feed: 'Matt''s Blog » Dart'
+link: 'http://blog.butlermatt.me/2014/08/polymer-expressions-filtering/'
+author:
+    name: 'Matthew Butler'
+    email: null
+    url: null
+tags:
+    - Dart
+    - filter
+    - Polymer
+    - polymer_expressions
+
+---
+
+<p><img src="http://blog.butlermatt.me/wp-content/uploads/2014/08/polymer-logo.png" alt="polymer-logo" width="416" height="286" class="aligncenter size-full wp-image-162" /></p>
+<p>Polymer is a great library. I use it every day and I&#8217;m often finding hidden gems that make life so much easier. Today I wanted to touch on some goodness of Polymer Expressions. In particular setting up and using filters.</p>
+<p><span id="more-186"></span></p>
+<p>It used to be that setting up filters in Polymer was a little bit of a task, having to create a new object which implemented or extended some kind of filter object. I don&#8217;t recall now the details, just that I recall using it was very inconvenient. I&#8217;m not sure when exactly it changed, as I gave up on filters and transformers for quite a while. However looking at them now, they have become supremely easy to use.</p>
+<p>Filters can be used on single items or even in repeat templates. To show a couple small examples on how filters can be used very easily we&#8217;ll create a list which allows for a very, <em>very</em>, simple fuzzy search. In order to do this we&#8217;ll create a our own polymer component called fuzzy-list. The goal is to have a list of items which will filter based on characters typed into a text box. All items in the list should also be entirely uppercase, just to take the contrived example from the <a href="https://pub.dartlang.org/packages/polymer_expressions" title="Polymer Expressions - Pub Package Manager">Polymer Expressions Pub package</a>.</p>
+<p>First we&#8217;ll setup the simple stuff for our component. Below is the initial code we&#8217;ll use, and which we&#8217;ll add to.</p>
+<pre class="prettyprint linenums"><code class="language-html">&lt;link rel="import" href="packages/polymer/polymer.html"&gt;
+
+&lt;polymer-element name="fuzzy-list"&gt;
+  &lt;template&gt;
+    &lt;div&gt;
+      &lt;ul&gt;
+        &lt;template repeat="{{ item in list }}"&gt;
+          &lt;li&gt;{{ item }}&lt;/li&gt;
+        &lt;/template&gt;
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  &lt;/template&gt;
+  &lt;script type="application/dart" src="fuzzy_list.dart"&gt;&lt;/script&gt;
+&lt;/polymer-element&gt;
+</code></pre>
+<p>And here&#8217;s our class:</p>
+<pre class="prettyprint linenums"><code class="language-dart">import 'package:polymer/polymer.dart';
+
+@CustomTag('fuzzy-list')
+class FuzzyList extends PolymerElement {
+  @observable List list;
+  
+  FuzzyList.created() : super.created() {
+    list = toObservable(['apple','banana','orange', 'pear', 
+                         'grape', 'pineapple',
+                         'strawberry', 'peach']);
+  }
+}</code></pre>
+<p>Now filters in Polymer Expressions must be a one-argument function. To start with we&#8217;ll create the simple uppercase filter. We add the following one-line function to our <code>FuzzyList</code> class.</p>
+<pre class="prettyprint"><code class="language-dart">uppercase(String str) =&gt; str.toUpperCase();</code></pre>
+<p>It&#8217;s really that simple. Now any String which is passed to the uppercase filter will be returned in uppercase. To see this, change <code>line 8</code> of our HTML file to be:</p>
+<pre class="prettyprint"><code class="language-html">&lt;li&gt;{{item | uppercase}}&lt;/li&gt;</code></pre>
+<p>That&#8217;s great, now we have a filter in place to capitalize our list. Note that this affects only the display and it does not change the contents of our original list. Now we need to be able to filter the list contents itself. Our filter should accept an argument which is the text to apply for the filter, and the list we want to filter. But Polymer Expression filters can only accept one argument, how can we pass two? First lets see the code then we&#8217;ll look at what&#8217;s going on.</p>
+<p>First A couple of additions to the HTML. First line appears above the unordered list to allow us to specify the filter. The second line replaces the existing template repeat.</p>
+<pre class="prettyprint linenums"><code class="language-html">&lt;label&gt;Filter: &lt;input type="text" value="{{filterStr}}"&gt;&lt;/label&gt;
+&lt;!-- ... --&gt;
+&lt;template repeat="{{ item in list | filter(filterStr) }}"&gt;</code></pre>
+<p>Next we update our class to add the <code>filterStr</code> variable and add the filter function</p>
+<pre class="prettyprint linenums"><code class="language-dart">  @observable String filterStr = '';
+  // ...
+  filter(String str) =&gt; (List l) {
+    if(str == null || str.trim().isEmpty) return l;
+    return l.where((el) {
+      for(var i = 0; i &lt; str.length; i++) {
+        if(!el.contains(str[i])) return false;
+      }
+      return true;
+    });
+  };</code></pre>
+<p>We bind the <code>input</code>s value to <code>filterStr</code> which is an observable, and as such will receive updates as we type and cause any expression using it to be re-evaluated. Secondly we pass the list in our template repeat to the <code>filter</code> filter. The <code>filter</code> function is also passed our <code>filterStr</code>. You'll notice the <code>filter</code> function accepts a string, not a list, and returns a function, rather than a list. The reasoning for this is actually a little complex. If we just passed the filter without the arguments, our list would not be automatically updated when the value of <code>filterStr</code> changed.</p>
+<p>Instead what happens is that when the value of <code>filterStr</code> changes, it causes <code>filter(filterStr)</code> to be re-evaluated. When that evaluates, it returns a new function to which we pass the list. Essentially, <code>filter</code> is not actually our filter as used by Polymer Expressions, rather the function it returns is the filter. Using Dart's closures, we essentially generate a new function enclosing the value passed to <code>filter</code> within. This is then applied to the list we pass.</p>
+<p>The anonymous closure itself is pretty straight forward. It first checks if the string passed when creating the closure was null or empty, if so it just returns the list. If not, it returns a sub-list (well iterable on the list) of elements which contain all the characters contained in the string which was passed. If an element does not contain all the characters, then it's not included in the iterable returned. See the API documents for <a href="https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/dart-core.List#id_where" title="List.where API Docs">List.where</a> for more information.</p>
+<p>A few things to note, this fuzzy search is extremely simple. For instance it ignores duplicates, searching for "pp" will give the same results of just "p". Secondly it doesn't verify order that characters appears. For instance searching for "ap" will return "pear" and "peach" even though the letters appear in different order. This was just intended as a simple example and would need a lot of updates to be functional as most people would expect it to be. I leave it as an exercise for the reader to implement a better fuzzy search algorithm.</p>
+
