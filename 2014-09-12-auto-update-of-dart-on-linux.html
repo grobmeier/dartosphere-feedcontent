@@ -1,0 +1,21 @@
+---
+title: 'Auto-Update of Dart on Linux'
+layout: post
+published: '2014-09-12T23:59:00-04:00'
+feed: 'japh(r) by Chris Strom'
+link: 'http://feedproxy.google.com/~r/JaphrByChrisStrom/~3/uQi5xqmYS34/auto-update-of-dart-on-linux.html'
+author:
+    name: 'Chris Strom'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/117928918793969810642'
+tags:
+    - bash
+    - chain
+    - dart
+    - dartlang
+    - debian
+    - testing
+
+---
+
+<div class=top-chain-links></div><br />Updating <a href="http://dartlang.org">Dart</a> packages as part of an automated test suite is easy (<code>pub upgrade</code>). But what about updating Dart itself?<br /><br />As a coder, my instinct is a <code>curl</code> script to check the <a href="http://dartlang.org">dartlang.org</a> page for the latest release, then a Bash script to compare that value with the current install, then download, unzip and install. I am almost tempted to head down that rabbit hole—like all rabbit holes, it sounds fun from the outside. But, &lt;deep breath>, maybe there is a better way.<br /><br />The DartEditor has an auto-update feature, but if that is easily accessed from the command-line or code, I cannot find it. Shame. That too sounds like a fun rabbit hole.<br /><br />So instead, I note that there are <a href="https://www.dartlang.org/tools/download.html#dart-sdk-for-debian-and-ubuntu">Debian packages</a> for the SDK. I could add my CI server's user to the sudoers list for updating the package list and upgrading the SDK. I will not easily be able to trigger a new build when new versions of Dart are available, but I probably want to run the test suite every night regardless. Also, I like my grapes sour, dammit.<br /><br />But that won't work either. My CI server is still 32-bit. Bleh.<br /><br />So rabbit hole #1 it is.<br /><br />Instead of scraping the dartlang.org site, I find that the VERSION resource at <a href="https://storage.googleapis.com/dart-archive/channels/stable/release/latest/VERSION">https://storage.googleapis.com/dart-archive/channels/stable/release/latest/VERSION</a> is a better bet:<pre class=prettyprint>$ curl https://storage.googleapis.com/dart-archive/channels/stable/release/latest/VERSION 2>/dev/null                      ~/Downloads<br />{<br />  "revision": "39553",<br />  "version" : "1.6.0",<br />  "date"    : "201408270039"<br />}</pre><br /><pre class=prettyprint>#!/bin/sh<br /><br />ROOT_DIR='/home/chris/local'<br /><br />VERSION_URL='https://storage.googleapis.com/dart-archive/channels/stable/release/latest/VERSION'<br />DOWNLOAD_URL='https://storage.googleapis.com/dart-archive/channels/stable/release/latest/editor/darteditor-linux-ia32.zip'<br /><br />latest=`curl $VERSION_URL 2>/dev/null |<br />  grep version |<br />  sed -e 's/\s*"version"\s*:\s*"//' \<br />      -e 's/".*//'`<br /><br />set +e<br />current=`drt --version 2>&1 |<br />  sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*/\1/'`<br />set -e<br /><br />echo "Latest: $latest"<br />echo "Current: $current"<br />echo ""<br /><br />if [ "$current" = "$latest" ]; then<br />    echo "Up to date."<br />    exit 0<br />fi<br /><br />echo "Downloading the latest version of Dart!"<br />echo ""<br /><br />rm -rf $ROOT_DIR/dart.old<br />mv $ROOT_DIR/dart $ROOT_DIR/dart.old<br /><br />rm -f /tmp/dart.zip<br />wget -O /tmp/dart.zip $DOWNLOAD_URL<br /><br />cd $ROOT_DIR<br />unzip /tmp/dart.zip<br /><br />cd $ROOT_DIR/dart<br /><br />./chromium/download_contentshell.sh<br />unzip content_shell-linux-*-release.zip<br />mv drt-lucid*-full-stable-* content_shell<br /></pre><br />Which does the trick.<br /><br /><br /><span style="color: #ccc">Day #181</span>  <br /><br /><p class=bottom-chain-links><a href="http://japhr.blogspot.com/2014/09/a-lockfile-to-prevent-double-nodejs.html">&lsaquo;prev</a> | <a href="http://japhr.blogspot.com/2013/11/new-chain-patterns-in-polymer.html">My Chain</a> | <span style="color: #ccc">next&rsaquo;</span> </p><script>var b_links = document.getElementsByClassName('bottom-chain-links'),      t_links = document.getElementsByClassName('top-chain-links');  if (b_links.length == 1 && t_links.length == 1) {   t_links[0].innerHTML = b_links[0].innerHTML; } </script><img src="http://feeds.feedburner.com/~r/JaphrByChrisStrom/~4/uQi5xqmYS34" height="1" width="1"/>
