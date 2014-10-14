@@ -1,0 +1,102 @@
+---
+title: 'How to deploy your Redstone.dart app to Heroku'
+layout: post
+published: '2014-10-14T00:00:00+00:00'
+feed: Redstone.dart
+link: 'http://redstonedart.org/2014/10/14/how-to-deploy-your-redstone-app-on-heroku/'
+author:
+    name: 'Luiz Mineo'
+    email: luiz.mineo@gmail.com
+    url: null
+
+---
+
+<p>Today I&#39;ve got some time to play with the new <a href="https://blog.heroku.com/archives/2014/8/19/cedar-14-public-beta">cedar-14</a> stack and the <a href="https://github.com/igrigorik/heroku-buildpack-dart">Dart buildpack</a>, and I&#39;m impressed on how easy it is now to deploy Dart apps on <a href="http://heroku.com">Heroku</a>. </p>
+
+<p>Basically, to run on Heroku, your app must be configurable through environment variables. The minimal configuration that every heroku application must handle is the port number, where the server is allowed to bind to. Let&#39;s see an example:</p>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="k">import</span> <span class="s2">&quot;dart:io&quot;</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="s2">&quot;package:redstone/server.dart&quot;</span> <span class="k">as</span> <span class="n">app</span><span class="p">;</span>
+
+<span class="c1">//Import services here</span>
+
+<span class="n">main</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="n">app</span><span class="p">.</span><span class="n">setupConsoleLog</span><span class="p">();</span>
+
+  <span class="c1">//check environment variables</span>
+  <span class="kd">var</span> <span class="n">port</span> <span class="o">=</span> <span class="n">_getConfig</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;8080&quot;</span><span class="p">);</span>
+
+  <span class="c1">//start the server</span>
+  <span class="n">app</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="nl">port:</span> <span class="kt">int</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="n">port</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="n">_getConfig</span><span class="p">(</span><span class="kt">String</span> <span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">defaultValue</span><span class="p">])</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="n">value</span> <span class="o">=</span> <span class="n">Platform</span><span class="p">.</span><span class="n">environment</span><span class="p">[</span><span class="n">name</span><span class="p">];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">defaultValue</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>If your app also has client code, it&#39;s a good idea to make the path to the web folder configurable too.</p>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="k">import</span> <span class="s2">&quot;dart:io&quot;</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="s2">&quot;package:redstone/server.dart&quot;</span> <span class="k">as</span> <span class="n">app</span><span class="p">;</span>
+<span class="k">import</span> <span class="s2">&quot;package:shelf_static/shelf_static.dart&quot;</span><span class="p">;</span>
+
+<span class="c1">//Import services here</span>
+
+<span class="n">main</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">String</span><span class="o">&gt;</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+
+  <span class="n">app</span><span class="p">.</span><span class="n">setupConsoleLog</span><span class="p">();</span>
+
+  <span class="c1">//check environment variables</span>
+  <span class="kd">var</span> <span class="n">port</span> <span class="o">=</span> <span class="n">_getConfig</span><span class="p">(</span><span class="s2">&quot;PORT&quot;</span><span class="p">,</span> <span class="s2">&quot;8080&quot;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="n">web</span> <span class="o">=</span> <span class="n">_getConfig</span><span class="p">(</span><span class="s2">&quot;WEB_FOLDER&quot;</span><span class="p">,</span> <span class="s2">&quot;web&quot;</span><span class="p">);</span>
+
+  <span class="c1">//start the server</span>
+  <span class="n">app</span><span class="p">.</span><span class="n">setShelfHandler</span><span class="p">(</span><span class="n">createStaticHandler</span><span class="p">(</span><span class="n">web</span><span class="p">,</span>
+                      <span class="nl">defaultDocument:</span> <span class="s2">&quot;index.html&quot;</span><span class="p">));</span>
+  <span class="n">app</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="nl">port:</span> <span class="kt">int</span><span class="p">.</span><span class="n">parse</span><span class="p">(</span><span class="n">port</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="n">_getConfig</span><span class="p">(</span><span class="kt">String</span> <span class="n">name</span><span class="p">,</span> <span class="p">[</span><span class="n">defaultValue</span><span class="p">])</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="n">value</span> <span class="o">=</span> <span class="n">Platform</span><span class="p">.</span><span class="n">environment</span><span class="p">[</span><span class="n">name</span><span class="p">];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">value</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">defaultValue</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>When you push your Dart application to Heroku, it uses the <code>pub build</code> command to compile the client code, and then starts the server. To allow Heroku to run your server, you need to create a <code>Procfile</code> file with the command to start it. For example, if your server entry-point is defined in the bin/server.dart file, the Procfile can have the following content:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">web: ./dart-sdk/bin/dart bin/server.dart
+</code></pre></div>
+<p>With everything set up, you can use the <a href="https://toolbelt.heroku.com/">Heroku Toolbelt</a> to deploy your app. To do so, just run the following commands
+from the application root folder.</p>
+
+<p>First, you need a git repository to transfer your app to Heroku. If you already have one, you can ignore this step:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ git init
+$ git add .
+$ git commit -am &quot;first commit&quot;
+</code></pre></div>
+<p>Create a Heroku application using the cedar-14 stack:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ heroku create -s cedar-14
+</code></pre></div>
+<p>Configure a Dart SDK archive. The following link points to Dart SDK 1.7-dev.4.6, but you can get another version 
+<a href="https://www.dartlang.org/tools/download_archive/">here</a> (be sure to get a Linux 64-bit build):</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ heroku config:set DART_SDK_URL=https://storage.googleapis.com/dart-archive/channels/dev/release/41090/sdk/dartsdk-linux-x64-release.zip
+</code></pre></div>
+<p>Configure the Dart buildpack:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ heroku config:add BUILDPACK_URL=https://github.com/igrigorik/heroku-buildpack-dart.git
+</code></pre></div>
+<p>Configure the path to the client code:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ heroku config:set WEB_FOLDER=build/web
+</code></pre></div>
+<p>And finally, push the application to Heroku:</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">$ git push heroku master
+</code></pre></div>
+<p>If everything goes right, your app will be ready for use! You can see its URL in the output of the <code>git push</code> command. It&#39;s also possible to access it through the Heroku Dashboard. </p>
+
+<p>For more information, checkout the <a href="https://devcenter.heroku.com/articles/how-heroku-works">Heroku</a> and <a href="https://github.com/igrigorik/heroku-buildpack-dart">Dart buildpack</a> documentations. You can also see a more complete example <a href="https://github.com/luizmineo/io_2014_contacts_demo">here</a>.</p>
+
