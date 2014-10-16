@@ -1,0 +1,14 @@
+---
+title: 'Dart 1.7: easily share and use command-line applications built with Dart'
+layout: post
+published: '2014-10-15T16:03:00-07:00'
+feed: 'Dart News & Updates'
+link: 'http://news.dartlang.org/2014/10/dart-17-easily-share-and-use-command.html'
+author:
+    name: 'Kevin Moore'
+    email: noreply@blogger.com
+    url: 'http://www.blogger.com/profile/08411979841477351623'
+
+---
+
+The Dart language, libraries, and runtime make it easy to create command-line applications. In fact, all of the core tools in the Dart SDK – dart2js, pub, and dartanalyzer – are written in Dart. We wanted to allow developers to easily get their own Dart scripts and command-line apps into users' hands. With Dart 1.7, users now have an easy way to install and run scripts built with Dart, making first-class command-line Dart apps a reality.<br /><div><br /></div><div>Developers can specify executables (Dart scripts) in their pub package, which are made available to a user when the package is installed.<br /><br />Before:<br /><br /><code>$&gt; git clone https://git.example.com/my_cool_app<br />$&gt; cd my_cool_app<br />$&gt; pub install<br />$&gt; dart bin/my_cool_app.dart<br /></code><br />Now:<br /><br /><code>$&gt; pub global activate my_cool_app<br />$&gt; my_cool_app<br /></code><br />Dart 1.7 also includes improvements to our code isolation models. You can now launch isolates with a different package root than the host application, allowing for composition of Dart applications with different dependencies. For more robust servers and long-running Dart scripts, developers cans now easily handle errors thrown in child zones.<br /><br />We've also made it easier to install and upgrade Dart SDK and Dartium. We now support <a href="https://www.dartlang.org/tools/debian.html">Apt on Linux</a> and <a href="http://news.dartlang.org/2014/10/dart-launches-support-for-homebrew.html">Homebrew on Mac</a>.<br /><br />For a summary of these and others changes see the <a href="https://groups.google.com/a/dartlang.org/d/msg/announce/ioHy-1IomIg/iZ8ka6BzsAAJ">release notes</a>. You can download Dart 1.7 from the <a href="https://www.dartlang.org/tools/download.html">Download Dart page</a>. If you are running the Dart Editor, you can update by checking "About Dart Editor". Check out the <a href="https://www.dartlang.org/support/">Dart support page</a> for information on getting help, filing issues, contributing to the project.</div>
