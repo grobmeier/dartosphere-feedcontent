@@ -1,0 +1,21 @@
+---
+title: 'TDD a Polymer (Dart) Form Element '
+layout: post
+published: '2014-11-27T23:59:00-05:00'
+feed: 'japh(r) by Chris Strom'
+link: 'http://feedproxy.google.com/~r/JaphrByChrisStrom/~3/V3ydLTkekmw/tdd-polymer-dart-form-element.html'
+author:
+    name: 'Chris Strom'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/117928918793969810642'
+tags:
+    - chain
+    - dart
+    - dartlang
+    - polymer
+    - tdd
+    - testing
+
+---
+
+<div class=top-chain-links></div><br />After last night, I am leaning toward being bad. Well, not too bad, but I have given up on trying to implement custom <a href="http://www.polymer-project.org/">Polymer</a> form elements the right way. Instead I begin to think the best approach is to break encapsulation of Polymer elements so that they can inject hidden <code>&lt;input></code> elements into the containing document containing the necessary data.<br /><br />I am not entirely sure how this is going to work in practice, but I think I can describe some of the functionality as:<pre class=prettyprint><code>  var _el, _form, _container;<br />  group("&lt;x-pizza>", (){<br />    setUp((){ /* ... */ });<br />    group('acts like &lt;input>', (){<br /><b>      test('value property is updated when internal state changes', (){});<br />      test('value attribute is updated when internal state changes', (){});<br />      test('containing form includes input with supplied name attribute', (){});</b><br /><br />      test('setting the value property updates the value attribute', (){});<br />      test('setting the name property updates the name attribute', (){});<br />    });<br />  });</code></pre>Most of those come for free from Polymer. In the <code>&lt;input></code> group, I setup as follows:<pre class=prettyprint><code>    group('acts like &lt;input>', (){<br />      setUp((){<br />        _el.name = 'my_field_name';<br />        _el.model.firstHalfToppings.add('pepperoni');<br /><br />        var completer = new Completer();<br />        _el.async(completer.complete);<br />        return completer.future;<br />      });<br />      // Tests here...<br />    });</code></pre>This setup is mostly from last night. I sets the name of the "input"<br /><br /><br /><br /><span style="color: #ccc">Day #7</span>  <br /><br /><p class=bottom-chain-links><a href="http://japhr.blogspot.com/2014/11/native-form-inputs-with-polymer.html">&lsaquo;prev</a> | <a href="http://japhr.blogspot.com/2013/11/new-chain-patterns-in-polymer.html">My Chain</a> | <span style="color: #ccc">next&rsaquo;</span> </p><script>var b_links = document.getElementsByClassName('bottom-chain-links'),      t_links = document.getElementsByClassName('top-chain-links');  if (b_links.length == 1 && t_links.length == 1) {   t_links[0].innerHTML = b_links[0].innerHTML; } </script><img src="http://feeds.feedburner.com/~r/JaphrByChrisStrom/~4/V3ydLTkekmw" height="1" width="1"/>
