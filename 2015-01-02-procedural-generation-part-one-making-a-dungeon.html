@@ -1,0 +1,20 @@
+---
+title: 'Procedural Generation - Part One - Making A Dungeon'
+layout: post
+published: '2015-01-02T11:59:00-08:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/01/procedural-generation-part-one-making.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - GameDev
+    - GitHub
+    - 'Procedural Generation'
+    - Web
+
+---
+
+<p>Procedural generation is a technique used in computer graphics, simulations and games to create content on demand.  For example, the worlds in Minecraft are not installed with the game, they are created by algorithms whilst the game is being played. Often the algorithms introduce variations to allow unique content to be created every time the game is played. Fractals are an example of procedural generation as are many on the HTML5 demos on this blog.</p> <p>This is the first in a series looking at Procedural Generation using Dart. The example will be generating a 2D dungeon as might be found in a game such as NetHack.</p> <p>First step is to create some utility classes to create a map and store information at each point.</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />// Block is the smallest unit of a map.<br />class block {<br />  int base = VOID;<br />  block(this.base);<br />}<br /><br />// Point - cell on the map.<br />class point {<br />  int x = 0;<br />  int y = 0;<br />  point(this.x, this.y) {}<br />}<br /><br /><br />// Rectangle - defines a rectangular area on the map.<br />class rectangle {<br /><br />  int x = 0;<br />  int y = 0;<br />  int width = 0;<br />  int height = 0;<br />  int x2 = 0;<br />  int y2 = 0;<br /><br />  rectangle(this.x, this.y, this.width, this.height) {update2ndPoints();}<br /><br />  point getMidPoint() => (new point(x + (width / 2).round(), y + (height / 2).round()));<br /><br />  void update2ndPoints() {<br />    x2 = x + width;<br />    y2 = y + height;<br />  }<br />}<br /></pre> <p>The generation algorithm will add a requested number of rooms and then connect them via corridors. Walls will then be added around rooms and corridors. Finally corners where walls meet are marked on the map. Of course, we want to actually see the dungeon so to start with will display it in text in a much simplified form.</p> <a href="http://1.bp.blogspot.com/-NPaQFgmIXR0/VKbF6yfBDRI/AAAAAAABBxw/oPeREiVw18g/s1600/dungeonpartone.png" imageanchor="1" ><img border="0" src="http://1.bp.blogspot.com/-NPaQFgmIXR0/VKbF6yfBDRI/AAAAAAABBxw/oPeREiVw18g/s320/dungeonpartone.png" /></a> <p>Code is <a href="https://github.com/daftspaniel/dart-procgendungeon">available on Github</a> and <a href="http://daftspaniel.com/dart/dungeon/partone/">a live demo is available here</a>. Hitting the button a few times shows how many varied dungeons can be.</p><p>Next time we will look at providing a Canvas display instead of text.</p>
