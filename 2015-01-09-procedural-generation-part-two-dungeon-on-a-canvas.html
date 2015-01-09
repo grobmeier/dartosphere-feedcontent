@@ -1,0 +1,20 @@
+---
+title: 'Procedural Generation - Part Two - Dungeon On A Canvas'
+layout: post
+published: '2015-01-09T12:11:00-08:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/01/procedural-generation-part-two-dungeon.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Dart
+    - GameDev
+    - Graphics
+    - 'Procedural Generation'
+
+---
+
+<p>Last time the Dungeon was rendered using a PRE tag - this time we will us an HTML5 canvas and use PNG files to render a better looking display. In 2014 I entered a game jam and from that I have a set of RPG graphics that will be used for this demo. The jam's theme was 8-bit so all the gfx tiles are 8 pixels by 8 pixels.</p> <p>There are few changes since last time... The code has been tidied up and rearranged. The new version can be found under the <a href="https://github.com/daftspaniel/dart-procgendungeon/tree/master/parttwo">parttwo</a> folder. <b>PGMap</b> - has a new method addRandomObject that sets a block to a particular type if VOID. This is used to scatter some trees around the world.</p> <p><b>render.dart</b> - LoadImages() Starts the Load of images and waits for them to complete. drawMap() - renders onto the Canvas element. The new feature, trees, are deliberately irregularly place for a more organic look - this will be important when there are more of them and characters are moving past them.</p> <p>A new addition to the User interface is a ZOOM slider to scale the display.</p> <a href="http://4.bp.blogspot.com/-2Wi8NKIWQuk/VLAuTMgLpmI/AAAAAAABB7c/YnoguN5caPQ/s1600/dungeonparttwo.png" imageanchor="1" ><img border="0" src="http://4.bp.blogspot.com/-2Wi8NKIWQuk/VLAuTMgLpmI/AAAAAAABB7c/YnoguN5caPQ/s320/dungeonparttwo.png" /></a> <p>Code is <a href="https://github.com/daftspaniel/dart-procgendungeon">available on Github</a> and <a href="http://daftspaniel.com/dart/dungeon/parttwo/">a live demo is available here</a>.</p> <p>Next time we will look at putting a hero and some items into the Dungeon.</p>
