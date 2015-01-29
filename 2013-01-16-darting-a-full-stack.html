@@ -405,4 +405,16 @@ author:
 </span><span class='line'>  <span class="n">WebSocketHandler</span> <span class="n">wsHandler</span> <span class="o">=</span> <span class="k">new</span> <span class="n">WebSocketHandler</span><span class="p">();</span>
 </span><span class='line'>  <span class="n">server</span><span class="p">.</span><span class="n">addRequestHandler</span><span class="p">((</span><span class="n">req</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">req</span><span class="p">.</span><span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/ws&#39;</span><span class="p">,</span> <span class="n">wsHandler</span><span class="p">.</span><span class="n">onRequest</span><span class="p">);</span>
 </span><span class='line'>  <span class="n">server</span><span class="p">.</span><span class="n">defaultRequestHandler</span> <span class="o">=</span> <span class="n">_loadIndex</span><span class="p">;</span>
-</span><span class='line'>  <span clas
+</span><span class='line'>  <span class="n">server</span><span class="p">.</span><span class="n">addRequestHandler</span><span class="p">((</span><span class="n">req</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">req</span><span class="p">.</span><span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/main.html&#39;</span><span class="p">,</span> <span class="n">_loadFile</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">server</span><span class="p">.</span><span class="n">addRequestHandler</span><span class="p">((</span><span class="n">req</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">req</span><span class="p">.</span><span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/main.html_bootstrap.dart.js&#39;</span><span class="p">,</span> <span class="n">_loadFile</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">server</span><span class="p">.</span><span class="n">addRequestHandler</span><span class="p">((</span><span class="n">req</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">req</span><span class="p">.</span><span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/base.css&#39;</span><span class="p">,</span> <span class="n">_loadFile</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">server</span><span class="p">.</span><span class="n">addRequestHandler</span><span class="p">((</span><span class="n">req</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">req</span><span class="p">.</span><span class="n">path</span> <span class="o">==</span> <span class="s1">&#39;/dart.js&#39;</span><span class="p">,</span> <span class="n">_loadFile</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Looking at the <a href="https://github.com/financeCoding/dart-full-stack-example/blob/master/server.dart">server.dart</a> source code will give you a fuller example, all that is needed now is to run <code>dart server.dart</code> and you&#8217;ll have server running.</p>
+
+<p><em>This is a more complicated process then it has to be, at some point it will get easier when a true deployment and configuration story happen.</em></p>
+
+<p>Happy Dart Hacking!!!</p>
+

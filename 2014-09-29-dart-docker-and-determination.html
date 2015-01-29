@@ -90,4 +90,5 @@ location @proxy {
     proxy_pass http://myapp:8080;
     proxy_http_version 1.1;
 }</pre>
-<p>With that, I now have 3 docker containers running, each linked together as appropriate but also isolated services which can easily be reproduced, and updated independent of each other. My dev machine is also much cleaner without services that aren&#8217;t needed outside of development runnin
+<p>With that, I now have 3 docker containers running, each linked together as appropriate but also isolated services which can easily be reproduced, and updated independent of each other. My dev machine is also much cleaner without services that aren&#8217;t needed outside of development running. Where appropriate, persistence is achieved on the local filesystem as opposed to within the container(s), and configuration updates are readily possible without rebuilding the container (with the exception of the Dart container).</p>
+
