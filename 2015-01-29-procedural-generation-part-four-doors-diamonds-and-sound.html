@@ -1,0 +1,22 @@
+---
+title: 'Procedural Generation - Part Four - Doors, Diamonds and Sound'
+layout: post
+published: '2015-01-29T12:53:00-08:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/01/procedural-generation-part-four-doors.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Game
+    - GameDev
+    - Graphics
+    - HTML5
+    - 'Procedural Generation'
+    - Web
+
+---
+
+<p>Last time we set our Hero free to roam the dungeon but there wasn't much to do there. This time we will set a diamond that he can collect and we will mark this momentous find with a sound effect!</p> <a href="http://1.bp.blogspot.com/-cNw5KmCpmzI/VMf9nflrEnI/AAAAAAABCcs/rhJ8eb3KYI0/s1600/dungeondiamond.png" imageanchor="1" ><img border="0" src="http://1.bp.blogspot.com/-cNw5KmCpmzI/VMf9nflrEnI/AAAAAAABCcs/rhJ8eb3KYI0/s320/dungeondiamond.png" /></a> <p>The code's layout is largely unchanged. If this was being developed into a full game, I'd seriously recommend splitting into several packages before it gets any larger! The slider controls are gone this time and instead of drawing the entire map at once, just a smaller view port is drawn centered round the hero character. One button - Refresh - is kept so that the dungeon can be rebuilt.</p> <p>map_render.dart - Loading sounds is very similar to loading images. This is done in an async fashion and we wait for all to load up. The function drawMap has become a little more complicated too as we keep track of the section of the map to be drawn.</p> <p>PGMap has a new method createDoor which goes through the room and adds a door to the room furthest to the top of the map. Our hero can now take a walk outside. The trees are rendered off their grid points. If the hero walks behind trees you will see a layered effect and it also helps break up the grid appearance of the map. Each block object that makes up the map now has a list of items for the Hero to interact with.</p> <p>Code is <a href="https://github.com/daftspaniel/dart-procgendungeon/tree/master/partfour">available on Github</a> and <a href="http://daftspaniel.com/dart/dungeon/partfour/">a live demo is available here</a>. Use arrow keys to move!</p> <p>Next time we will finish our dungeon adventures by putting some other characters in the dungeon.</p>
