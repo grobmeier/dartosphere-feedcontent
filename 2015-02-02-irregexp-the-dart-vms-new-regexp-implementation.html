@@ -1,0 +1,16 @@
+---
+title: 'Irregexp, the Dart VM''s new RegExp implementation'
+layout: post
+published: '2015-02-02T14:22:00-08:00'
+feed: 'Dart News & Updates'
+link: 'http://news.dartlang.org/2015/02/irregexp-dart-vms-new-regexp.html'
+author:
+    name: 'Seth Ladd'
+    email: noreply@blogger.com
+    url: 'http://www.blogger.com/profile/17721182865180471955'
+tags:
+    - dartvm
+
+---
+
+<div>Crafting regular expressions, or regexps, is an <a href="http://xkcd.com/208/">art</a> <a href="http://xkcd.com/1313/">form</a>. They are a powerful way to search through and pattern-match strings. To give our developers faster performance (up to 150X, compared to our previous implementation) and better semantics with their regular expressions, we're happy to announce that we've finished a port of V8's <a href="http://blog.chromium.org/2009/02/irregexp-google-chromes-new-regexp.html">Irregexp</a> engine to the Dart VM.</div><br />Previously, some regular expressions had <a href="https://code.google.com/p/dart/issues/detail?id=21544">incorrect semantics</a>, while others had <a href="https://stackoverflow.com/questions/24027524/why-does-dart-not-match-this-regex">sluggish performance</a> when run in the Dart VM. These issues are resolved by the new implementation. The behavior of regular expressions are now consistent with dart2js compiled code executed on top of V8.<br /><br />We hope you enjoy these improvements to Dart's regular expressions. Look for the new regular expressions implementation starting with Dart 1.9, which is now in the <a href="https://www.dartlang.org/tools/download-archive/">developer channel</a>.<br /><br />Posted by Jakob Gruber and <a href="https://plus.google.com/u/0/+IanZerny42/about">Ian Zerny</a>, Irregular Software Engineers
