@@ -1,0 +1,21 @@
+---
+title: 'Procedural Generation - Part Five : Surprise (Browser-Compatibility) Monster Attack! '
+layout: post
+published: '2015-02-06T11:45:00-08:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/02/procedural-generation-part-five.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Dart
+    - GameDev
+    - HTML5
+    - Interop
+    - Javascript
+
+---
+
+<p>Surprise Attack! If you visited the previous dungeon examples in a non-Chrome browser, you may have noticed two issues. One was that the graphics looked all blurred and the other being that the sound didn't play. Let's roll a couple of D6's and see if we have the agility to overcome it!</p> <p>Firstly, why is it blurry? This is due to browsers smoothing scaled images on the canvas by default. For pixel based art (blocky), we do not want this to happen so we have to use the property <i>imageSmoothingEnabled</i> of the drawing context object that we get from the canvas. Currently in Dart, this property doesn't cover the numerous variants. If we want the dungeon to work on IE, Firefox etc we need to use JavaScript.</p> <p>Fortunately calling JS from Dart is very easy. We will add a simple class to the index.html page with a simple class called <i>crossBrowserFilla</i> with a single method called <i>keepThingsBlocky</i>.</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br /><br />    var crossBrowserFilla  = function (){<br /><br />      this.keepThingsBlocky = function(){<br />        var canvas = document.getElementById("surface");<br />        var ctx = canvas.getContext("2d");<br />        ctx.mozImageSmoothingEnabled = false;<br />        ctx.imageSmoothingEnabled = false;<br />        ctx.msImageSmoothingEnabled = false;<br />        ctx.webkitImageSmoothingEnabled = false;<br />      }<br />    };<br />  <br /></pre> <p>This is called in <a href="https://github.com/daftspaniel/dart-procgendungeon/blob/master/partfive/web/main.dart">main.dart</a>. Fairly easy!</p>  <pre style="padding: 3px 5px; border: 3px double silver;"><br />import 'dart:js';<br /><br />....<br /><br />JsObject jsproxy = new JsObject(context['crossBrowserFilla']);<br />bool canvasConfigured = false;<br /><br />...<br /><br />    if (!canvasConfigured){<br />      jsproxy.callMethod('keepThingsBlocky');<br />      canvasConfigured = true;<br />    }<br /><br /></pre> <p>The second issue of sound has to navigate things a bit differently. The best format across browsers is MP3 currently, the downside being is that Dartium doesn't yet support the required codec as it is based on Chromium. This is short term (hopefully) once the Dart VM makes it into Chrome. Apart from changing the file extensions, there is not change required to the audio code. </p> <p> <a href="http://1.bp.blogspot.com/-cNw5KmCpmzI/VMf9nflrEnI/AAAAAAABCcs/rhJ8eb3KYI0/s1600/dungeondiamond.png" imageanchor="1" ><img border="0" src="http://1.bp.blogspot.com/-cNw5KmCpmzI/VMf9nflrEnI/AAAAAAABCcs/rhJ8eb3KYI0/s320/dungeondiamond.png" /></a> </p>  <p>Code is <a href="https://github.com/daftspaniel/dart-procgendungeon/tree/master/partfive">available on Github</a> and <a href="http://daftspaniel.com/dart/dungeon/partfive/">a live demo is available here</a>. Use arrow keys to move!</p> <p>Next time we will <b>REALLY REALLY WILL </b>finish our dungeon adventures by putting some other characters in the dungeon. A wizard's promise!</p>
