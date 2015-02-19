@@ -1,0 +1,21 @@
+---
+title: 'Procedural Generation : Part Six : Release The Ninjas!'
+layout: post
+published: '2015-02-19T10:36:00-08:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/02/procedural-generation-part-six-release.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Dart
+    - GameDev
+    - Graphics
+    - HTML5
+    - 'Procedural Generation'
+
+---
+
+<p>Last time we dealt with browser issues, this time we will put some characters into the dungeon map and let them run around.</p> <a href="http://4.bp.blogspot.com/-q0-OJbqSZLE/VOTmW7zL23I/AAAAAAABC3Y/WowpgbKF0Ok/s1600/bigninja.png" imageanchor="1" ><img border="0" src="http://4.bp.blogspot.com/-q0-OJbqSZLE/VOTmW7zL23I/AAAAAAABC3Y/WowpgbKF0Ok/s1600/bigninja.png" /></a> <p>The Ninjas will be similar to the player character. From a procedural generation point of view, we have to be careful where we initially place them. We don't want them stuck in a wall or sharing a space with another character! We also need something to tell the Ninja to move.</p> <p>Placing the Ninja takes place after we have built the map. Each block has a member variable to track if something/someone is standing on that spot. This is separate from the list of items and is used only as a starting position as our characters will soon be mobile.</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br /><br />class Block {<br /><br />  int base = VOID;<br />  int character = VOID;<br />  List<int> items = null;<br /><br />  Block(this.base);<br /><br />  addItem(anobject)<br />  {<br />    if (items==null) items = new List<int>();<br />    items.add(anobject);<br />  }<br />}<br /><br /></pre> <p> We can reuse the same class (RPGCharacter) for the Player for the Ninja. Yay - code reuse! </p> <p>Movement of the Ninja is a simple affair. In the logic update for the game in <b>main.dart</b> (triggered by a recurring timer), each Ninja is moved 1 block in a random direction. In a real game, we would perhaps move them towards the player if they are close enough.</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br /><br /> <br /> ...<br /><br />  Timer logup = new Timer.periodic(new Duration(milliseconds: 1000), gameLogicUpdate);<br />  window.animationFrame.then(gameLoop);<br /><br /> ...<br /><br />void gameLogicUpdate(e) {<br />  if (mymap != null) mymap.updatePlayer(p1, playSnd);<br /><br />  ninjas.forEach((n) {<br />    int m = RND(4);<br />    if (m == 1) n.moveU();<br />    if (m == 2) n.moveD();<br />    if (m == 3) n.moveL();<br />    if (m == 4) n.moveR();<br />  });<br />}<br /><br /></pre> <p>I should repeat an important point from a previous post in this series, that if this was to be developed into a full game, it really should be split off into several packages to improve the structure. Save some pain! :-)</p> <p>Code is <a href="https://github.com/daftspaniel/dart-procgendungeon/tree/master/partsix">available on Github</a> and <a href="http://daftspaniel.com/dart/dungeon/partsix/">a live demo is available here</a>. Use arrow keys to move!</p> <p>The next part of this series we will take a break from dungeons and see if we can generate and entire world!</p>
