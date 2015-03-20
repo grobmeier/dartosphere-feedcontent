@@ -1,0 +1,20 @@
+---
+title: 'Procedural Generation : Part Seven : World Data Structure Optimisation'
+layout: post
+published: '2015-03-05T12:17:00-08:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/03/procedural-generation-part-seven-world.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - '1.9'
+    - Dart
+    - Data
+    - 'Data Structures'
+    - 'Procedural Generation'
+
+---
+
+<p>The next version of Dart (1.9) will have some optimisations for the Map class. A discussion about this on the mailing list made me think of the Map used for the Dungeon demo. Dart currently has no 'real' 2D arrays so a simple map was used with a string key of the x and y co-ordinates. Creating and joining those strings takes a bit of work, so perhaps a List of Lists would be a better way. Let's use the Stopwatch class and see if we get an improvement.</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br /><br />class block{}<br />class point{ int x; int y; point(this.x,this.y);}<br /><br />main() {<br />  Map testMap = new Map();<br />  List testLol = new List();<br />  List dataPoints = new List();<br />  Stopwatch watch;<br /><br />  print("Set up maps.");<br />  for(int i=0;i<100;i++)<br />  for(int j=0;j<100;j++){<br />    testMap["$j-$i"] = new block();<br />    dataPoints.add(new point(j,i));<br />  }<br /><br />  print("Set up list of lists.");<br />  for(int i=0;i<100;i++){<br />    List row = new List();<br />    for(int j=0;j<100;j++){<br />      row.add(new block());<br />    }<br />    testLol.add(row);<br />  }<br /><br />  dataPoints.shuffle();<br /><br />  print("Run tests.");<br />  watch = new Stopwatch();<br />  watch.start();<br />  for(int j=0;j<8000;j++){<br />    dataPoints.forEach((p) => testMap["${p.x}-${p.y}"]);<br />  }<br />  watch.stop();<br />  print("${watch.elapsed}");<br /><br />  watch = new Stopwatch();<br />  watch.start();<br />  for(int j=0;j<8000;j++){<br />    dataPoints.forEach((p) => testLol[p.x][p.y]);<br />  }<br />  watch.stop();<br />  print("${watch.elapsed}");<br /><br />}<br /><br /></pre> <p>Results were the Map taking around 26 seconds and the List taking about 1.4 seconds. This was running from the Dart Editor. From the command line, the map was just under 20 seconds (probably debugging overhead) and the List took about the same time. So moving forward with the world generation, List of Lists seems the way to go!</p>

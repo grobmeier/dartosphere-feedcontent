@@ -1,0 +1,18 @@
+---
+title: 'Beautiful automated code formatting for Dart'
+layout: post
+published: '2015-03-06T11:38:00-08:00'
+feed: 'Dart News & Updates'
+link: 'http://news.dartlang.org/2015/03/beautiful-automated-code-formatting.html'
+author:
+    name: 'Seth Ladd'
+    email: noreply@blogger.com
+    url: 'http://www.blogger.com/profile/17721182865180471955'
+tags:
+    - formatter
+    - sdk
+    - tools
+
+---
+
+I spend a lot of time reviewing Dart code. At Google, we use the <a href="https://www.dartlang.org/articles/style-guide/">Dart style guide</a>, but we humans are poor at consistently following rules. I end up writing a lot of review comments like "put a newline here" and "remove this space". Although we have an automated formatter, dartfmt, to address this problem, I wasn’t happy with its output.<br /><br />Over the past few months, I spent a bunch of time adding a sophisticated rule engine to the formatter, helping it choose how best to format a chunk of code. There are still improvements to make, but I believe the formatter is now good enough to be run on all of the world's Dart code.<br /><br />We've been using this version of the formatter internally for a while, and people really like it. Everyone loves that it ends style debates and makes code reviews easier. Today, I'm happy to announce that the new formatter has landed in the <a href="https://www.dartlang.org/tools/download-archive/">dev channel SDK</a>. Using it is as simple as:<br /><br />&nbsp; &nbsp; <span style="font-family: Courier New, Courier, monospace;">$ dartfmt -w &lt;file or directory&gt;</span><br /><br />I'd love to have you try out the new formatter. Check out the <a href="https://www.dartlang.org/tools/dartfmt/">docs</a>, and if you have feedback, <a href="https://github.com/dart-lang/dart_style/issues">throw an issue my way</a>.<br /><br /><i>– Bob Nystrom, Chief Formatting Officer</i>

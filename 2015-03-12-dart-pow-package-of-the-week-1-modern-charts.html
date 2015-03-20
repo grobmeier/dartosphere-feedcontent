@@ -1,0 +1,20 @@
+---
+title: 'Dart POW - ( Package Of The Week) #1 : modern_charts'
+layout: post
+published: '2015-03-12T12:09:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/03/dart-pow-package-of-week-1-moderncharts.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Dart
+    - Graphics
+    - HTML5
+    - POW
+
+---
+
+<p>New feature for the blog - Dart POW! A weekly look at an interesting Package on <a href="https://pub.dartlang.org/">pub.dartlang.org</a></p> <p><a href="https://pub.dartlang.org/packages/modern_charts">modern_charts</a> is a great canvas based graphs package with support for Bar, Gauge, Line, Pie/Donut and Radar graphs.</p> The API is nice and straightforward too - didn't take long for me to create a LineChart: <pre style="padding: 3px 5px; border: 3px double silver;"><br /><br />import 'dart:html';<br />import 'package:modern_charts/modern_charts.dart';<br /><br />void main() {<br /><br />  DataTable table = new DataTable(<br /> [['Categories', 'Bears', 'Giraffes', 'Rabbits'],<br />  ['Monday', 12, 23, 25], ['Tuesday', 23, 24, 26],<br />  ['Wednesday', 24, 23, 21], ['Thursday', 44, 25, 21],<br />  ['Friday', 23, 24, 22], ['Saturday', 25, 10, 24],<br />  ['Sunday', 24, 12, 28]]);<br /><br />  Map options = {<br />    'colors': ['#cbcbcb', '#00aa00', '#990000'],<br />    'series': {<br />      'labels': {<br />        'enabled': true<br />      }<br />    }<br />  };<br /><br />  LineChart chart = new LineChart(document.body);<br />  chart.draw(table, options);<br /><br />}<br /><br /></pre> <a href="https://raw.githubusercontent.com/jolleekin/modern_charts/master/doc/images/pie.png" imageanchor="1" ><img border="0" src="https://raw.githubusercontent.com/jolleekin/modern_charts/master/doc/images/pie.png" width="200" height="100"  /></a> <a href="https://raw.githubusercontent.com/jolleekin/modern_charts/master/doc/images/line.png" imageanchor="1" ><img border="0" src="https://raw.githubusercontent.com/jolleekin/modern_charts/master/doc/images/line.png" width="200" height="100"  /></a> <p>Feel free to leave a comment with suggestions for the next Dart POW post! Don't be too shy to suggest your own package :-)</p>
