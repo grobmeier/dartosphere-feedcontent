@@ -1,0 +1,16 @@
+---
+title: 'Create your own REST API with Dart'
+layout: post
+published: '2015-03-23T09:00:00-07:00'
+feed: 'Dart News & Updates'
+link: 'http://news.dartlang.org/2015/03/create-your-own-rest-api-with-dart.html'
+author:
+    name: 'Seth Ladd'
+    email: noreply@blogger.com
+    url: 'http://www.blogger.com/profile/17721182865180471955'
+tags:
+    - server
+
+---
+
+We created Dart to help make developers as productive as possible. While we were building <a href="https://dartpad.dartlang.org/">Dart Pad</a> (a browser-based app to help developers learn Dart), we didn't want to spend a lot of time writing boilerplate code for serialization or routing in the REST API. We built the <a href="https://pub.dartlang.org/packages/rpc">RPC package</a> to help make building REST APIs easier, and today we're happy to announce that it is open source and ready for you to use.<br /><br />You can use the RPC package to automate the data serialization and request routing for your REST API. Exposing a REST API is simple. Annotate your classes and methods with the HTTP methods, URL paths, etc. Here is an example of a simple echo service.<br /><div><br /></div><div class="separator" style="clear: both; text-align: center;"><img border="0" src="http://2.bp.blogspot.com/-F92NYnOskXM/VQurpbF7aII/AAAAAAAAEb4/DVgBfhVoEF4/s1600/Screen%2BShot%2B2015-03-19%2Bat%2B10.09.37%2BPM.png" height="200" width="400" /></div><div><br />After you configure your HTTP server (see <a href="https://github.com/dart-lang/rpc/blob/master/README.md#api-server">README</a>), your API can now be reached at:<br /><br /><span style="font-family: Courier New, Courier, monospace;">GET http://&lt;server url&gt;:&lt;port&gt;/api/echo/v1/identity/&lt;name&gt;<br />POST http://&lt;server url&gt;:&lt;port&gt;/api/echo/v1/inverse</span><br /><br />Calling your new server API from client code (written in Dart, Java, Go, iOS, Android, C#) is also easy. For more details on the specifics, check out the <a href="https://github.com/dart-lang/rpc#rpc">README</a>. You can also find a simple <a href="https://github.com/dart-lang/rpc/tree/master/example">Getting Started example</a> that shows how to hook it all up using either dart:io or <a href="https://pub.dartlang.org/packages/shelf">shelf</a>.<br /><br />We currently use the RPC package for <a href="https://dartpad.dartlang.org/">Dart Pad</a> and <a href="https://github.com/GoogleCloudPlatform/appengine-dart-todos">TodoMVC</a>, and we hope you'll find this package as helpful as we do. We look forward to your <a href="https://github.com/dart-lang/rpc/issues">feedback</a>.<br /><br /><i>Written by&nbsp;Gustav Wibling, Rapid Productivity Champion</i></div>
