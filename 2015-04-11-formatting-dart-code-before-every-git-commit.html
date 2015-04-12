@@ -1,0 +1,16 @@
+---
+title: 'Formatting Dart code before every git commit'
+layout: post
+published: '2015-04-11T20:42:00-07:00'
+feed: 'Seth Ladd''s Blog'
+link: 'http://feedproxy.google.com/~r/SethLaddsBlog/~3/D-mogxxvtfc/formatting-dart-code-before-every-git.html'
+author:
+    name: 'Seth Ladd'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/118397406534237711570'
+tags:
+    - dart
+
+---
+
+<a href="https://www.dartlang.org/">Dart</a>'s dartfmt tool is&nbsp;a really neat utility to automatically format your code. Use the <a href="https://www.dartlang.org/tools/dartfmt/">dartfmt</a> tool in your workflow to ensure your code complies with the <a href="https://www.dartlang.org/articles/style-guide/">Dart style guide</a>.<br /><br />Of course, you don't want to manually run dartfmt. Instead, you want to automate it. Use git's pre-commit hook to ensure your code is formatted, before it is committed.<br /><br />Add the following code to your .<span style="font-family: Courier New, Courier, monospace;">git/hooks/pre-commit</span> script for your local repo, and make sure the script is executable.<br /><br /><div class="p1"><span style="font-family: Courier New, Courier, monospace;">#!/bin/bash</span></div><div class="p2"><span style="font-family: Courier New, Courier, monospace;"><br /></span></div><div class="p1"><span style="font-family: Courier New, Courier, monospace;">DARTFMT_OUTPUT=`dartfmt -w . | grep Formatted`</span></div><div class="p2"><span style="font-family: Courier New, Courier, monospace;"><br /></span></div><div class="p1"><span style="font-family: Courier New, Courier, monospace;">if [ -n "$DARTFMT_OUTPUT" ]; then</span></div><div class="p1"><span style="font-family: Courier New, Courier, monospace;">&nbsp; echo $DARTFMT_OUTPUT</span></div><div class="p1"><span style="font-family: Courier New, Courier, monospace;">&nbsp; echo "Re-attempt commit."</span></div><div class="p1"><span style="font-family: Courier New, Courier, monospace;">&nbsp; exit 1</span></div><div class="p1"><span style="font-family: Courier New, Courier, monospace;">else</span></div><div class="p1"><span style="font-family: Courier New, Courier, monospace;">&nbsp; echo "All Dart files formatted correctly. Yay!"</span></div><div class="p1"><span style="font-family: Courier New, Courier, monospace;">&nbsp; exit 0</span></div><br /><div class="p1"><span style="font-family: Courier New, Courier, monospace;">fi</span></div><div class="p1"><br /></div><div class="p1">If your code needs formatting, it will be formatted and written to disk. The commit will fail, so you have a chance to inspect the changes.</div><div class="p1"><br /></div><div class="p1">You can enforce formatting with your Continuous Integration system. Try these <a href="http://work.j832.com/2015/04/enforce-formatting-for-your-dart.html">instructions to use dartfmt with Travis CI</a>, and fail a build if a file isn't formatted.</div><div class="p1"><br /></div><div class="p1">Have you integrated dartfmt into your workflow? Let us know in the comments below!</div><img src="http://feeds.feedburner.com/~r/SethLaddsBlog/~4/D-mogxxvtfc" height="1" width="1" alt=""/>
