@@ -36,7 +36,7 @@ that Dart is in the makings.</p>
 will easily see the point. The values: false, null, undefined, &quot;&quot;, 0, NaN will
 evaluate to false. Means you can write things like this:</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">a</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
 <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
    <span class="c1">// do</span>
 <span class="p">}</span></code></pre></div>
@@ -44,7 +44,7 @@ evaluate to false. Means you can write things like this:</p>
 <p>In Dart there is only one thing which is false. It is
 false itself. Of course you need to rewrite to this:</p>
 
-<div class="highlight"><pre><code class="java"><span class="n">var</span> <span class="n">a</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">var</span> <span class="n">a</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 <span class="k">if</span><span class="o">(</span><span class="n">a</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
    <span class="c1">// do</span>
 <span class="o">}</span></code></pre></div>
@@ -62,7 +62,7 @@ checker and go ahead.</p>
 
 <p>In JavaScript you can work with these old friend:</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="nx">getElementsById</span><span class="p">()</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">getElementsById</span><span class="p">()</span>
 <span class="nx">getElementsByTagName</span><span class="p">()</span>
 <span class="nx">getElementsByName</span><span class="p">()</span>
 <span class="nx">getElementsByClassName</span><span class="p">()</span>
@@ -82,7 +82,7 @@ to use a framework when simply selecting from the DOM? Not today.</p>
 <p><a title="Improving the DOM" href="http://www.dartlang.org/articles/improving-the-dom/" target="_blank">Dart
 has looked at jQuery</a> and has stripped it down to 2 methods:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">elem</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;#foo&#39;</span><span class="p">);</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">elem</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="s1">&#39;#foo&#39;</span><span class="p">);</span>
 <span class="n">elem</span><span class="p">.</span><span class="n">queryAll</span><span class="p">(</span><span class="s1">&#39;.foo&#39;</span><span class="p">);</span></code></pre></div>
 
 <p>Much better.</p>
@@ -123,13 +123,13 @@ has looked at jQuery</a> and has stripped it down to 2 methods:</p>
 
 <p>Or you do the following for arrays:</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">elements</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">elements</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// do something</span>
 <span class="p">}</span></code></pre></div>
 
 <p>And you can even do that for objects:</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">elements</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="k">for</span> <span class="p">(</span><span class="nx">key</span> <span class="k">in</span> <span class="nx">elements</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">alert</span><span class="p">(</span><span class="nx">elements</span><span class="p">[</span><span class="nx">key</span><span class="p">]);</span>
 <span class="p">}</span></code></pre></div>
 
@@ -141,7 +141,7 @@ has looked at jQuery</a> and has stripped it down to 2 methods:</p>
 
 <p>In Dart:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="k">for</span> <span class="p">(</span><span class="n">element</span> <span class="k">in</span> <span class="n">elements</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="k">for</span> <span class="p">(</span><span class="n">element</span> <span class="k">in</span> <span class="n">elements</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// do something</span>
 <span class="p">}</span></code></pre></div>
 
@@ -151,7 +151,7 @@ has looked at jQuery</a> and has stripped it down to 2 methods:</p>
 
 <p><a href="http://c2.com/cgi/wiki?JavaScriptFlaws" target="_blank">This one is borrowed</a>. Look at this:</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">a1</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">a1</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">);</span>
 <span class="kd">var</span> <span class="nx">a2</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Array</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span></code></pre></div>
 
 <p>a1 is an array with 5 elements: [1,2,3,4,5]
@@ -159,7 +159,7 @@ a2 is an array with 5 elements to: [undefined,undefined,undefined,undefined,unde
 
 <p><a href="http://blog.sethladd.com/2011/12/lists-and-arrays-in-dart.html" target="_blank">Dart is much more cleaner</a>. An array is basically a List and therefore has this interface.</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">List</span> <span class="n">a1</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">];</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">List</span> <span class="n">a1</span> <span class="o">=</span> <span class="p">[</span><span class="m">1</span><span class="p">,</span><span class="m">2</span><span class="p">,</span><span class="m">3</span><span class="p">,</span><span class="m">4</span><span class="p">,</span><span class="m">5</span><span class="p">];</span>
 <span class="n">List</span> <span class="n">a2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">(</span><span class="m">5</span><span class="p">);</span></code></pre></div>
 
 <p>Again, a1 contains 5 different elements. a2 contains space for 5 elements.

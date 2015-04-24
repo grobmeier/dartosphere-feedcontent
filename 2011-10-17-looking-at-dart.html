@@ -113,7 +113,7 @@ define something in A.dart it will not be accessible in B.dart. Your namespace i
 
 <p>This is how Dart looks:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="n">value</span><span class="p">;</span>
 
   <span class="n">MyClass</span><span class="p">()</span> <span class="p">{</span>
@@ -133,26 +133,26 @@ The first one is very easy to explain, it is pretty much like the default constr
 in Java. The second one is different: it is a named constructor. These act like every
 constructor, just with a name. If you would like to call it, you need to call:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="k">new</span> <span class="n">MyClass</span><span class="p">.</span><span class="n">constructorname</span><span class="p">()</span></code></pre></div>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="k">new</span> <span class="n">MyClass</span><span class="p">.</span><span class="n">constructorname</span><span class="p">()</span></code></pre></div>
 
 <p>This is because in dynamically typed languages it is not really
 easy to add a feature as „overloading“.
 If you look at the constructor signature, it is a bit weird:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">);</span></code></pre></div>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">);</span></code></pre></div>
 
 <p>No brackets. It means that you assign the first parameter to the
 member field „value“ automatically. This is very nice and actually
 you’ll find things like this in other aspects of the language too.
 This does not prevent you to do something like:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">print</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">);</span>
 <span class="p">}</span></code></pre></div>
 
 <p>Of course you can make it look like Java too:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="kd">var</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="kd">var</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
   <span class="n">print</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">value</span><span class="p">);</span>
 <span class="p">}</span></code></pre></div>
 
@@ -176,11 +176,11 @@ You need to enable it manually to make it work.</p>
 
 <p>On the commandline it is:</p>
 
-<div class="highlight"><pre><code class="bash">dart --enable_type_checks myfile.dart</code></pre></div>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash">dart --enable_type_checks myfile.dart</code></pre></div>
 
 <p>This generates warnings in the following code:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">MyClass</span> <span class="p">{</span>
   <span class="kt">String</span> <span class="n">value</span><span class="p">;</span>
   <span class="n">MyClass</span><span class="p">.</span><span class="n">woho</span><span class="p">(</span><span class="kt">String</span> <span class="n">value</span><span class="p">)</span> <span class="p">{</span>
      <span class="k">this</span><span class="p">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
@@ -199,15 +199,15 @@ You need to enable it manually to make it work.</p>
 elements. Therefore it seems the selection mechanism in Dart is pretty
 similar to jQuery. So here ist he difference, starting with JavaScript:</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="nx">elem</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="err">‚</span><span class="nx">myDiv</span><span class="err">’</span><span class="p">);</span></code></pre></div>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">elem</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="err">‚</span><span class="nx">myDiv</span><span class="err">’</span><span class="p">);</span></code></pre></div>
 
 <p>In jQuery:</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="nx">$</span><span class="p">(.</span><span class="err">#</span><span class="nx">myDiv</span><span class="err">’</span><span class="p">);</span> <span class="nx">or</span> <span class="nx">like</span> <span class="nx">$</span><span class="p">().</span><span class="nx">find</span><span class="p">(</span><span class="err">‚#</span><span class="nx">myDiv</span><span class="err">’</span><span class="p">);</span></code></pre></div>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">$</span><span class="p">(.</span><span class="err">#</span><span class="nx">myDiv</span><span class="err">’</span><span class="p">);</span> <span class="nx">or</span> <span class="nx">like</span> <span class="nx">$</span><span class="p">().</span><span class="nx">find</span><span class="p">(</span><span class="err">‚#</span><span class="nx">myDiv</span><span class="err">’</span><span class="p">);</span></code></pre></div>
 
 <p>Finally in Dart:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">elem</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="err">‚#</span><span class="n">myDiv</span><span class="err">’</span><span class="p">);</span></code></pre></div>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">elem</span><span class="p">.</span><span class="n">query</span><span class="p">(</span><span class="err">‚#</span><span class="n">myDiv</span><span class="err">’</span><span class="p">);</span></code></pre></div>
 
 <p>Dart selector methods are only two: <strong>query</strong> and <strong>queryAll</strong>.
 You are able to select one element or a group of elements.
@@ -216,7 +216,7 @@ Again it looks as this is a gift for Java developers.</p>
 
 <p>Here is another selector example:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">elem</span><span class="p">.</span><span class="n">queryAll</span><span class="p">(</span><span class="err">‚</span><span class="p">.</span><span class="n">myClass</span> <span class="p">.</span><span class="n">otherClass</span><span class="err">’</span><span class="p">);</span></code></pre></div>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">elem</span><span class="p">.</span><span class="n">queryAll</span><span class="p">(</span><span class="err">‚</span><span class="p">.</span><span class="n">myClass</span> <span class="p">.</span><span class="n">otherClass</span><span class="err">’</span><span class="p">);</span></code></pre></div>
 
 <p>It selects elements with these two classes. Dart also has streamlined the
 way you can get attributes from a specific element.</p>

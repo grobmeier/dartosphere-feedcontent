@@ -30,11 +30,11 @@ yourself. This all is history with the new Isolates API. The Dart
 <p>First you need to import the Isolate package. This is new. Before you
 had the Isolate classes in the core.</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="err">#</span><span class="kr">import</span><span class="p">(</span><span class="s1">&#39;dart:isolate&#39;</span><span class="p">);</span></code></pre></div>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="err">#</span><span class="kr">import</span><span class="p">(</span><span class="s1">&#39;dart:isolate&#39;</span><span class="p">);</span></code></pre></div>
 
 <p>First I will define a function (!) which shall act as a new Isolate.</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="nx">process</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">process</span><span class="p">()</span> <span class="p">{</span>
   <span class="nx">port</span><span class="p">.</span><span class="nx">receive</span><span class="p">((</span><span class="kd">var</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">SendPort</span> <span class="nx">replyTo</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">print</span> <span class="p">(</span><span class="s2">&quot;Got message: ${message}&quot;</span><span class="p">);</span>
       <span class="nx">replyTo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s2">&quot;close&quot;</span><span class="p">);</span>
@@ -64,7 +64,7 @@ that your code will run forever and probably cause messes around with your memor
 
 <p>That&#39;s it for the new Isolate function so far. Let&#39;s look into how we actually spawn it.</p>
 
-<div class="highlight"><pre><code class="javascript"><span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="nx">main</span><span class="p">()</span> <span class="p">{</span>
    <span class="nx">port</span><span class="p">.</span><span class="nx">receive</span><span class="p">((</span><span class="kd">var</span> <span class="nx">message</span><span class="p">,</span> <span class="nx">SendPort</span> <span class="nx">replyTo</span><span class="p">)</span> <span class="p">{</span>
      <span class="nx">print</span><span class="p">(</span><span class="s2">&quot;Got message: ${message}&quot;</span><span class="p">);</span>
      <span class="nx">port</span><span class="p">.</span><span class="nx">close</span><span class="p">();</span>  

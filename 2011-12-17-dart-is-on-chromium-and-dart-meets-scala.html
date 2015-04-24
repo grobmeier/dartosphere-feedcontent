@@ -22,7 +22,7 @@ there were no security tests so far, use at own risk. What is it
 actually? A browser which supports native Dart and therefore can
 run the new script type &quot;application/dart&quot;, like this:</p>
 
-<div class="highlight"><pre><code class="html"><span class="nt">&lt;html&gt;</span>
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;html&gt;</span>
   <span class="nt">&lt;body&gt;</span>
     <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;application/dart&quot;</span><span class="nt">&gt;</span>
       <span class="err">#</span><span class="kr">import</span><span class="p">(</span><span class="s1">&#39;dart:dom&#39;</span><span class="p">);</span>
@@ -53,7 +53,7 @@ some examples</a>.</p>
 the way for concurrency in Dart. Looking at it, this framework
 is a great way to use Isolates without the low level pain :-)</p>
 
-<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="kd">extends</span> <span class="n">Actor</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">HelloWorld</span> <span class="kd">extends</span> <span class="n">Actor</span> <span class="p">{</span>
   <span class="n">HelloWorld</span><span class="p">()</span> <span class="o">:</span> <span class="k">super</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">on</span><span class="p">[</span><span class="s2">&quot;say hello&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kd">var</span> <span class="n">who</span><span class="p">)</span> <span class="p">{</span>
       <span class="n">ui</span><span class="p">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;Hello </span><span class="si">${</span><span class="n">who</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">);</span>

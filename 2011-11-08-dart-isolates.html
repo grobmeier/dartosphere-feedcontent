@@ -47,7 +47,7 @@ from within Dart at the moment, you&#39;ll need to trust Dart VM.</p>
 
 <p>The Worker class is actually pretty simple. It looks like that:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">Worker</span> <span class="kd">extends</span> <span class="n">Isolate</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">Worker</span> <span class="kd">extends</span> <span class="n">Isolate</span> <span class="p">{</span>
   <span class="n">Worker</span><span class="p">()</span> <span class="o">:</span> <span class="k">super</span><span class="p">.</span><span class="n">heavy</span><span class="p">();</span>
 
   <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
@@ -96,7 +96,7 @@ which should spawn the worker.</p>
 
 <p>Here is the code:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">Starter</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">Starter</span> <span class="p">{</span>
   <span class="n">ReceivePort</span> <span class="n">_receivePort</span><span class="p">;</span>
 
   <span class="n">Starter</span><span class="p">.</span><span class="n">start</span><span class="p">()</span> <span class="o">:</span> 
@@ -137,7 +137,7 @@ line 15. I send the message and need to give a SendPort to my Worker.
 ReceiverPort fortunately has the method toSendPort() which creates
 the backchannel.</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">main</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">new</span> <span class="n">Starter</span><span class="p">.</span><span class="n">start</span><span class="p">();</span>
 <span class="p">}</span></code></pre></div>
 

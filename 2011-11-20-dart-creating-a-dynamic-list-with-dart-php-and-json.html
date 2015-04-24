@@ -26,10 +26,10 @@ is doing, except you cannot choose anything from your list at the moment.</p>
 
 <p>Lets look at the PHP script first. It is nothing special.</p>
 
-<div class="highlight"><pre><code class="php"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]))</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-php" data-lang="php"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nb">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]))</span> <span class="p">{</span>
     <span class="k">return</span><span class="p">;</span>
 <span class="p">}</span>
-<span class="nv">$q</span> <span class="o">=</span> <span class="nx">strtolower</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]);</span>
+<span class="nv">$q</span> <span class="o">=</span> <span class="nb">strtolower</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">]);</span>
 
 <span class="nv">$data</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
     <span class="s2">&quot;Aberdeen&quot;</span><span class="p">,</span> <span class="o">...</span> <span class="s2">&quot;Zoar&quot;</span>
@@ -43,7 +43,7 @@ is doing, except you cannot choose anything from your list at the moment.</p>
     <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nv">$first</span><span class="p">)</span> <span class="p">{</span>
         <span class="nv">$put</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="p">;</span>
     <span class="p">}</span> 
-    <span class="k">if</span> <span class="p">(</span><span class="nb">strpos</span><span class="p">(</span><span class="nx">strtolower</span><span class="p">(</span><span class="nv">$element</span><span class="p">),</span> <span class="nv">$q</span><span class="p">)</span> <span class="o">!==</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">strpos</span><span class="p">(</span><span class="nb">strtolower</span><span class="p">(</span><span class="nv">$element</span><span class="p">),</span> <span class="nv">$q</span><span class="p">)</span> <span class="o">!==</span> <span class="k">false</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">echo</span> <span class="nv">$put</span><span class="o">.</span><span class="s1">&#39;&quot;&#39;</span><span class="o">.</span><span class="nv">$element</span><span class="o">.</span><span class="s1">&#39;&quot;&#39;</span><span class="p">;</span>
         <span class="nv">$first</span> <span class="o">=</span> <span class="k">false</span><span class="p">;</span>
     <span class="p">}</span>
@@ -74,7 +74,7 @@ In my case, they are called  basicajax.html and basicajax.dart.</p>
 
 <p>Opening basicajax.dart, I have added the following two libraries to my file:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="err">#</span><span class="k">import</span><span class="err">(</span><span class="s1">&#39;dart:html&#39;</span><span class="err">)</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="err">#</span><span class="k">import</span><span class="err">(</span><span class="s1">&#39;dart:html&#39;</span><span class="err">)</span><span class="p">;</span>
 <span class="err">#</span><span class="k">import</span><span class="err">(</span><span class="s2">&quot;dart:json&quot;</span><span class="err">)</span><span class="p">;</span></code></pre></div>
 
 <p>dart:html is a library for manipulating the dom in a very easy way. dart:json
@@ -87,7 +87,7 @@ GitHub HTML file does contain several formatting code. But if would strip it
 down to the absolute minimum, we would end up with only two elements
 which are needed for this example:</p>
 
-<div class="highlight"><pre><code class="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;input&quot;</span> <span class="na">class=</span><span class="s">&quot;search&quot;</span> <span class="na">value=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
+<div class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;input&quot;</span> <span class="na">class=</span><span class="s">&quot;search&quot;</span> <span class="na">value=</span><span class="s">&quot;&quot;</span> <span class="nt">/&gt;</span>
 <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">&quot;data&quot;</span><span class="nt">&gt;&lt;/ul&gt;</span></code></pre></div>
 
 <p>The input element is the input field in which we want to enter some
@@ -96,7 +96,7 @@ characters. The ul  element below is where we want our data to appear.</p>
 <p>Things defined - let&#39;s look at the Dart code finally. Here is
 the outline of our little program:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">basicajax</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">basicajax</span> <span class="p">{</span>
   <span class="n">basicajax</span><span class="p">()</span> <span class="p">{}</span>
   <span class="kt">void</span> <span class="n">run</span><span class="p">()</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
   <span class="kt">void</span> <span class="n">resetData</span><span class="p">()</span> <span class="p">{</span> <span class="err">…</span> <span class="p">}</span>
@@ -116,7 +116,7 @@ query for my two html elements here and store the result in
 private variables. With this I save multiple queries as I had
 on an earlier version of this script. The constructor looks like:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="kd">class</span> <span class="nc">basicajax</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">class</span> <span class="nc">basicajax</span> <span class="p">{</span>
   <span class="n">InputElement</span> <span class="n">_search</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
   <span class="n">Element</span> <span class="n">_data</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
   
@@ -138,9 +138,9 @@ we need the addRow() method, with which we will add list elements
 to our data node. More to these two methods later. Now let us start
 with the run() method:</p>
 
-<div class="highlight"><pre><code class="java"><span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">element</span><span class="o">.</span><span class="na">on</span><span class="o">.</span><span class="na">keyUp</span><span class="o">.</span><span class="na">add</span><span class="o">(</span> <span class="n">_</span><span class="o">(</span><span class="n">Event</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">XMLHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XMLHttpRequest</span><span class="o">();</span>
+      <span class="n">XMLHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">XMLHttpRequest</span><span class="o">();</span>
       <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="err">&#39;</span><span class="nl">http:</span><span class="c1">//localhost/data.php?q=${_search.value}&#39;;</span>
       <span class="n">request</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;GET&quot;</span><span class="o">,</span> <span class="n">url</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
       
@@ -164,7 +164,7 @@ pressed. The interesting thing here is, that all the listeners an
 bundled in the &quot;element.on&quot; getter. You can find many more there,
 just look at the code completion of your Editor (STRG - SPACE).</p>
 
-<div class="highlight"><pre><code class="java"><span class="n">element</span><span class="o">.</span><span class="na">on</span><span class="o">.</span><span class="na">keyUp</span><span class="o">.</span><span class="na">add</span><span class="o">(</span> <span class="n">_</span><span class="o">(</span><span class="n">Event</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">element</span><span class="o">.</span><span class="na">on</span><span class="o">.</span><span class="na">keyUp</span><span class="o">.</span><span class="na">add</span><span class="o">(</span> <span class="n">_</span><span class="o">(</span><span class="n">Event</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
     <span class="err">…</span>      
 <span class="o">});</span></code></pre></div>
 
@@ -178,7 +178,7 @@ to add a new anonymous function serving as EventListener. This time
 I add it to request.on.load event. You sense a pattern, it is again
 the &quot;on&quot; getter, where all EventListeners are somehow stored.</p>
 
-<div class="highlight"><pre><code class="java"><span class="n">XMLHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XMLHttpRequest</span><span class="o">();</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">XMLHttpRequest</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">XMLHttpRequest</span><span class="o">();</span>
 <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="err">&#39;</span><span class="nl">http:</span><span class="c1">//localhost/data.php?q=${_search.value}&#39;;</span>
 <span class="n">request</span><span class="o">.</span><span class="na">open</span><span class="o">(</span><span class="s">&quot;GET&quot;</span><span class="o">,</span> <span class="n">url</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
 <span class="n">request</span><span class="o">.</span><span class="na">on</span><span class="o">.</span><span class="na">load</span><span class="o">.</span><span class="na">add</span><span class="o">((</span><span class="n">event</span><span class="o">)</span> <span class="o">{</span>
@@ -192,19 +192,19 @@ the JSON returned by the PHP script) and parse it to JSON. One must
 know, what we get from the PHP script is a String and only via
 JSON.parse it becomes actual JSON.</p>
 
-<div class="highlight"><pre><code class="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">responseText</span><span class="o">);</span></code></pre></div>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">request</span><span class="o">.</span><span class="na">responseText</span><span class="o">);</span></code></pre></div>
 
 <p>As we have sent back an JSON array, the result of the parsing is
 a List containing Strings. Very comfortable, because we can easily
 iterate over it:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">result</span><span class="p">.</span><span class="n">forEach</span><span class="p">((</span><span class="n">element</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">result</span><span class="p">.</span><span class="n">forEach</span><span class="p">((</span><span class="n">element</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">this</span><span class="p">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
 <span class="p">});</span></code></pre></div>
 
 <p>And finally we execute this XMLHttpRequest, with:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="n">request</span><span class="p">.</span><span class="n">send</span><span class="p">();</span></code></pre></div>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">request</span><span class="p">.</span><span class="n">send</span><span class="p">();</span></code></pre></div>
 
 <p>Once this is done and the result is loaded, the load event will occur
 and we resetData, transform the result from String to JSON and add a
@@ -212,7 +212,7 @@ row for each JSON element.</p>
 
 <p>Now lets look at the easier resetData method:</p>
 
-<div class="highlight"><pre><code class="java"><span class="kt">void</span> <span class="nf">resetData</span><span class="o">()</span> <span class="o">{</span>
+<div class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">resetData</span><span class="o">()</span> <span class="o">{</span>
     <span class="n">_data</span><span class="o">.</span><span class="na">nodes</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
 <span class="o">}</span></code></pre></div>
 
@@ -222,7 +222,7 @@ clear it with a single method call: clear().</p>
 
 <p>And finally there is addRow:</p>
 
-<div class="highlight"><pre><code class="dart"><span class="kt">void</span> <span class="n">addRow</span><span class="p">(</span><span class="kt">String</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kt">void</span> <span class="n">addRow</span><span class="p">(</span><span class="kt">String</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">Element</span> <span class="n">inner</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Element</span><span class="p">.</span><span class="n">tag</span><span class="p">(</span><span class="s1">&#39;li&#39;</span><span class="p">);</span>
     <span class="n">inner</span><span class="p">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="n">message</span><span class="p">;</span>
     <span class="n">_data</span><span class="p">.</span><span class="n">elements</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">inner</span><span class="p">);</span>
