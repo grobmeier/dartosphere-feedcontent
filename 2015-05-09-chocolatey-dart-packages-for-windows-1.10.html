@@ -1,0 +1,21 @@
+---
+title: 'Chocolatey Dart Packages for Windows 1.10'
+layout: post
+published: '2015-05-09T11:38:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/05/chocolatey-dart-packages-for-windows-110.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - '1.10'
+    - Chocolatey
+    - DartEditor
+    - Deploy
+    - Package
+    - Windows
+
+---
+
+<p><a href="https://chocolatey.org/"><u>Chocolatey</u></a> is a package manager for Windows similar to Linux's apt-get, based on Microsoft's Nuget tool and Powershell scripting language. It works from the command-line and from a WPF GUI interface.</p> <a href="http://3.bp.blogspot.com/-788r8TYl0_I/VU4xxx1RTzI/AAAAAAABEJY/4XrgX4Z3tbk/s1600/Chocolatey.png" imageanchor="1" ><img border="0" src="http://3.bp.blogspot.com/-788r8TYl0_I/VU4xxx1RTzI/AAAAAAABEJY/4XrgX4Z3tbk/s320/Chocolatey.png" /></a> <p>Recently I have recently taken over as maintainer of the <a href="https://github.com/daftspaniel/Chocolatey-Packages/"><u>Dart packages</u></a>, and thanks to some timely pull requests and help from the Chocolatey community, the packages are now much more up to date. The Chocolatey moderation queue is around 2 weeks at the moment, however you can click on 'All Versions' to see the 1.10 releases.</p> <p>Packages: <li>Dart Editor</li><li>Dart Sdk</li><li>Dartium</li><b>N.B.</b> The Dart Editor includes the SDK + Dartium. </p> <p>Command line installation: <pre style="padding: 3px 5px; border: 3px double silver;"><br />choco install -y DartEditor  -version 1.10.0<br />choco install -y dart-sdk  -version 1.10.0<br />choco install -y dartium  -version 1.10.0<br /></pre></p> <p>The Dart Editor package will probably be deprecated after the 1.11 release with the Editor being discontinued (officially at least).</p> <p>One other idea I am considering is a non-Chocolatey install/update script. Feedback, comments and suggestions welcome!</p>
