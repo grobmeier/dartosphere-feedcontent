@@ -1,0 +1,20 @@
+---
+title: 'Dart POW - ( Package Of The Week) #7 : bwu_docker'
+layout: post
+published: '2015-05-13T04:59:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/05/dart-pow-package-of-week-7-bwudocker.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Async
+    - Dart
+    - Docker
+    - Packages
+    - POW
+
+---
+
+<p>Who is ready for another - Dart POW? A weekly look at an interesting Package on <a href="https://pub.dartlang.org/">pub.dartlang.org</a></p> <p><a href="https://pub.dartlang.org/packages/bwu_docker">bwu_docker</a> is a  provides a typed interface to the Docker REST API and deserializes JSON response to Dart classes.</p> <a href="http://1.bp.blogspot.com/-olXUy-tM4lI/VVM8Rs7NLzI/AAAAAAABELQ/ZyaO9RBpM5k/s1600/docker.png" imageanchor="1" ><img border="0" src="http://1.bp.blogspot.com/-olXUy-tM4lI/VVM8Rs7NLzI/AAAAAAABELQ/ZyaO9RBpM5k/s320/docker.png" /></a>  <p>Code snippet:</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />...<br />  // initialize the connection to the Docker service<br />  final conn = new DockerConnection('localhost', dockerPort);<br />  await conn.init();<br /><br />  // create a container from an image<br />  CreateResponse created = await conn.createContainer(<br />      new CreateContainerRequest()<br />    ..image = 'busybox'<br />    ..hostConfig.logConfig = {'Type': 'json-file'});<br />...<br /></pre> <p>Feel free to leave a comment with suggestions for the next Dart POW post! Don't be too shy to suggest your own package :-)</p>
