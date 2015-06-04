@@ -1,0 +1,19 @@
+---
+title: 'Programming Minecraft with Dart - mcpi-dart v0.1'
+layout: post
+published: '2015-06-04T09:56:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/06/programming-minecraft-with-dart-mcpi.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Dart
+    - Game
+    - GitHub
+    - Minecraft
+
+---
+
+<p>The <a href="https://minecraft.net/">Minecraft</a> phenomena has been an amazing success with game players and coders. A version was released for the Raspberry Pi computer that allowed programming via a <a href="https://github.com/brooksc/mcpipy/tree/master/mcpi">Python wrapper</a>. The same programming API was added to regular Minecraft servers via <a href="http://dev.bukkit.org/bukkit-plugins/raspberryjuice/">Raspberry Juice</a>. </p> <p>Of course, it would be better if you could program Minecraft in Dart... and now you can! I have put up a first version of <a href="https://github.com/daftspaniel/mcpi-dart">mcpi-dart</a> on GitHub. An early version so please be kind, try it out and provide feedback. Make sure you Dart is up to date as it requires <b>async</b>. </p> <a href="http://3.bp.blogspot.com/-tlJa8v_sHpc/VW9I0G--3NI/AAAAAAABFOc/wImR3od5VZI/s1600/2015-06-03_19.18.18.png" imageanchor="1" ><img border="0" src="http://3.bp.blogspot.com/-tlJa8v_sHpc/VW9I0G--3NI/AAAAAAABFOc/wImR3od5VZI/s320/2015-06-03_19.18.18.png" /></a> <p>This entire project was inspired by the awesome book <a href="https://www.youtube.com/watch?v=YoZ9-oYJHb4">'Adventures in Minecraft'</a> by <a href="https://plus.google.com/+MartinOHanlon/posts">Martyn O'Hanlon</a>.</p> <p>Let's take a run through the <b>main.dart</b> demo sample.</p> <h2>Connecting to the server</h2><p>Make sure the IP is pointing to your Minecraft server running Bukkit & Raspberry Juice. This was tested on a slightly older  Minecraft 1.6.4 on Bukkit Server with Raspberry Juice. </p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />  mci = new Minecraft();<br />  await mci.connect("192.168.0.110", 4711);<br /></pre>  <h2>Chat Messages</h2><p>Talkie talkie! Easy one this. </p><pre style="padding: 3px 5px; border: 3px double silver;"><br />mci.chat("Dart is awesome!");<br /></pre> <h2>Placing Blocks</h2><p>This is what it is all about. Let's get building! </p><pre style="padding: 3px 5px; border: 3px double silver;"><br />blockDemo() {<br />  print("Block Demo Start");<br />  for (int i = 0; i < 99; i++) {<br />    mci<br />      ..setBlock(1, i, 0, Block.GOLD_BLOCK)<br />      ..setBlock(3, i, 0, Block.DIAMOND_BLOCK)<br />      ..setBlock(5, i, 0, Block.WOOL);<br />  }<br />  print("Block Demo End");<br />}<br /></pre>  <h2>Getting the Player's Position</h2><p>This method is a little trickier as we have to <b>await</b> a response. </p><pre style="padding: 3px 5px; border: 3px double silver;"><br />  var s = (await mci.getPos());<br />  print(s);<br /></pre> <h2>Building a Rainbow</h2><p>Just for fun :-) </p><pre style="padding: 3px 5px; border: 3px double silver;"><br />  print("Starting rainbow...");<br />  var colors = [<br />    Block.BRICK_BLOCK,<br />    Block.GOLD_BLOCK,<br />    Block.MELON,<br />    Block.DIAMOND_BLOCK,<br />    Block.SANDSTONE,<br />    Block.GLOWSTONE_BLOCK,<br />    Block.LAPIS_LAZULI_BLOCK<br />  ];<br /><br />  var height = 80;<br /><br />  for (int x = 0; x < 128; x++) {<br />    for (int ci = 0; ci < colors.length; ci++) {<br />      double y = math.sin((x / 128.0) * math.PI) * height + ci;<br />      mci.setBlock(x - 64, y.round(), 0, colors[(colors.length - 1) - ci]);<br />    }<br />  }<br />  print("Built rainbow.");<br /></pre> <h2>Next steps</h2><p><li>Some blocks require data rather than just an ID. <li>Get package onto Pub. <li>More Demos! </p>
