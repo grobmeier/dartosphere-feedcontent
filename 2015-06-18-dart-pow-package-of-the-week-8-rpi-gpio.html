@@ -1,0 +1,19 @@
+---
+title: 'Dart POW - ( Package Of The Week) #8 : rpi_gpio'
+layout: post
+published: '2015-06-18T04:33:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/06/dart-pow-package-of-week-8-rpigpio.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Electronics
+    - GPIO
+    - POW
+    - RaspberryPi
+
+---
+
+  <p>Who is ready for another - Dart POW? A weekly look at an interesting Package on <a href="https://pub.dartlang.org/">pub.dartlang.org</a></p> <p><a href="https://pub.dartlang.org/packages/rpi_gpio">rpi_gpio</a> is a Dart library for accessing the Raspberry Pi <a href="https://www.raspberrypi.org/documentation/usage/gpio/">GPIO</a> pins.</p> <a href="https://en.wikipedia.org/wiki/File:Drawing_of_Raspberry_Pi_model_B_rev2.svg" imageanchor="1" ><img border="0" src="https://upload.wikimedia.org/wikipedia/en/thumb/c/c0/Drawing_of_Raspberry_Pi_model_B_rev2.svg/320px-Drawing_of_Raspberry_Pi_model_B_rev2.svg.png" /></a> <p>Code snippet:</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />...<br />main() async {<br />  Gpio.hardware = new RpiHardware();<br />  var gpio = Gpio.instance;<br />  var pin = gpio.pin(1, output);<br />  for (int count = 0; count < 5; ++count) {<br />    pin.value = 1;<br />    await _delay(1000);<br />    pin.value = 0;<br />    await _delay(1000);<br />  }<br />}<br />...<br /></pre> <p></p>  <p>Feel free to leave a comment with suggestions for the next Dart POW post! Don't be too shy to suggest your own package :-)</p>
