@@ -66,11 +66,11 @@ class FuzzyList extends PolymerElement {
     if(str == null || str.trim().isEmpty) return l;
     return l.where((el) {
       for(var i = 0; i &lt; str.length; i++) {
-        if(!el.contains(str[i])) return false;
-      }
-      return true;
-    });
-  };</code></pre>
+         if(!el.contains(str[i])) return false;
+       }
+       return true;
+     });
+   };</code></pre>
 <p>We bind the <code>input</code>s value to <code>filterStr</code> which is an observable, and as such will receive updates as we type and cause any expression using it to be re-evaluated. Secondly we pass the list in our template repeat to the <code>filter</code> filter. The <code>filter</code> function is also passed our <code>filterStr</code>. You'll notice the <code>filter</code> function accepts a string, not a list, and returns a function, rather than a list. The reasoning for this is actually a little complex. If we just passed the filter without the arguments, our list would not be automatically updated when the value of <code>filterStr</code> changed.</p>
 <p>Instead what happens is that when the value of <code>filterStr</code> changes, it causes <code>filter(filterStr)</code> to be re-evaluated. When that evaluates, it returns a new function to which we pass the list. Essentially, <code>filter</code> is not actually our filter as used by Polymer Expressions, rather the function it returns is the filter. Using Dart's closures, we essentially generate a new function enclosing the value passed to <code>filter</code> within. This is then applied to the list we pass.</p>
 <p>The anonymous closure itself is pretty straight forward. It first checks if the string passed when creating the closure was null or empty, if so it just returns the list. If not, it returns a sub-list (well iterable on the list) of elements which contain all the characters contained in the string which was passed. If an element does not contain all the characters, then it's not included in the iterable returned. See the API documents for <a href="https://api.dartlang.org/apidocs/channels/stable/dartdoc-viewer/dart-core.List#id_where" title="List.where API Docs">List.where</a> for more information.</p>
