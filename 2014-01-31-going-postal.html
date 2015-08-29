@@ -26,16 +26,16 @@ tags:
 &lt;html&gt;
   &lt;head&gt;
     &lt;meta charset="utf-8"&gt;
-    
+    &lt;title&gt;Postal&lt;/title&gt;
     &lt;link rel="stylesheet" href="postal.css"&gt;
   &lt;/head&gt;
   &lt;body&gt;
     &lt;h1&gt;Postal&lt;/h1&gt;
     
     &lt;form id="myForm" action="send/"&gt;
-      &lt;label&gt;First Name:&lt;input type="text" value="" name="firstName" id="firstName"&gt;&lt;/label&gt;&lt;br /&gt;
-      &lt;label&gt;Last Name:&lt;input type="text" value="" name="lastName" id="lastName"&gt;&lt;/label&gt;&lt;br /&gt;
-      &lt;label&gt;Email: &lt;input type="email" value="" name="email" id="email"&gt;&lt;/label&gt;&lt;br /&gt;
+      &lt;label&gt;First Name:&lt;input type="text" value="" name="firstName" id="firstName"&gt;&lt;/label&gt;&lt;br&gt;
+      &lt;label&gt;Last Name:&lt;input type="text" value="" name="lastName" id="lastName"&gt;&lt;/label&gt;&lt;br&gt;
+      &lt;label&gt;Email: &lt;input type="email" value="" name="email" id="email"&gt;&lt;/label&gt;&lt;br&gt;
       &lt;input type="Submit" value="Submit"&gt;
     &lt;/form&gt;
 
@@ -102,7 +102,7 @@ void main() {
   &lt;head&gt;
     &lt;meta charset="utf-8"&gt;
     &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    
+    &lt;title&gt;Sample app&lt;/title&gt;
     &lt;link rel="stylesheet" href="bindingpostal.css"&gt;
     
     &lt;!-- import the click-counter --&gt;
@@ -136,10 +136,10 @@ void main() {
       }
     &lt;/style&gt;
     &lt;form id="myForm" action="send/" on-submit="{{ save }}"&gt;
-      &lt;label&gt;First Name:&lt;input type="text" value="{{ firstName }}" id="firstName"&gt;&lt;/label&gt;&lt;br /&gt;
-      &lt;label&gt;Last Name:&lt;input type="text" value="{{ lastName }}" id="lastName"&gt;&lt;/label&gt;&lt;br /&gt;
-      &lt;label&gt;Email: &lt;input type="email" value="{{ email }}" id="email"&gt;&lt;/label&gt;&lt;br /&gt;
-      &lt;label&gt;Cool: &lt;input type="checkbox" checked="{{ isCool }}" id="email"&gt;&lt;/label&gt;&lt;br /&gt;
+      &lt;label&gt;First Name:&lt;input type="text" value="{{ firstName }}" id="firstName"&gt;&lt;/label&gt;&lt;br&gt;
+      &lt;label&gt;Last Name:&lt;input type="text" value="{{ lastName }}" id="lastName"&gt;&lt;/label&gt;&lt;br&gt;
+      &lt;label&gt;Email: &lt;input type="email" value="{{ email }}" id="email"&gt;&lt;/label&gt;&lt;br&gt;
+      &lt;label&gt;Cool: &lt;input type="checkbox" checked="{{ isCool }}" id="email"&gt;&lt;/label&gt;&lt;br&gt;
       &lt;input type="Submit" value="Submit"&gt;
     &lt;/form&gt;
   &lt;/template&gt;
