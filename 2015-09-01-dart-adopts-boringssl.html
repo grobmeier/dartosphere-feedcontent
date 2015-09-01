@@ -1,0 +1,17 @@
+---
+title: 'Dart adopts BoringSSL'
+layout: post
+published: '2015-09-01T08:09:00-07:00'
+feed: 'Dart News & Updates'
+link: 'http://news.dartlang.org/2015/09/dart-adopts-boringssl.html'
+author:
+    name: 'Seth Ladd'
+    email: noreply@blogger.com
+    url: 'http://www.blogger.com/profile/17721182865180471955'
+tags:
+    - dartvm
+    - ssl
+
+---
+
+Starting today, with the 1.13.0-dev.1.0 release of the <a href="https://www.dartlang.org/">Dart</a> SDK, the Dart VM has upgraded its TLS/SSL implementation to <a href="https://www.chromium.org/Home/chromium-security/boringssl">BoringSSL</a>. The BoringSSL library is a fork of OpenSSL that’s created and maintained by Google. Dart developers now have the same implementation of SSL as Chromium and Chrome.<br /><br />The new implementation includes some breaking changes to the <a href="https://api.dartlang.org/dev/dart-io/SecureSocket-class.html">SecureSocket class</a> and related classes. Dart programs that create secure servers will need to provide their server certificate chain and private key in a new, and easier, way.<br /><br />We encourage you to try the dev channel build of Dart SDK and the new configurations for BoringSSL. You can learn more about <a href="https://www.dartlang.org/server/tls-ssl.html">Dart and TLS/SSL</a>, and we look forward to your <a href="https://github.com/dart-lang/sdk/issues">feedback</a>.<br /><br /><br /><i>--- Bill Hesse, feeling more secure</i>
