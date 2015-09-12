@@ -1,0 +1,21 @@
+---
+title: 'Dart POW - ( Package Of The Week) #10 : irc'
+layout: post
+published: '2015-09-12T02:53:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/09/dart-pow-package-of-week-10-irc.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - chat
+    - Dart
+    - irc
+    - Package
+    - Packages
+    - POW
+
+---
+
+<p>Who is ready for another - Dart POW? A weekly look at an interesting Package on <a href="https://pub.dartlang.org/">pub.dartlang.org</a></p> <p><a href="https://pub.dartlang.org/packages/irc"></a> is a 'one-stop shop for all your irc needs in Dart'. IRC (Internet Relay Chat) has been around a long time and is still a great way to connect. There are a number of irc packages on pub so be sure to check them all out.</p> <p>This example is taken straight from the irc docs:</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />import "package:irc/client.dart";<br /><br />// This stores our configuration for this client<br />var config = new Configuration(host: "irc.esper.net", port: 6667, nickname: "DartBot", username: "DartBot");<br />// "Primary" IRC class<br />var client = new Client(config);<br /><br />main() {<br />  // Register an onReady event handler<br />  client.onReady.listen((event) {<br />    // Join a channel<br />    event.join("#directcode");<br />  });<br /><br />  // Register an onMessage event handler    <br />  client.onMessage.listen((event) {<br />    // Log any message events to the console<br />    print("<${event.target.name}><${event.from.name}> ${event.message}");<br />  });<br /><br />  // Connect to the server<br />  client.connect();<br />}<br /></pre> <p></p>  <p>Feel free to leave a comment with suggestions for the next Dart POW post! Don't be too shy to suggest your own package :-)</p> 
