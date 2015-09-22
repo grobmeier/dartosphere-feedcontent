@@ -1,0 +1,18 @@
+---
+title: 'Dart POW - ( Package Of The Week) #11 : colorful'
+layout: post
+published: '2015-09-22T11:58:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/09/dart-pow-package-of-week-11-colorful.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Dart
+    - Package
+    - POW
+
+---
+
+<p>Who is ready for another - Dart POW? A weekly look at an interesting Package on <a href="https://pub.dartlang.org/">pub.dartlang.org</a></p> <p><a href="https://pub.dartlang.org/packages/colorful">colorful</a> is a package that helps creates 'a List of equally distant random colors'. Handy if you need a palette and you know I like some colour on this blog!</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br /><br />  var output = querySelector('#output');<br />  WarmPalette wp = new WarmPalette(10);<br />  List<HexColor> cl = wp.colors();<br /><br />  cl.forEach((HexColor color) {<br />    var line = new HeadingElement.h1();<br />    line<br />      ..text = 'Dart is Awesome!'<br />      ..style.color = '#ffffff'<br />      ..style.backgroundColor = color.toCssString()<br />      ..style.margin = '15px'<br />      ..style.padding = '2px';<br />    output.append(line);<br />  });<br /><br /></pre> <p><div class="separator" style="clear: both; text-align: center;"><a href="http://4.bp.blogspot.com/-xmw9i3JVzYQ/VgGkB2sxECI/AAAAAAABIFE/RT5lzj5PjGs/s1600/DartPallette.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-xmw9i3JVzYQ/VgGkB2sxECI/AAAAAAABIFE/RT5lzj5PjGs/s320/DartPallette.png" /></a></div></p>  <p>Feel free to leave a comment with suggestions for the next Dart POW post! Don't be too shy to suggest your own package :-)</p>
