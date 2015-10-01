@@ -1,0 +1,18 @@
+---
+title: 'Simple Sprite Based Web Games In Dart - Part One'
+layout: post
+published: '2015-10-01T12:23:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/10/simple-sprite-based-web-games-in-dart.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - HTML5
+    - simplesprite
+
+---
+
+<p>This is a new series where we will look a Dart package I am developing for simple Canvas based sprites games. I have written a couple of little games in Dart and always thought it would be an idea to split off all the general code into a reusable package.</p> <p>The library is called <a href="https://pub.dartlang.org/packages/simplegamelib">simplegamelib</a> and is heavily inspired by PyGame. The source is on GitHub here and the package is on pub. My personal aims are to write a Space Invaders type game and have really understandable library so it can be used to learn Dart. The code (so far!) is on <a href="https://github.com/daftspaniel/simplegamelib">GitHub</a> and the project's homepage is <a href="http://divingintodart.blogspot.co.uk/p/simplegamelib-homepage.html">here on blogger</a>. </p><p>Yes it is time to get around to our 'Hello World'. We will create a simple scene and have a familiar looking sprite move from one side of the screen to the other.</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />import 'dart:html';<br />import 'package:simplegamelib/simplegamelib.dart';<br /><br />void main() {<br />  Game game = new Game("My Game", '#surface');<br />  Sprite player = game.createSprite("images/ninjadude.png");<br /><br />  player<br />    ..position = new Point(0, 10)<br />    ..movement = Movements.east;<br />  print('starting game...');<br /><br />  game.start();<br />}<br /></pre> <p>As you can see it is easy to get started with just a few lines of code. <a href="http://daftspaniel.com/dart/simplegamelib/demo1/index.html">Click here</a> to see it in action. Hit reload to start again.</p> <p>Next time, we will look at adding more than one sprite and collision detection!</p>
