@@ -1,0 +1,21 @@
+---
+title: 'Sprite Collisions - Simplegamelib Part Two'
+layout: post
+published: '2015-10-02T07:52:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/10/sprite-collisions-simplegamelib-part-two.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Dart
+    - Game
+    - Google
+    - Graphics
+    - Packages
+
+---
+
+<p>This is the second part in an ongoing series where we will look a Dart package I am developing for simple Canvas based sprites games. I have written a couple of little games in Dart and always thought it would be an idea to split off all the general code into a reusable package.</p> <p>The library is called <a href="https://pub.dartlang.org/packages/simplegamelib">simplegamelib</a> and is heavily inspired by PyGame. The source is on GitHub here and the package is on pub. My personal aims are to write a Space Invaders type game and have really understandable library so it can be used to learn Dart. The code (so far!) is on <a href="https://github.com/daftspaniel/simplegamelib">GitHub</a> and the project's homepage is <a href="http://divingintodart.blogspot.co.uk/p/simplegamelib-homepage.html">here on blogger</a>. </p><p>This time we will create a simple scene and again have a familiar looking sprite move from one side of the screen to the other. This time they will bump into another ninja so we add another sprite.</p> <a href="http://2.bp.blogspot.com/-_YFnqPULEtU/Vg6UgZhNAJI/AAAAAAABIQM/haiaHyeDifY/s1600/twoninjas.png" imageanchor="1" ><img border="0" src="http://2.bp.blogspot.com/-_YFnqPULEtU/Vg6UgZhNAJI/AAAAAAABIQM/haiaHyeDifY/s320/twoninjas.png" /></a> <pre style="padding: 3px 5px; border: 3px double silver;"><br />void main() {<br />  Game game = new Game("My Game", '#surface');<br /><br />  player = game.createSprite("images/ninjadude.png");<br /><br />  player<br />    ..position = new Point(0, 10)<br />    ..movement = Movements.east;<br /><br />  dude = game.createSprite("images/ninjadude.png");<br /><br />  dude..position = new Point(200, 20);<br /><br />  dude.height = 48;<br />  dude.width = 48;<br />  player.height = 48;<br />  player.width = 48;<br /><br />  game.customUpdate = collisionDemo;<br /><br />  print('starting game...');<br /><br />  game.start();<br />}<br /><br />// Custom detection routine.<br />void collisionDemo() {<br />  document.body.style.backgroundColor =<br />      player.detectCollision(dude) ?  "#ffcc00" : "cornflowerblue";<br />  if (player.x > 333) {<br />    player.x = -50;<br />  }<br />}<br /></pre> <p>This time around we create another sprite and both are set to a width and height of 48 pixels. This area for each ninja is used to detect whether they overlap. This type of collision detection can be used in all sorts of games. We take advantage of a hook in the Game object <b>customUpdate</b> that is called after each update. Here we can check if the two sprites collide and change the colour of the page accordingly. If the moving <b>player</b> sprite goes out of view it is set back to just off screen on the left. <a href="http://daftspaniel.com/dart/simplegamelib/demo1/demo2.html">Click here</a> to see it in action.</p> <p>Next time, we will look at Sprite drawing priority!</p>
