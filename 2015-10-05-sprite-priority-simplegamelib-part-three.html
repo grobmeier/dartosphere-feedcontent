@@ -1,0 +1,20 @@
+---
+title: 'Sprite Priority - Simplegamelib Part Three'
+layout: post
+published: '2015-10-05T09:41:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/10/sprite-priority-simplegamelib-part-three.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Dart
+    - Frameworks
+    - Game
+    - Graphics
+
+---
+
+ <p>This is the third part in an ongoing series where we will look at the package called <a href="https://pub.dartlang.org/packages/simplegamelib">simplegamelib</a></p> <a href="http://2.bp.blogspot.com/-7qzBf0tW8RI/VhFTPFqGksI/AAAAAAABIXQ/EU3iCWQ5znQ/s1600/ninjatree.png" imageanchor="1" ><img border="0" src="http://2.bp.blogspot.com/-7qzBf0tW8RI/VhFTPFqGksI/AAAAAAABIXQ/EU3iCWQ5znQ/s400/ninjatree.png" /></a> <p>This time we will create a little forest of trees to walk down the middle of. Two trees will be in the foreground and two in the background. This is achieved by placing the ninja sprite in the <b>SpriteGroup</b> after the background sprites but before the foreground. When the ninja goes off screen, the order of the sprites is reversed by calling the <b>reverse</b> method. The display will not look as good the second time around as the foreground will be drawn first but it does clearly show the order the drawing of the sprites <b>SpriteGroup</b>.</p>  <pre style="padding: 3px 5px; border: 3px double silver;"><br />Sprite player;<br />Sprite backTree, backTree2;<br />Sprite foreTree, foreTree2;<br />Game game = new Game("My Game", '#surface');<br /><br />void main() {<br /><br />  backTree = game.createSprite("images/ftree.png");<br />  backTree2 = game.createSprite("images/ftree.png");<br />  player = game.createSprite("images/ninjadude.png");<br />  foreTree = game.createSprite("images/ftree.png");<br />  foreTree2 = game.createSprite("images/ftree.png");<br /><br />  player<br />    ..position = new Point(0, 30)<br />    ..movement = Movements.east;<br /><br />  backTree.position = new Point(200, 20);<br />  backTree2.position = new Point(20, 20);<br /><br />  foreTree.position = new Point(180, 60);<br />  foreTree2.position = new Point(40, 60);<br /><br />  game.customUpdate = priorityDemo;<br />  print('starting game...');<br /><br />  game.start();<br />}<br /><br />void priorityDemo() {<br />  if (player.x > 333) {<br />    player.x = -50;<br />    game.spriteGroup.reverse();<br />  }<br />}<br /></pre> <p><a href="http://daftspaniel.com/dart/simplegamelib/demo1/demo3.html">Click here</a> to see it in action.</p> <p>Next time, we will look at adding some keyboard controls so we can start getting interactive!</p>
