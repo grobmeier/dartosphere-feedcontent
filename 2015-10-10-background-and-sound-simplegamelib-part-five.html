@@ -1,0 +1,21 @@
+---
+title: 'Background and Sound - Simplegamelib Part Five'
+layout: post
+published: '2015-10-10T06:39:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/10/background-and-sound-simplegamelib-part.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Game
+    - GameDev
+    - Graphics
+    - HTML5
+    - Sound
+
+---
+
+ <p>This is the fifth part in an ongoing series where we will look at the package I am currently writing called <a href="https://pub.dartlang.org/packages/simplegamelib">simplegamelib</a>. Development is usually a little ahead of the current blog post. The projects homepage is located <a href="http://divingintodart.blogspot.co.uk/p/simplegamelib-homepage.html">here</a>.</p> <p>This demo is our most complicated so far. First change is that the white background is replaced by an image. The ninja will still be movable via the cursor keys but will be able to pick up the collectible hearts (ninja's need love too!) which emit a little sound when collected. </p> <a href="http://4.bp.blogspot.com/-RZw3_rD1T1Y/VhkUixxOmWI/AAAAAAABIis/EmADF1OuNgk/s1600/backdemo.png" imageanchor="1" ><img border="0" src="http://4.bp.blogspot.com/-RZw3_rD1T1Y/VhkUixxOmWI/AAAAAAABIis/EmADF1OuNgk/s1600/backdemo.png" /></a> <p>To set the background, the <b>Renderer</b> must be told of the image to be used. The <b>Audiobank</b> class loads a mp3 file which is given the name 'test' which is used to request that sound to play later on. Three heart sprites are created and added to the collectables list in the <b>Game</b> object. In the update method, the player is checked for collision with any of the hearts. If there is a collision, the heart is set to alive = false, the <b>SpriteGroup</b> is cleared of dead entries and the sound is played.</p> <p>Remember Dartium does not play MP3 files so run from another browser!</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />Sprite player;<br />AudioBank sounds = new AudioBank();<br />Game game = new Game("My Game", '#surface');<br /><br />void main() {<br /><br />  sounds.load('test', 'sounds/coin.mp3');<br />  player = game.createSprite('images/ninjadude.png');<br />  game.player.sprite = player;<br />  game.renderer.liveBackground.setImageBackground('images/background.png');<br /><br />  for (int i = 0; i < 3; i++) {<br />    Sprite heart = new Sprite.fromFilename('images/heart.png');<br />    heart<br />      ..position = new Point(100 + (i * 75), 100)<br />      ..width = 24<br />      ..height = 24;<br />    heart.updatePos();<br />    game.collectablesGroup.add(heart);<br />  }<br /><br />  player<br />    ..position = new Point(0, 30)<br />    ..movement = new Point(0, 0)<br />    ..width = 48<br />    ..height = 48;<br /><br />  game.customUpdate = soundDemo;<br /><br />  print('starting game...');<br />  game.setUpKeys();<br />  game.start();<br />}<br /><br />void soundDemo() {<br />  List<Sprite> pickedHearts = game.collectablesGroup.detectCollision(player);<br /><br />  pickedHearts.forEach((Sprite heart) {<br />    heart.alive = false;<br />    game.collectablesGroup.removeDead();<br />    sounds.play("test");<br />  });<br />}<br /></pre> <p><a href="http://daftspaniel.com/dart/simplegamelib/demo1/demo5.html">Click here</a> to see it in action.</p> <p>Next time, we will look behind the scenes at the unit testing for this package!</p>
