@@ -1,0 +1,22 @@
+---
+title: 'Unit Testing - Simplegamelib Part Six'
+layout: post
+published: '2015-10-14T11:18:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/10/unit-testing-simplegamelib-part-six.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - 'Continuous Integration'
+    - Dart
+    - GitHub
+    - Packages
+    - Test
+    - Testing
+    - 'Unit Testing'
+
+---
+
+<p>In this post, we take a step back and look at how the Simplegamelib is tested. Sorry no ninjas this time!</p> <p>The awesome <a href="https://pub.dartlang.org/packages/test">test</a> package allows unit tests to be created and run. For example:</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />    test('Check empty', () {<br />      SpriteGroup sg = createSpriteGroup(4);<br />      expect(sg.empty, equals(false));<br />      sg.reset();<br />      expect(sg.empty, equals(true));<br />    });<br /></pre> <p>The unit tests (20 or so) can be found on <a href="https://github.com/daftspaniel/simplegamelib/tree/master/test">GitHub</a>. In contrast to other command line apps, it can run code that imports <b>dart:html</b> which saves splitting of packages to remove browser dependencies. This is hugely useful and a real plus point for Dart Unit Testing. It has certainly helped in the development of this little package!! :-) </p> <p>These can be run using the command:</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />pub run test .\test\simplegamelib_test.dart -p dartium<br /></pre> <p>Providing the system has a binary called <i>dartium</i>on the path. The Dart content shell is another possibility but as dartium worked first time I have tried anything else locally.</p> <p>This is all great for running unit tests when I want to but how about getting them running every time a change goes into the GitHub repository? Turns out the continuous integration service <a href="https://travis-ci.org/">Travis CI</a> supports Dart. The claim to be set up in minutes turns out to be true! All you need to add is a small YML file to the GitHub repository and it will monitor the repo for changes and even email you the results. The current implementation is focussed on the old unittest package but I hear it is to be move to test very soon!</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />language: dart<br />dart:<br />  - stable<br />  - dev<br />sudo: false<br />with_content_shell: true<br />before_install:<br />  - export DISPLAY=:99.0<br />  - sh -e /etc/init.d/xvfb start<br />script: pub run test -p content-shell -p firefox<br /></pre> <p>This time we use the content shell and firefox. As a bonus, we can run the tests on Dart STABLE and DEV.</p> <p>You can see the test reports for the <a href="https://travis-ci.org/daftspaniel/simplegamelib">Simplegamelib package here</a>.  <p>Next time, we will get back to a traditional demo and look at adding some speed to our sprites.</p>
