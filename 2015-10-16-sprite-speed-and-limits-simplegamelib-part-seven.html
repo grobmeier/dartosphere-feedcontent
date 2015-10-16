@@ -1,0 +1,19 @@
+---
+title: 'Sprite Speed and Limits - Simplegamelib Part Seven'
+layout: post
+published: '2015-10-16T10:42:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/10/sprite-speed-and-limits-simplegamelib.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Game
+    - GameDev
+    - Graphics
+
+---
+
+<p><p>This is the seventh part in an ongoing series where we will look at the package I am currently writing called <a href="https://pub.dartlang.org/packages/simplegamelib">simplegamelib</a>. Development is usually a little ahead of the current blog post. The projects homepage is located <a href="http://divingintodart.blogspot.co.uk/p/simplegamelib-homepage.html">here</a>.</p> <p>We have already seen how to get sprites on the screen moving about. Sometimes it is useful to <b>speed</b> up a particular <b>Sprite</b>, whilst this could be done with setting a higher <b>movement </b>value, it is also possible to set a <b>speed</b> value that acts as a multiplier. This is useful, for example, in a game where the Player picks up a speed up bonus. Once the power-up has run out the speed can be set back to 1 and we don't need to worry about direction either.</p> <a href="http://3.bp.blogspot.com/-mAgBeXGhm48/ViEzUX1SwGI/AAAAAAABIkU/C90ggiY6KQg/s1600/ninjaspeed.png" imageanchor="1" ><img border="0" src="http://3.bp.blogspot.com/-mAgBeXGhm48/ViEzUX1SwGI/AAAAAAABIkU/C90ggiY6KQg/s1600/ninjaspeed.png" /></a> <pre style="padding: 3px 5px; border: 3px double silver;"><br />  Game game = new Game("My Game", '#surface');<br /><br />  player = game.createSprite("images/ninjadude.png", 48, 48);<br />  dude = game.createSprite("images/ninjadude.png", 48, 48);<br /><br />  player<br />    ..position = new Point(0, 10)<br />    ..movement = Movements.east<br />    ..speed = 3;<br /><br />  dude<br />    ..position = new Point(10, 10)<br />    ..movement = new Point(1, 1)<br />    ..limits = new Rectangle(0, 0, 133, 133);<br /><br />  print('starting game...');<br /><br />  game.start();<br /></pre> <p>The other aspect we want to address is limiting a <b>Sprite</b>'s position on the screen. Imagine a Space Invaders type game where the player's sprite is restricted to the lower portion of the screen. To achieve this for one of our ninja's, we set the <b>limit </b> property to desired rectangular area.</p> <p><a href="http://daftspaniel.com/dart/simplegamelib/demo1/demo6.html">Click here</a> to see it in action. Hit reload to start again. One Ninja will zoom off never to be seen again. The other will head diagonally down the screen until it hits an invisible wall. These things happen to ninjas.</p> <p>Next time, we will look at making sprites solid to they don't just float over each other.</p>
