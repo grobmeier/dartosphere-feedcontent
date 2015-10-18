@@ -1,0 +1,19 @@
+---
+title: 'Obstacles - Simplegamelib Part Eight'
+layout: post
+published: '2015-10-18T06:58:00-07:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/10/obstacles-simplegamelib-part-eight.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Game
+    - GameDev
+    - Graphics
+    - HTML5
+
+---
+
+<p><p>This is the eighth part in an ongoing series where we will look at the package I am currently writing called <a href="https://pub.dartlang.org/packages/simplegamelib">simplegamelib</a>. Development is usually a little ahead of the current blog post. The projects homepage is located <a href="http://divingintodart.blogspot.co.uk/p/simplegamelib-homepage.html">here</a>. There's been some refactoring going on, documentation being updated and general bug fixing.</p> <p>This time we are looking making sprites solid to they don't just float over each other. This little ninja is going to hit a brick wall!</p> <a href="http://4.bp.blogspot.com/-9JEFRp_AwqM/ViOkQRLE5PI/AAAAAAABIl0/iiFhai5N2Ho/s1600/brickninja.png" imageanchor="1" ><img border="0" src="http://4.bp.blogspot.com/-9JEFRp_AwqM/ViOkQRLE5PI/AAAAAAABIl0/iiFhai5N2Ho/s1600/brickninja.png" /></a> <p>To achieve this, we set the obstacles property which is a <b>SpriteGroup</b> with anything the player is not allowed to walk over. The wall <b>Sprite</b> is created like any other and added to this group. That's it!</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />  Game game = new Game("My Game", '#surface');<br />  SpriteGroup walls = new SpriteGroup();<br />  player = game.createSprite("images/ninjadude.png", 48, 48);<br />  wall = game.createSprite("images/brick.png", 100, 100);<br /><br />  game.player.sprite = player;<br />  walls.canvas = player.canvas;<br />  walls.add(wall);<br /><br />  player<br />    ..position = new Point(0, 10)<br />    ..movement = Movements.none<br />    ..speed = 3<br />    ..obstacles = walls;<br /><br />  wall..position = new Point(150, 0);<br /><br />  print('starting game...');<br />  game<br />    ..setUpKeys()<br />    ..start();<br /></pre> <p><a href="http://daftspaniel.com/dart/simplegamelib/demo1/demo7.html">Click here</a> to see it in action. Use the cursor keys to bump into the wall.</p> <p>Next time, we will look at creating some collectible items.</p>
