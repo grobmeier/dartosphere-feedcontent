@@ -1,0 +1,21 @@
+---
+title: 'Collectibles - Simplegamelib Part Nine'
+layout: post
+published: '2015-10-26T18:34:00+00:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/10/collectibles-simplegamelib-part-nine.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Dart
+    - Game
+    - GameDev
+    - Graphics
+    - HTML5
+
+---
+
+<p><p>This is the ninth part in an ongoing series where we will look at the package I am currently writing called <a href="https://pub.dartlang.org/packages/simplegamelib">simplegamelib</a>. Development is usually a little ahead of the current blog post. The projects homepage is located <a href="http://divingintodart.blogspot.co.uk/p/simplegamelib-homepage.html">here</a>. There's been some refactoring going on, documentation being updated and general bug fixing. I have also started a Space Invaders/Galaxian game using the library though too soon to share!</p> <a href="http://3.bp.blogspot.com/-oxRuswDucqA/Vi5xxO4CGUI/AAAAAAABIwo/Rdv_9Z3VxQo/s1600/collect.png" imageanchor="1" ><img border="0" src="http://3.bp.blogspot.com/-oxRuswDucqA/Vi5xxO4CGUI/AAAAAAABIwo/Rdv_9Z3VxQo/s1600/collect.png" /></a> <p>This time we are looking at picking up items. A <b>Collectible</b> is a specialisation of the <b>Sprite</b> class that stores some extra information - the points and health delta (collectible items can have both a positive and negative effect!). The collectibles are added to the game by the <b>createCollectibles</b> function and the picking up in the <b>collectibleDemo</b> function.</p> <p>If the Player's health or points change, we need to broadcast this message in order to update the game display. The function <b>updateScorePanel</b> is called by the <b>Player</b> class when one of these properties changes.</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />import 'dart:html';<br />import 'package:simplegamelib/simplegamelib.dart';<br /><br />Sprite player;<br />AudioBank sounds = new AudioBank();<br />Game game = new Game("My Game", '#surface');<br /><br />void main() {<br />  sounds.load('test', 'sounds/coin.mp3');<br />  player = game.createSprite('images/ninjadude.png', 48, 48);<br /><br />  game<br />    ..player = new Player.withNotifications(updateScorePanel)<br />    ..player.sprite = player<br />    ..renderer.liveBackground.setImageBackground('images/background.png');<br /><br />  createCollectibles();<br /><br />  player<br />    ..position = new Point(0, 30)<br />    ..movement = new Point(0, 0);<br /><br />  game.customUpdate = collectibleDemo;<br /><br />  print('starting game...');<br />  game.setUpKeys();<br />  updateScorePanel(game.player);<br />  game.start();<br />}<br /><br />void collectibleDemo() {<br />  List<Sprite> pickUps = game.collectiblesGroup.detectCollision(player);<br /><br />  pickUps.forEach((Sprite pickup) {<br />    pickup.alive = false;<br />    game.collectiblesGroup.removeDead();<br />    sounds.play("test");<br />    game.player.apply(pickup);<br />  });<br />}<br /><br />void createCollectibles() {<br />  Collectible heart = new Collectible.fromFilename('images/heart.png', 24, 24);<br />  heart<br />    ..position = new Point(100, 100)<br />    ..healthDelta = 15;<br /><br />  game.collectiblesGroup.add(heart);<br /><br />  Collectible diamond =<br />      new Collectible.fromFilename('images/diamond.png', 24, 24);<br />  diamond<br />    ..position = new Point(175, 100)<br />    ..scoreDelta = 1000;<br /><br />  game.collectiblesGroup.add(diamond);<br />}<br /><br />void updateScorePanel(Player p1) {<br />  DivElement statusPanel = querySelector("#gameStatus");<br />  statusPanel.innerHtml =<br />      "Health : ${p1.health}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Score : ${p1.score}";<br />}<br /><br /></pre> <p><a href="http://daftspaniel.com/dart/simplegamelib/demo1/demo8.html">Click here</a> to see it in action. Use the cursor keys to pick up the objects.</p> <p>Next time, we will look at <b>Sprite</b>'s being hit by projectiles and expiring. Yikes!</p>
