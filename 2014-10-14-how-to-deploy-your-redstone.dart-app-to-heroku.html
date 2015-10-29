@@ -16,7 +16,7 @@ author:
 <p>Basically, to run on Heroku, your app must be configurable through environment variables. The minimal configuration that every heroku application must handle is the port number, where the server is allowed to bind to. Let&#39;s see an example:</p>
 <div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="k">import</span> <span class="s2">&quot;dart:io&quot;</span><span class="p">;</span>
 
-<span class="k">import</span> <span class="s2">&quot;package:redstone/server.dart&quot;</span> <span class="k">as</span> <span class="n">app</span><span class="p">;</span>
+<span class="k">import</span> <span class="s2">&quot;package:redstone/redstone.dart&quot;</span> <span class="k">as</span> <span class="n">app</span><span class="p">;</span>
 
 <span class="c1">//Import services here</span>
 
@@ -42,7 +42,7 @@ author:
 <p>If your app also has client code, it&#39;s a good idea to make the path to the web folder configurable too.</p>
 <div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="k">import</span> <span class="s2">&quot;dart:io&quot;</span><span class="p">;</span>
 
-<span class="k">import</span> <span class="s2">&quot;package:redstone/server.dart&quot;</span> <span class="k">as</span> <span class="n">app</span><span class="p">;</span>
+<span class="k">import</span> <span class="s2">&quot;package:redstone/redstone.dart&quot;</span> <span class="k">as</span> <span class="n">app</span><span class="p">;</span>
 <span class="k">import</span> <span class="s2">&quot;package:shelf_static/shelf_static.dart&quot;</span><span class="p">;</span>
 
 <span class="c1">//Import services here</span>
