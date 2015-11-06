@@ -1,0 +1,19 @@
+---
+title: 'Sprite Lifecycle - Simplegamelib Part Ten'
+layout: post
+published: '2015-11-06T15:35:00+00:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/11/sprite-lifecycle-simplegamelib-part-ten.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Canvas
+    - Game
+    - GameDev
+    - HTML5
+
+---
+
+<p><p>This is the tenth part in an ongoing series where we will look at the package I am currently writing called <a href="https://pub.dartlang.org/packages/simplegamelib">simplegamelib</a>. Development is usually a little ahead of the current blog post. The projects homepage is located <a href="http://divingintodart.blogspot.co.uk/p/simplegamelib-homepage.html">here</a>.</p> <a href="http://3.bp.blogspot.com/-ZPtSBQPzWlg/VjzFWTogdxI/AAAAAAABJKg/Cz_7YFeZkZc/s1600/fireballs.png" imageanchor="1" ><img border="0" src="http://3.bp.blogspot.com/-ZPtSBQPzWlg/VjzFWTogdxI/AAAAAAABJKg/Cz_7YFeZkZc/s1600/fireballs.png" /></a> <p>Ninjas have a tough life and often have a lot thrown at them at once. This sometimes involves painful objects. In a game, we need to check how each object is interacting with others in the game world. The projectiles will be in the <b>SpriteGroup</b>. Sadly these will cause the Ninja to die but we don't want the character just to suddenly vanish. We want a skeleton to appear (or an explosion in a game set in space). This is why the Sprite has both an <b>alive</b> property and a <b>dying</b> property.</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />import 'dart:html';<br />import 'package:simplegamelib/simplegamelib.dart';<br /><br />Sprite player;<br />SpriteGroup fireballs = new SpriteGroup();<br />Game game = new Game("My Game", '#surface');<br /><br />void main() {<br />  player = game.createSprite('images/ninjadude.png', 48, 48);<br />  player<br />    ..setDyingImage('images/deaddude.png')<br />    ..cyclesToDie = 1000;<br />  for (int i = 0; i < 5; i++) {<br />    var fireball = game.createSprite('images/fire.png', 24, 24);<br />    fireball<br />      ..movement = Movements.west<br />      ..x = 290 + i * 100<br />      ..y = 60<br />      ..speed = 3;<br />    fireballs.add(fireball);<br />  }<br /><br />  game<br />    ..player.sprite = player<br />    ..renderer.liveBackground.setImageBackground('images/background.png')<br />    ..customUpdate = spriteDying;<br /><br />  player<br />    ..position = new Point(10, 30)<br />    ..movement = new Point(0, 0);<br /><br />  print('starting game...');<br />  game.start();<br />}<br /><br />void spriteDying() {<br />  if (player.dying) return;<br />  List<Sprite> collisions = fireballs.detectCollision(player);<br /><br />  collisions.forEach((Sprite fireball) {<br />    fireball.alive = false;<br />    fireballs.removeDead();<br />    game.player.sprite.dying = true;<br />  });<br />}<br /><br /></pre> <p>Next time, we will take a break and have a look at the Left-Right shoot-em-up I have been working on using simplegamelib!</p>
