@@ -1,0 +1,284 @@
+---
+title: 'Dart Apps With Unidirectional Flow and Persistent Data Structures'
+layout: post
+published: '2014-10-18T01:05:46-05:00'
+feed: 'Anton Astashov''s blog - Dart'
+link: 'http://astashov.github.io/blog/2014/10/18/dart-apps-with-unidirectional-flow-and-persistent-data-structures/'
+author:
+    name: 'Anton Astashov'
+    email: ''
+    url: ''
+
+---
+
+<p>Recently in JavaScript, and especially in ClojureScript world, one approach of developing front-end apps became pretty popular &ndash; using unidirectional app flow and persistent data structures. Something pretty close to <a href="http://facebook.github.io/flux/docs/overview.html">Flux</a>, but not really exactly like it. I tried that approach in <a href="http://textik.com">Textik</a>, and was really happy how it went.</p>
+
+<h2>The idea</h2>
+
+<p>Here&rsquo;s the idea &ndash; in your app, you have only one place where you store <strong>ALL</strong> of your application state, some sort of global structure, containing persistent vectors and maps. It is important to use persistent data structures there, as you will see soon, they provide some very important features we use to speed up our app.</p>
+
+<p>So, you have one global data structure, where the state of all your application is stored. Everything is there &ndash; what tooltips are shown, what buttons are disabled, all the content of the app, etc. Then, you pass that global data structure to your rendering engine, which renders the whole app, from top to bottom, for the first time. It also sets up various HTML events listeners to the DOM elements, and attaches event handlers, which basically do only one thing &ndash; they generate parameters payload, and pass it to Dispatcher.</p>
+
+<p>Dispatcher receives that payload, and figures out what to do with it. It calls various &ldquo;mutators&rdquo; &ndash; models, which actually will change the global state of the app. Then, Dispatcher calls the rendering engine again, and passes the updated global state to it. The rendering engine rerenders the whole app again, from top to the bottom. But now, it can easily figure out what parts, or what components of the app should be rerendered. We pass particular subtrees of our global state tree to the components while rendering the whole app, and because these are persistent data structures, we can very quickly find out if some particular subtree was changed since last render. So, the rendering engine, using that knowledge, rerenders only parts of the app, which were changed, and because of that &ndash; it does that really fast.</p>
+
+<p>And then everything happens in the same way again. We get another event, send the payload to Dispatcher, Dispatcher calls mutators, mutators change the global state, and Dispatcher calls the rendering engine to rerender the app again.</p>
+
+<p>I.e., this way:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  main -------&gt; render view --------&gt; dispatcher
+</span><span class='line'>                    ^                      |
+</span><span class='line'>                    |                      |
+</span><span class='line'>                    |                      v
+</span><span class='line'>                    +------------ change global state</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So, this way we get a very simple data flow, all our events go through the same message bus to Dispatcher, the app structure becomes so simple, it is even ridiculous a bit :)</p>
+
+<h2>Implementing TodoMVC in Dart</h2>
+
+<p>So, I decided to try the same approach with Dart. I took ReactJS as the rendering engine, since it works really close to what I want from it, and there is a nice Dart wrapper for it from Clean Team &ndash; <a href="https://pub.dartlang.org/packages/react">react</a>. As for persistent data structures, there is a pub package from VacuumLabs &ndash; <a href="https://github.com/vacuumlabs/persistent">persistent</a> (but unfortunately it is not in Pub, you should get it from their forked repo from GitHub).</p>
+
+<p>You can check the source code here: <a href="https://github.com/astashov/todomvc/tree/master/labs/architecture-examples/react-dart-uniflow/web/dart,">https://github.com/astashov/todomvc/tree/master/labs/architecture-examples/react-dart-uniflow/web/dart,</a> and you can play with it here: <a href="http://astashov.s3-us-west-2.amazonaws.com/todomvc/index.html">http://astashov.s3-us-west-2.amazonaws.com/todomvc/index.html</a> (if you want to check it in Dart, use Dartium). This is just usual TodoMVC app.</p>
+
+<p>Let me quickly guide you through the code.</p>
+
+<p>Everything starts with <a href="https://github.com/astashov/todomvc/blob/master/labs/architecture-examples/react-dart-uniflow/web/dart/data.dart#L86">initializing the global state</a>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="c1">// data.dart</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="n">_appData</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Data</span><span class="p">(</span><span class="n">persist</span><span class="p">({</span>
+</span><span class='line'>    <span class="s1">&#39;autoincrement&#39;</span><span class="o">:</span> <span class="m">0</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;new-input&#39;</span><span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;list&#39;</span><span class="o">:</span> <span class="p">[],</span>
+</span><span class='line'>    <span class="s1">&#39;filter&#39;</span><span class="o">:</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span>
+</span><span class='line'>    <span class="s1">&#39;edit&#39;</span><span class="o">:</span> <span class="kc">null</span><span class="p">}));</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Data</span> <span class="kd">get</span> <span class="n">appData</span> <span class="o">=&gt;</span> <span class="n">_appData</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>appData</code> will be globally available, and we&rsquo;ll get the current value of the global state with <code>appData.value</code>.
+There are a bunch of methods-mutators in the <code>Data</code> class, which will overwrite the <code>value</code> property of <code>appData</code> with the new value. They won&rsquo;t really mutate the existing <code>value</code>, but recreate the new one, reusing unchanged parts of the old <code>value</code>.</p>
+
+<p>Then, we <a href="https://github.com/astashov/todomvc/blob/master/labs/architecture-examples/react-dart-uniflow/web/dart/app.dart#L46">initialize the app</a>, entering our <code>main()</code> function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="c1">// app.dart</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">setClientConfiguration</span><span class="p">();</span>
+</span><span class='line'>  <span class="n">rerender</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>setClientConfiguration()</code> initializes the <code>react</code> library, and then we render the app for the first time. It happens in <a href="https://github.com/astashov/todomvc/blob/master/labs/architecture-examples/react-dart-uniflow/web/dart/dispatcher.dart#L12">dispatcher.dart</a>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="c1">// dispatcher.dart</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">rerender</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">renderComponent</span><span class="p">(</span><span class="n">todoAppComponent</span><span class="p">({</span><span class="s1">&#39;value&#39;</span><span class="o">:</span> <span class="n">appData</span><span class="p">.</span><span class="n">value</span><span class="p">}),</span> <span class="n">querySelector</span><span class="p">(</span><span class="s1">&#39;#todoapp&#39;</span><span class="p">));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here we call <code>renderComponent</code>, which is a function of the <code>react</code> package, and pass the React component we are going to render and the selector which we are going to append it to.</p>
+
+<p>The components are defined in the <a href="https://github.com/astashov/todomvc/blob/master/labs/architecture-examples/react-dart-uniflow/web/dart/components.dart#L41">components.dart</a> file.</p>
+
+<p>All our components are not just default <code>React</code> components, but instead inherited from our custom <code>_Component</code> class, which we instrumented with the <code>shouldComponentUpdate</code> hook. There we check if the new passed value (our subtree of the global state) was changed since the last render. Again, this check should be very fast because of the persistent data structures properties. Also, as a convention, we are going to send our subtrees as the &lsquo;value&rsquo; prop.</p>
+
+<p>Let&rsquo;s have a look at <code>todoAppComponent</code> &ndash; our entry component. All it does is just renders three subcomponents &ndash; header, footer and main, and pass parts of the received global tree to them.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="c1">// components.dart</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">TodoApp</span> <span class="kd">extends</span> <span class="n">_Component</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">render</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span>
+</span><span class='line'>      <span class="n">div</span><span class="p">({</span><span class="s1">&#39;id&#39;</span><span class="o">:</span> <span class="s1">&#39;todo-app&#39;</span><span class="p">,</span> <span class="s1">&#39;className&#39;</span><span class="o">:</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;filter&#39;</span><span class="p">]},</span> <span class="p">[</span>
+</span><span class='line'>        <span class="n">headerComponent</span><span class="p">({</span><span class="s1">&#39;value&#39;</span><span class="o">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;new-input&quot;</span><span class="p">]}),</span>
+</span><span class='line'>        <span class="n">mainComponent</span><span class="p">({</span><span class="s1">&#39;value&#39;</span><span class="o">:</span> <span class="n">persist</span><span class="p">({</span>
+</span><span class='line'>          <span class="s1">&#39;list&#39;</span><span class="o">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;list&quot;</span><span class="p">],</span>
+</span><span class='line'>          <span class="s1">&#39;edit&#39;</span><span class="o">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;edit&quot;</span><span class="p">]})}),</span>
+</span><span class='line'>        <span class="n">footerComponent</span><span class="p">({</span><span class="s1">&#39;value&#39;</span><span class="o">:</span> <span class="n">persist</span><span class="p">({</span>
+</span><span class='line'>          <span class="s1">&#39;count&#39;</span><span class="o">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;list&quot;</span><span class="p">].</span><span class="n">length</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;filter&#39;</span><span class="o">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;filter&quot;</span><span class="p">],</span>
+</span><span class='line'>          <span class="s1">&#39;countCompleted&#39;</span><span class="o">:</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;list&quot;</span><span class="p">].</span><span class="n">where</span><span class="p">((</span><span class="n">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;isCompleted&quot;</span><span class="p">]).</span><span class="n">length</span><span class="p">})})]);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kd">var</span> <span class="n">todoAppComponent</span> <span class="o">=</span> <span class="n">registerComponent</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="n">TodoApp</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, let&rsquo;s have a look e.g. at <code>headerComponent</code>, which renders the input for creating new tasks, and also adds event handlers to the input. It only receives the <code>appData.value['new-input']</code> value, which defines what should be the value of the input.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="c1">// components.dart</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">class</span> <span class="nc">Header</span> <span class="kd">extends</span> <span class="n">_Component</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// ...</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">void</span> <span class="n">_inputChange</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">dispatch</span><span class="p">({</span><span class="s1">&#39;action&#39;</span><span class="o">:</span> <span class="s1">&#39;new-input&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="o">:</span> <span class="n">event</span><span class="p">.</span><span class="n">target</span><span class="p">.</span><span class="n">value</span><span class="p">});</span>
+</span><span class='line'>    <span class="n">setState</span><span class="p">({</span><span class="s1">&#39;value&#39;</span><span class="o">:</span> <span class="n">event</span><span class="p">.</span><span class="n">target</span><span class="p">.</span><span class="n">value</span><span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// ...</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">render</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span>
+</span><span class='line'>      <span class="n">header</span><span class="p">({</span><span class="s1">&#39;id&#39;</span><span class="o">:</span> <span class="s1">&#39;header&#39;</span><span class="p">},</span> <span class="p">[</span>
+</span><span class='line'>        <span class="n">h1</span><span class="p">({},</span> <span class="s1">&#39;todos&#39;</span><span class="p">),</span>
+</span><span class='line'>        <span class="n">input</span><span class="p">({</span>
+</span><span class='line'>          <span class="s1">&#39;id&#39;</span><span class="o">:</span> <span class="s1">&#39;new-todo&#39;</span><span class="p">,</span> <span class="s1">&#39;placeholder&#39;</span><span class="o">:</span> <span class="s1">&#39;What needs to be done?&#39;</span><span class="p">,</span> <span class="s1">&#39;autofocus&#39;</span><span class="o">:</span> <span class="s1">&#39;autofocus&#39;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s1">&#39;value&#39;</span><span class="o">:</span> <span class="n">value</span><span class="p">,</span> <span class="s1">&#39;onChange&#39;</span><span class="o">:</span> <span class="n">_inputChange</span><span class="p">,</span> <span class="s1">&#39;onKeyDown&#39;</span><span class="o">:</span> <span class="n">_onKeyDown</span><span class="p">})]);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="kd">var</span> <span class="n">headerComponent</span> <span class="o">=</span> <span class="n">registerComponent</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="n">Header</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Every single time we enter/remove a character in the input, we fire an event, and its handler <a href="https://github.com/astashov/todomvc/blob/master/labs/architecture-examples/react-dart-uniflow/web/dart/dispatcher.dart#L19">calls the dispatch function</a> of Dispatcher. We send the payload to it, which looks like <code>{'action': 'new-input', 'value': input.value}</code>.</p>
+
+<p>There, in Dispatcher, we handle it. For simplicity, I mutate the global state right in Dispatcher, but in a larger application you probably would want to delegate that to a model.</p>
+
+<p>And then, we rerender the app again.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="c1">// dispatcher.dart</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">dispatch</span><span class="p">(</span><span class="n">Map</span> <span class="n">payload</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">switch</span> <span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">// ...</span>
+</span><span class='line'>    <span class="k">case</span> <span class="s1">&#39;new-input&#39;</span><span class="o">:</span>
+</span><span class='line'>      <span class="n">appData</span><span class="p">.</span><span class="n">update</span><span class="p">(</span><span class="s2">&quot;new-input&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]);</span>
+</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">// ...</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="n">rerender</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Summary</h2>
+
+<p>So, that&rsquo;s actually it. Of course there are also other functionality &ndash; editing items, removing items, marking as completed, etc, but it works just in the same way as I just described. For items, there is the <code>Item</code> model &ndash; <a href="https://github.com/astashov/todomvc/blob/master/labs/architecture-examples/react-dart-uniflow/web/dart/models/item.dart">items.dart</a>, which provides API for CRUD operations for items. But all that stuff works in the same way I just described.</p>
+
+<p>That&rsquo;s the whole lifecycle of the application. Very simple, very declarative &ndash; you basically only need to work with the global state, changing it accordingly, and you don&rsquo;t really need to care about the view &ndash; React will do a great job with rendering the app using the global state.</p>
+
+<p>Another cool side-effect of having the global state &ndash; you can always easily reproduce your user&rsquo;s problems &ndash; debugging becomes way easier! If you use something like Airbrake or Rollbar to aggregate exceptions from your users, then you could just attach the global state in JSON to the exception you are about to send to e.g. Rollbar, and then you can easily reproduce the user&rsquo;s problem just by applying that JSON on your machine, so you&rsquo;d get exactly the same state of the app where the user was before the exception happened. Kinda cool, huh? :)</p>
+
+<p>There are a bunch of other cool things (e.g. simple undo &ndash; you can just save the full state of the app (or part of the state) in a vector every time the change happens, and it will be stored efficiently because of the nature of persistent data structures).</p>
+
+<p>I&rsquo;m really excited about this approach so far.</p>
+
+<h2>Isn&rsquo;t that like Rails?</h2>
+
+<p>If you ever worked with Rails, you can actually see a lot of similar things in this approach. In Rails, we pass our request through router, then router figures out (from URLs and GET params) what controller this request should be sent to, controller calls various models, which change the database, and the render the response. In this case,</p>
+
+<ul>
+<li>Dispatcher is router</li>
+<li>&lsquo;mutators&rsquo; are models</li>
+<li>appData is our database</li>
+</ul>
+
+
+<p>In models, we also don&rsquo;t have our internal state, models work with the database, retrieving and saving data into it.
+Same as in ActiveRecord :)</p>
+
+<p>And the whole lifecycle of the front-end app like this one and a Rails app looks extremely familiar. :)</p>
+
+<hr />
+
+
+<p>There are still some things, that could be improved, and some additional persistent data structures, that could be written, like e.g. currently PersistentVector doesn&rsquo;t efficiently handle inserting/removing elements in the middle of a vector. But still, you already can do a lot with the Dart ecosystem and these 2 packages I was talking about &ndash; <code>react</code> and <code>persistent</code>.</p>
+
+<p>So, please try it out, hopefully you&rsquo;ll find it useful :)</p>
+
+<h2>Related links</h2>
+
+<ul>
+<li><a href="https://pub.dartlang.org/packages/react">React</a></li>
+<li><a href="https://github.com/vacuumlabs/persistent">Persistent</a> &ndash; btw, there is a great explanation why persistent data structures are cool, make sure you&rsquo;ve read that!</li>
+<li><a href="https://github.com/astashov/todomvc/tree/master/labs/architecture-examples/react-dart-uniflow/web/dart">Source code</a></li>
+<li><a href="http://astashov.s3-us-west-2.amazonaws.com/todomvc/index.html">Demo</a> (Dartium only)</li>
+<li><a href="http://www.slideshare.net/AntonAstashov/textik">Slides of my Textik talk</a> &ndash; where I was talking about the Textik&rsquo;s architecture, which is very close to what I described dhere.</li>
+</ul>
+
+

@@ -1,0 +1,360 @@
+---
+title: 'Dart Tricks in dartdocs.org'
+layout: post
+published: '2015-11-08T21:01:01-06:00'
+feed: 'Anton Astashov''s blog - Dart'
+link: 'http://astashov.github.io/blog/2015/11/08/dart-tricks-in-dartdocs-org/'
+author:
+    name: 'Anton Astashov'
+    email: ''
+    url: ''
+
+---
+
+<p>I&rsquo;ve just finished building new infrastructure for <a href="https://www.dartdocs.org">Dartdocs</a>, and <a href="https://plus.google.com/+SethLadd">Seth</a> asked me to share my experience with Dart there. Obviously, you expect infrastructure for generating Dart docs for all the packages on <a href="https://pub.dartlang.org/">pub</a> to be written in Dart, though it might be built in any programming language. All it needs in a nutshell is to run a dartdoc shell command, which actually generates the documentation, and then upload the generated files somewhere.</p>
+
+<p>This is not my first Dart project, we use Dart in <a href="http://www.mixbook.com">Mixbook</a> (where I work) pretty heavily, mostly for <a href="https://www.montagebook.com">various</a> <a href="http://www.mixbook.com/canvas-prints">client-side</a> <a href="http://www.mixbook.com/photo-prints">projects</a>, but we also have some microservices on backend written in Dart as well. I love Dart, but like with any technology, using it is a tradeoff. It has its own pros (great async support, amazing tooling and ecosystem, staticly typed, but interpreted &ndash; no compile time) and cons (type system is not strict enough, IMHO, also a bit conservative for a modern language, i.e. where are my non-nullable types, method generics and immutable value objects?! :)), but for me pros outweight cons, so I use it a lot, and actually pretty happy with it.</p>
+
+<p>The requirements for <a href="http://www.dartdocs.org">http://www.dartdocs.org</a> were pretty simple &ndash; the infrastructure for generating docs for the Dart pub ecosystem, which is:</p>
+
+<ul>
+<li>Efficient &ndash; should use the available computing resources efficiently, avoid unnecessary work</li>
+<li>Scalable &ndash; allows to regenerate the documentation for the whole Dart ecosystem quickly (which is thousands and thousands Dart packages), within several hours, in case there is a new version of <a href="https://github.com/dart-lang/dartdoc">dartdoc</a> tool.</li>
+<li>Reliable &ndash; should work unattended, restore itself in case of failures, and should be easy to debug in case of failures.</li>
+</ul>
+
+
+<p>These requirements describe pretty much any web service you usually write :) So, I&rsquo;ll describe several tricks below I used in dartdocs to achieve these.</p>
+
+<h2>Efficiency</h2>
+
+<p>As I already said, Dart has really nice async support, for me this is one of its killer features. Futures and Streams were added to SDK from the very early versions, which means all the packages just use the SDK&rsquo;s ones, and nobody tries to reinvent their own implementations of Futures or Streams. And this is a big deal! A lot of packages are built with concurrency support as well, methods return Futures and Streams, and that makes these packages composable with each other, since every package uses the same implementation of Futures and Streams. Web frameworks, database drivers, unit test packages, file system tools, loggers, http libraries, socket handling, etc &ndash; all of them usually support concurrency and non-blocking operations. This allows us to build event-based fully concurrent web services pretty easily (especially after adding async/await support in Dart 1.9!)</p>
+
+<p>So, a workflow for the main dartdocs.org script is:</p>
+
+<ul>
+<li>Download all the existing package names and versions from pub (or refresh the list if already downloaded)</li>
+<li>Download (or refresh) the metadata for already generated packages from Google Cloud Datastore (was it successfully generated or not, generation datetime, etc)</li>
+<li>Figure out the next batch of packages to generate</li>
+<li>Actually generate the docs</li>
+<li>Upload the docs to Google Cloud Storage</li>
+<li>Update the metadata for the newly generated packages on Google Cloud Datastore</li>
+</ul>
+
+
+<p>Mostly, all of these are network calls (except actual generation of docs), so it&rsquo;d be dumb to do that sequently. But thanks to all the things about async and concurrency I desribed above, it could be done pretty easily! The HTTP lib and libs for working with Google Cloud services &ndash; they all return Futures, of course, so we can group them and then handle these groups in parallel. E.g., you could implement uploading to Google Cloud Storage in the following way:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="c1">// Getting the list of all the generated docs files for [package]. This is actually non-blocking too!</span>
+</span><span class='line'><span class="kd">var</span> <span class="n">files</span> <span class="o">=</span> <span class="n">await</span> <span class="n">_getListOfFilesForPackage</span><span class="p">(</span><span class="n">package</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Grouping files into groups of 20</span>
+</span><span class='line'><span class="kd">var</span> <span class="n">groups</span> <span class="o">=</span> <span class="n">inGroupsOf</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="m">20</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">Iterable</span> <span class="n">group</span> <span class="k">in</span> <span class="n">groups</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="c1">// Upload every 20 files in parallel, waiting til that batch finishes uploading, then starting a new one</span>
+</span><span class='line'>  <span class="n">await</span> <span class="n">Future</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">group</span><span class="p">.</span><span class="n">map</span><span class="p">((</span><span class="n">file</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="n">future</span> <span class="o">=</span> <span class="n">_uploadFileToGCS</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">future</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}));</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pretty simple, and easy to read and reason about. There is some room for improvement (you could queue all the uploads, and just make sure you handle 20 at a time, using some <a href="https://pub.dartlang.org/packages/tasks">task queue</a>, for example), but this example is simple enough to demonstrate the use case.</p>
+
+<p>This non-blocking nature may be not so important for dartdocs.org, but it&rsquo;s becoming way more important when you use it in web services with HTTP front-end. Usually, you don&rsquo;t spend a lot of time and CPU on crunching numbers in a request, but instead you just make a lot of network calls to various services and databases, combine data together and return to the requester. Something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/sendNotificationsToUsers&quot;</span><span class="p">,</span> <span class="nl">methods:</span> <span class="kd">const</span> <span class="p">[</span><span class="n">app</span><span class="p">.</span><span class="n">POST</span><span class="p">])</span>
+</span><span class='line'><span class="n">sendNotificationsToUsers</span><span class="p">(</span><span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Body</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">JSON</span><span class="p">)</span> <span class="n">List</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">userIds</span><span class="p">)</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">User</span><span class="o">&gt;</span> <span class="n">users</span> <span class="o">=</span> <span class="n">await</span> <span class="n">getUsersFromDatabase</span><span class="p">(</span><span class="n">userIds</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">Iterable</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="n">await</span> <span class="n">Future</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">users</span><span class="p">.</span><span class="n">map</span><span class="p">((</span><span class="n">user</span><span class="p">)</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">Future</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span> <span class="n">result</span> <span class="o">=</span> <span class="n">sendEMailToUser</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">result</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}));</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">results</span><span class="p">.</span><span class="n">every</span><span class="p">((</span><span class="n">r</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">r</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">JSON</span><span class="p">.</span><span class="n">encode</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="s2">&quot;successful&quot;</span><span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">JSON</span><span class="p">.</span><span class="n">encode</span><span class="p">({</span><span class="s2">&quot;status&quot;</span><span class="o">:</span> <span class="s2">&quot;failure&quot;</span><span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If every piece is non-blocking, the app spends very really little computation time on each request and has availability to process other concurrent requests. So you can process a lot of requests concurrently in a single thread. Which is great!</p>
+
+<h2>Scalability</h2>
+
+<p>Scalability in this context means &ndash; if we want to finish regenerating docs faster, we just need to launch more instances in the cloud. So, we need a way to split the work between them, and rebalance the work when we add or remove the instances.</p>
+
+<p>Let&rsquo;s observe some properties of the pub Dart packages &ndash; each package is uniquely identified by its name and version. It&rsquo;s immutable &ndash; the source code of the package never changes. Also, the packages are never being deleted, all their versions will forever stay in pub. So, developers can only add new packages, so the list is always growing, but never shrinking.</p>
+
+<p>I hosted the infrastructure on Google Cloud, on Google Compute Engine (GCE) instances. GCE has the ability to create instance groups, where you can specify how many instances should be run within that group. Each instance within that group will have a unique name, and you can get a list of all the instance names within a group. So, splitting the work in this case is pretty simple &ndash; after finishing generating docs for another batch of packages, we ask for the list of currently existing GCE instances within the group, sort it, check what&rsquo;s the current instance index within the list, and depending on that retrieve the next batch of packages from the whole list. I.e. if we have 5 instances in the group &ndash; foo1, foo2, foo3, foo4, and foo5. The current instance name is foo2. Whole number of unhandled packages is 10000. The batch size is 20 packages. Given all that, we&rsquo;ll take the range 2001-2020 from the list of all unhandled packages as the next batch.</p>
+
+<p>Sometimes, when we increase or reduce number of instances in the group, we may end up with 2 instances generating docs for the same package, but that&rsquo;s fine &ndash; they will produce the same result and rare enough we can ignore that.</p>
+
+<h2>Reliability</h2>
+
+<p>The scripts should work unattended, and should try to restore themselves after failures. Also, there are a lot of network calls happening during the workflow of the script, so it should be tolerable to network failures, or external service failures. Also, in case of a failure, we need to know why the failure happened. We can achieve that by logging, timeouts, retries, and if we are out of retries, then just fail completely, and let something like <a href="https://mmonit.com/monit/">monit</a> to get us up and running again.</p>
+
+<h3>Retries</h3>
+
+<p>It&rsquo;s actually very simple to do &ndash; let&rsquo;s define this function:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="kd">const</span> <span class="n">_defaultDurations</span> <span class="o">=</span> <span class="kd">const</span> <span class="p">[</span><span class="kd">const</span> <span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span> <span class="m">3</span><span class="p">),</span> <span class="kd">const</span> <span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span> <span class="m">5</span><span class="p">),</span> <span class="kd">const</span> <span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span> <span class="m">15</span><span class="p">)];</span>
+</span><span class='line'><span class="n">Future</span> <span class="n">retry</span><span class="p">(</span><span class="n">body</span><span class="p">(),</span> <span class="p">{</span><span class="kt">int</span> <span class="nl">number:</span> <span class="m">3</span><span class="p">,</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Duration</span><span class="o">&gt;</span> <span class="nl">durations:</span> <span class="n">_defaultDurations</span><span class="p">)</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">try</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">await</span> <span class="n">body</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">number</span> <span class="o">&gt;</span> <span class="m">0</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="n">duration</span> <span class="o">=</span> <span class="n">durations</span><span class="p">.</span><span class="n">first</span><span class="p">;</span>
+</span><span class='line'>      <span class="kd">var</span> <span class="n">newDurations</span> <span class="o">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">.</span><span class="n">from</span><span class="p">(</span><span class="n">durations</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">newDurations</span><span class="p">.</span><span class="n">length</span> <span class="o">&gt;</span> <span class="m">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">newDurations</span><span class="p">.</span><span class="n">removeAt</span><span class="p">(</span><span class="m">0</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="n">Future</span><span class="p">.</span><span class="n">delayed</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="n">retry</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="nl">number:</span> <span class="n">number</span> <span class="o">-</span> <span class="m">1</span><span class="p">,</span> <span class="nl">durations:</span> <span class="n">newDurations</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">rethrow</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now, with any sync or async <code>body()</code>, in case it throws some exception, it will retry several times with specified durations, and then fail. We wrap every single network call into that retry, something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="k">import</span> <span class="s1">&#39;package:http/http.dart&#39;</span> <span class="k">as</span> <span class="n">http</span><span class="p">;</span>
+</span><span class='line'><span class="c1">// ...</span>
+</span><span class='line'><span class="kd">var</span> <span class="n">response</span> <span class="o">=</span> <span class="n">retry</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="n">http</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="n">url</span><span class="p">).</span><span class="n">then</span><span class="p">((</span><span class="n">r</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">JSON</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">body</span><span class="p">)));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Unfortunately, we lose the return type of <code>body()</code> in this case, this is would be a great use case for <a href="https://github.com/leafpetersen/dep-generic-methods/blob/master/proposal.md">method generics</a> (there is a <a href="https://github.com/dart-lang/sdk/issues/254">ticket</a> though).</p>
+
+<p>Every network call in dartdocs.org scripts is wrapped with <code>retry()</code>, and it greatly reduces the number of failures, which may happen just because the network had problems or some service had occasional internal server error.</p>
+
+<h3>Timeouts</h3>
+
+<p>It&rsquo;s a good practice to specify meaningful timeouts for the things that are not under your control (like network calls, or external shell commands runs). There is the<code>Future.timeout()</code> method, which completes a future after specified duration, you use it somewhat like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="kd">var</span> <span class="n">response</span> <span class="o">=</span> <span class="n">await</span> <span class="n">http</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="n">url</span><span class="p">).</span><span class="n">timeout</span><span class="p">(</span><span class="kd">const</span> <span class="n">Duration</span><span class="p">(</span><span class="nl">seconds:</span> <span class="m">10</span><span class="p">));</span>
+</span><span class='line'><span class="kd">var</span> <span class="n">json</span> <span class="o">=</span> <span class="n">JSON</span><span class="p">.</span><span class="n">decode</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="n">body</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I used this approach everywhere at first, but then figured out that for the shell scripts it doesn&rsquo;t really work &ndash; if the shell script hangs, timeout fires, and the Dart script continues to run, but that script is not killed, it still hangs. So, a better approach would be to use <code>timeout</code> program, which kills the script and exits with non-zero status after specified timeout.</p>
+
+<h3>Logging</h3>
+
+<p>Sometimes things go wrong, and we need to know why. To figure out why we get some exception, it&rsquo;s usually not enough to have just that exception and the stack trace, you usually need to know what happened before that, that&rsquo;s why we need logging.</p>
+
+<p>The most popular logging package in Dart is named (surprisingly!) <a href="https://pub.dartlang.org/packages/logging">logging</a>. The nice thing about it, that it gives a stream with  all the log records as part of its API, so you can subscribe to that stream and do whatever you want with it &ndash; write it to STDOUT, to a file, etc.</p>
+
+<p>E.g., if we just want to print every log record into STDOUT, it may look something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="kt">String</span> <span class="n">format</span><span class="p">(</span><span class="n">LogRecord</span> <span class="n">record</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s2">&quot;</span><span class="si">${</span><span class="n">record</span><span class="p">.</span><span class="n">level</span><span class="si">}</span><span class="s2"> - </span><span class="si">${</span><span class="n">record</span><span class="p">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Logger</span><span class="p">.</span><span class="n">root</span><span class="p">.</span><span class="n">onRecord</span><span class="p">.</span><span class="n">map</span><span class="p">(</span><span class="n">format</span><span class="p">).</span><span class="n">listen</span><span class="p">(</span><span class="n">print</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Debugging</h3>
+
+<p>Since the code is async from the top to the bottom, in case of failure, what&rsquo;d you expect to see in the stacktrace? E.g. for this code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="k">import</span> <span class="s1">&#39;dart:async&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Future</span><span class="o">&lt;</span><span class="n">Null</span><span class="o">&gt;</span> <span class="n">blah</span><span class="p">()</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">throw</span> <span class="s1">&#39;foo&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="n">result</span> <span class="o">=</span> <span class="n">await</span> <span class="k">new</span> <span class="n">Future</span><span class="p">(()</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">await</span> <span class="k">new</span> <span class="n">Future</span><span class="p">(()</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">await</span> <span class="n">blah</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Probably something like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="n">Unhandled</span> <span class="nl">exception:</span>
+</span><span class='line'><span class="n">Uncaught</span> <span class="nl">Error:</span> <span class="n">foo</span>
+</span><span class='line'><span class="n">Stack</span> <span class="nl">Trace:</span>
+</span><span class='line'><span class="err">#</span><span class="m">0</span>      <span class="n">blah</span><span class="p">.</span><span class="o">&lt;</span><span class="n">blah_async_body</span><span class="o">&gt;</span> <span class="p">(</span><span class="nl">file:</span><span class="c1">///Users/anton/projects/dartdocsorg/blah.dart:7:3)</span>
+</span><span class='line'><span class="err">#</span><span class="m">1</span>      <span class="n">Future</span><span class="p">.</span><span class="n">Future</span><span class="p">.</span><span class="n">microtask</span><span class="p">.</span><span class="o">&lt;</span><span class="n">anonymous</span> <span class="n">closure</span><span class="o">&gt;</span> <span class="p">(</span><span class="nl">dart:</span><span class="o">as</span><span class="n">ync</span><span class="o">/</span><span class="n">future</span><span class="p">.</span><span class="nl">dart:</span><span class="m">144</span><span class="p">)</span>
+</span><span class='line'><span class="err">#</span><span class="m">2</span>      <span class="n">_microtaskLoop</span> <span class="p">(</span><span class="nl">dart:</span><span class="o">as</span><span class="n">ync</span><span class="o">/</span><span class="n">schedule_microtask</span><span class="p">.</span><span class="nl">dart:</span><span class="m">43</span><span class="p">)</span>
+</span><span class='line'><span class="err">#</span><span class="m">3</span>      <span class="n">_microtaskLoopEntry</span> <span class="p">(</span><span class="nl">dart:</span><span class="o">as</span><span class="n">ync</span><span class="o">/</span><span class="n">schedule_microtask</span><span class="p">.</span><span class="nl">dart:</span><span class="m">52</span><span class="p">)</span>
+</span><span class='line'><span class="err">#</span><span class="m">4</span>      <span class="n">_Timer</span><span class="p">.</span><span class="n">_runTimers</span> <span class="p">(</span><span class="nl">dart:</span><span class="n">isolate</span><span class="o">-</span><span class="n">patch</span><span class="o">/</span><span class="n">timer_impl</span><span class="p">.</span><span class="nl">dart:</span><span class="m">394</span><span class="p">)</span>
+</span><span class='line'><span class="err">#</span><span class="m">5</span>      <span class="n">_Timer</span><span class="p">.</span><span class="n">_handleMessage</span> <span class="p">(</span><span class="nl">dart:</span><span class="n">isolate</span><span class="o">-</span><span class="n">patch</span><span class="o">/</span><span class="n">timer_impl</span><span class="p">.</span><span class="nl">dart:</span><span class="m">414</span><span class="p">)</span>
+</span><span class='line'><span class="err">#</span><span class="m">6</span>      <span class="n">_RawReceivePortImpl</span><span class="p">.</span><span class="n">_handleMessage</span> <span class="p">(</span><span class="nl">dart:</span><span class="n">isolate</span><span class="o">-</span><span class="n">patch</span><span class="o">/</span><span class="n">isolate_patch</span><span class="p">.</span><span class="nl">dart:</span><span class="m">148</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The first line shows where the exception happened, but we have no idea where we came from when we reached that line, making the stacktrace useless. This is what stack traces usually look like in heavily async programs, and that&rsquo;s one of the reasons why it&rsquo;s hard to debug them.</p>
+
+<p>Thankfully, <a href="https://pub.dartlang.org/packages/stack_trace">stack_trace</a> package gives you the tools to solve that problem. If you wrap everything into <code>Chain.capture</code>, like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="k">import</span> <span class="s1">&#39;package:stack_trace/stack_trace.dart&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="k">import</span> <span class="s1">&#39;dart:async&#39;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Future</span><span class="o">&lt;</span><span class="n">Null</span><span class="o">&gt;</span> <span class="n">blah</span><span class="p">()</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>  <span class="k">throw</span> <span class="s1">&#39;foo&#39;</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">Chain</span><span class="p">.</span><span class="n">capture</span><span class="p">(()</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kd">var</span> <span class="n">result</span> <span class="o">=</span> <span class="n">await</span> <span class="k">new</span> <span class="n">Future</span><span class="p">(()</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">await</span> <span class="k">new</span> <span class="n">Future</span><span class="p">(()</span> <span class="o">as</span><span class="n">ync</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">await</span> <span class="n">blah</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">},</span> <span class="nl">onError:</span> <span class="p">(</span><span class="n">error</span><span class="p">,</span> <span class="n">chain</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">print</span><span class="p">(</span><span class="n">chain</span><span class="p">.</span><span class="n">terse</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>you&rsquo;ll get way nicer stack traces:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='dart'><span class='line'><span class="n">blah</span><span class="p">.</span><span class="n">dart</span> <span class="m">7</span><span class="o">:</span><span class="m">3</span>        <span class="n">blah</span><span class="p">.</span><span class="o">&lt;as</span><span class="n">ync</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">=====</span> <span class="o">as</span><span class="n">ynchronous</span> <span class="n">gap</span> <span class="o">===========================</span>
+</span><span class='line'><span class="nl">dart:</span><span class="o">as</span><span class="n">ync</span>           <span class="n">_Completer</span><span class="p">.</span><span class="n">completeError</span>
+</span><span class='line'><span class="n">blah</span><span class="p">.</span><span class="n">dart</span> <span class="m">10</span><span class="o">:</span><span class="m">1</span>       <span class="n">blah</span><span class="p">.</span><span class="o">&lt;as</span><span class="n">ync</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">=====</span> <span class="o">as</span><span class="n">ynchronous</span> <span class="n">gap</span> <span class="o">===========================</span>
+</span><span class='line'><span class="nl">dart:</span><span class="o">as</span><span class="n">ync</span>           <span class="n">Future</span><span class="p">.</span><span class="n">Future</span><span class="p">.</span><span class="n">microtask</span>
+</span><span class='line'><span class="n">blah</span><span class="p">.</span><span class="n">dart</span>            <span class="n">blah</span>
+</span><span class='line'><span class="n">blah</span><span class="p">.</span><span class="n">dart</span> <span class="m">14</span><span class="o">:</span><span class="m">15</span>      <span class="n">main</span><span class="p">.</span><span class="o">&lt;</span><span class="n">fn</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;as</span><span class="n">ync</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;</span><span class="n">fn</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;as</span><span class="n">ync</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;</span><span class="n">fn</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;as</span><span class="n">ync</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">=====</span> <span class="o">as</span><span class="n">ynchronous</span> <span class="n">gap</span> <span class="o">===========================</span>
+</span><span class='line'><span class="nl">dart:</span><span class="o">as</span><span class="n">ync</span>           <span class="n">Future</span><span class="p">.</span><span class="n">Future</span>
+</span><span class='line'><span class="n">blah</span><span class="p">.</span><span class="n">dart</span> <span class="m">13</span><span class="o">:</span><span class="m">17</span>      <span class="n">main</span><span class="p">.</span><span class="o">&lt;</span><span class="n">fn</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;as</span><span class="n">ync</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;</span><span class="n">fn</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;as</span><span class="n">ync</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">=====</span> <span class="o">as</span><span class="n">ynchronous</span> <span class="n">gap</span> <span class="o">===========================</span>
+</span><span class='line'><span class="nl">dart:</span><span class="o">as</span><span class="n">ync</span>           <span class="n">Future</span><span class="p">.</span><span class="n">Future</span>
+</span><span class='line'><span class="n">blah</span><span class="p">.</span><span class="n">dart</span> <span class="m">12</span><span class="o">:</span><span class="m">28</span>      <span class="n">main</span><span class="p">.</span><span class="o">&lt;</span><span class="n">fn</span><span class="o">&gt;</span><span class="p">.</span><span class="o">&lt;as</span><span class="n">ync</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">=====</span> <span class="o">as</span><span class="n">ynchronous</span> <span class="n">gap</span> <span class="o">===========================</span>
+</span><span class='line'><span class="nl">dart:</span><span class="o">as</span><span class="n">ync</span>           <span class="n">Future</span><span class="p">.</span><span class="n">Future</span><span class="p">.</span><span class="n">microtask</span>
+</span><span class='line'><span class="n">blah</span><span class="p">.</span><span class="n">dart</span>            <span class="n">main</span><span class="p">.</span><span class="o">&lt;</span><span class="n">fn</span><span class="o">&gt;</span>
+</span><span class='line'><span class="nl">package:</span><span class="n">stack_trace</span>  <span class="n">Chain</span><span class="p">.</span><span class="n">capture</span>
+</span><span class='line'><span class="n">blah</span><span class="p">.</span><span class="n">dart</span> <span class="m">11</span><span class="o">:</span><span class="m">9</span>       <span class="n">main</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It adds some performance and memory penalty, but it&rsquo;s neglectable for the dartdocs.org scripts, and simplifies debugging a lot.</p>
+
+<h2>Summary</h2>
+
+<p>All in all, it was a pretty straightforward project, and Dart didn&rsquo;t give me any unpleasant surprises, everything works just fine and as expected, and <a href="https://www.dartdocs.org/history/index.html">generates documentation for the new packages</a> every day. Check it out, if you haven&rsquo;t yet!</p>
+
