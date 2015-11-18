@@ -1,0 +1,182 @@
+---
+title: 'When Dart Is a Good Choice'
+layout: post
+published: '2015-11-18T09:55:58-06:00'
+feed: 'Anton Astashov''s blog - Dart'
+link: 'http://astashov.github.io/blog/2015/11/18/when-dart-is-a-good-choice/'
+author:
+    name: 'Anton Astashov'
+    email: ''
+    url: ''
+
+---
+
+<p>There was a link to <a href="https://flutter.io">flutter.io</a> recently, which went to Hacker News, Reddit, etc. The project itself is on the very early stage, not even alpha, afaik, and it wasn&rsquo;t an announcement, somebody just posted a link to flutter.io there.</p>
+
+<p>The programming language they use for Flutter is Dart. And I was really surprised by the crowd responses related to Dart &ndash; there was so much hate. It seems like there is some confusion among people about what the language and its ecosystem is these days. Since I have some experience with it, I decided to share my thoughts on the language and its ecosystem, what it&rsquo;s good for and what it&rsquo;s maybe not the best choice for, again, from my experience.</p>
+
+<p>So, from my perspective, the main selling points, things which are really nicely done in Dart, are:</p>
+
+<h2>Async</h2>
+
+<p>As I <a href="http://astashov.github.io/blog/2015/11/08/dart-tricks-in-dartdocs-org/">previously mentioned</a>, Dart has really nice async support across its whole ecosystem. Futures and Streams were added to the SDK from the very early versions, so they became standard de-facto, and are used in all the places where asynchronoucity is expected.</p>
+
+<p>I didn&rsquo;t see any alternative implementations of Futures or Streams in the wild, everybody just uses the SDK&rsquo;s ones. And majority of packages is built with async APIs, methods return Futures and/or Streams. This makes them nicely composable with each other.</p>
+
+<p>If you&rsquo;re building a front-end app, you&rsquo;ll have all the DOM events wrapped into Streams in SDK. If you&rsquo;re building a web-service, database drivers (e.g. <a href="https://pub.dartlang.org/packages/sqljocky">MySql</a>) return the Stream with results as a result of query execution. <a href="https://pub.dartlang.org/packages/logging">Loggers</a> give you a Stream with all the log records. You can subscribe/unsubscribe to these streams, map/filter/fold them, etc. All that stuff provides a good foundation for building <a href="https://en.wikipedia.org/wiki/Functional_reactive_programming">FRP</a> apps in Dart.</p>
+
+<p>Working with Futures also became pretty pleasant since Dart got async/await support. That allows you to write heavily async/concurrent applications, which look very synchronous. Futures, again, are everywhere &ndash; <a href="https://pub.dartlang.org/packages/http">HTTP</a> has Future-based API, <a href="https://pub.dartlang.org/packages/test">unit tests</a> cases will wait if the test returns a Future, <a href="https://pub.dartlang.org/packages/redstone">web frameworks</a> will also handle it properly if the request handler returns a Future, etc.</p>
+
+<p>There are <a href="https://www.dartlang.org/articles/zones/">Zones</a>, which nicely augment the async story of Dart. They give you the ability to wrap any piece of code into a &ldquo;Zone&rdquo;, which will keep the async context of that piece of code. So you can catch all the errors (even if they happened in the async part of it), store zone-local values (they will be accessible globally inside the zone), and do a bunch of other things.</p>
+
+<p>Generally, debugging of async apps is painful, because stack traces are messed up, and it&rsquo;s hard to figure out where we came from to the point where the exception happened. They may look like this:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Unhandled exception:
+</span><span class='line'>Uncaught Error: foo
+</span><span class='line'>Stack Trace:
+</span><span class='line'>#0      blah.&lt;blah_async_body&gt; (file:///Users/anton/projects/blah/blah.dart:7:3)
+</span><span class='line'>#1      Future.Future.microtask.&lt;anonymous closure&gt; (dart:async/future.dart:144)
+</span><span class='line'>#2      _microtaskLoop (dart:async/schedule_microtask.dart:43)
+</span><span class='line'>#3      _microtaskLoopEntry (dart:async/schedule_microtask.dart:52)
+</span><span class='line'>...</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Which gives you very little information, just the actual line where the exception happened. You have no clue how the app got to that point. Luckily, there is <a href="https://pub.dartlang.org/packages/stack_trace">stack_trace</a> package, which has <code>Chain.capture()</code> method. It uses Zones under the hood, and if you wrap your code with it, the stack traces became way nicer:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>blah.dart 7:3        blah.&lt;async&gt;
+</span><span class='line'>===== asynchronous gap ===========================
+</span><span class='line'>dart:async           _Completer.completeError
+</span><span class='line'>blah.dart 10:1       blah.&lt;async&gt;
+</span><span class='line'>===== asynchronous gap ===========================
+</span><span class='line'>dart:async           Future.Future.microtask
+</span><span class='line'>blah.dart            blah
+</span><span class='line'>blah.dart 14:15      main.&lt;fn&gt;.&lt;async&gt;.&lt;fn&gt;.&lt;async&gt;.&lt;fn&gt;.&lt;async&gt;
+</span><span class='line'>===== asynchronous gap ===========================
+</span><span class='line'>dart:async           Future.Future
+</span><span class='line'>blah.dart 13:17      main.&lt;fn&gt;.&lt;async&gt;.&lt;fn&gt;.&lt;async&gt;
+</span><span class='line'>===== asynchronous gap ===========================
+</span><span class='line'>dart:async           Future.Future
+</span><span class='line'>blah.dart 12:28      main.&lt;fn&gt;.&lt;async&gt;
+</span><span class='line'>===== asynchronous gap ===========================
+</span><span class='line'>dart:async           Future.Future.microtask
+</span><span class='line'>blah.dart            main.&lt;fn&gt;
+</span><span class='line'>package:stack_trace  Chain.capture
+</span><span class='line'>blah.dart 11:9       main</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It adds some performance and memory penalty, but usually it&rsquo;s neglectable, and it helps a lot with debugging.</p>
+
+<p>So, IMHO, Dart is really good for building front-end apps or single-threaded back-end services. Unfortunately, multithreading support is pretty immature for now &ndash; there are actor-based <a href="https://www.dartlang.org/docs/dart-up-and-running/ch02.html#isolates">isolates</a>, but they are very slow (instantiating of an isolate takes almost a second (sic!), and the throughput is about 20000-30000 messages per second on my MacBook Pro).</p>
+
+<h2>Staticly typed</h2>
+
+<p>It&rsquo;s nice that the language combines interpreted language (no compile-time, yay!) with static analysis support. Despite the fact the type system is &ldquo;optional and unsound&rdquo;, not using type annotations for public methods and functions is considered a bad practice.</p>
+
+<p>The fact the language is interpreted actually simplifies debugging a lot. Despite a decent debugger and other tools, the most convenient way of debugging programs for me is still just throwing print statements. Since the language is interpreted, you can easily throw them into the source code of any package or into SDK itself, and immediately see them on page refresh or script restart.</p>
+
+<p>Static analyzer is written as a <a href="https://pub.dartlang.org/packages/analyzer">package</a>, and also there is a daemon (basically headless IDE), which uses it and provides API, which could by used by the IDEs to provide Dart support. The analyzer supports autocomplete, go to definition, find usages, refactoring, etc. This is really cool, because it simplifies writing tools, which require analyzing of the source code. Like:</p>
+
+<ul>
+<li>Auto Code formatter (dartfmt)</li>
+<li>Command line <a href="https://pub.dartlang.org/packages/tuneup">static analyzer</a></li>
+<li><a href="https://pub.dartlang.org/packages/linter">Linter</a></li>
+<li><a href="https://www.crossdart.info">Crossdart</a></li>
+<li><a href="https://chrome.google.com/webstore/detail/crossdart-chrome-extensio/jmdjoliiaibifkklhipgmnciiealomhd">Crossdart Github Plugin</a></li>
+<li><a href="https://dart-lang.github.io/observatory/">Observatory</a> (the tool for debugging, profiling and monitoring running Dart processes)</li>
+</ul>
+
+
+<p>Static analyzis allows to find a lot of errors, which would be found in runtime otherwise later by end users. The analyzis coverage is okay, but sometimes I&rsquo;d like it to be stricter. There is a new <a href="https://github.com/dart-lang/dev_compiler/blob/master/STRONG_MODE.md">&ldquo;strong mode&rdquo;</a> option in the analyzer coming, which will be stricter, especially related to &ldquo;dynamic&rdquo; variables (where the type inference failed, or where it was specifically marked as dynamic), and I&rsquo;m really looking forward to it.</p>
+
+<p>There is one thing missing, though, and it really hurts. Unfortunately, there&rsquo;s currently no method generics (just class generics). There is <a href="https://github.com/leafpetersen/dep-generic-methods/blob/master/proposal.md">DEP</a> for that though, and it seems like the Dart team is experimenting with them in the new JS transpiler (implemented as annotations for now though), which gives me some hope it will wind up to the VM later as well.</p>
+
+<h2>Tooling</h2>
+
+<p>Humans are weak. We have hard time keeping more than 7 things in our head simultaneously, we forget things to do, we make mistakes, and cannot fully keep big complex constructs in our head. Complexity of large applications easily go waaay over what average human&rsquo;s brains can process and keep track of.</p>
+
+<p>So, we rely on tools instead. The programming language should be expressive and allow to build powerful abstractions, which would help us to handle the complexity. But that&rsquo;s not enough. We also need a code editor, which would help us to navigate through the thousands of lines of code, we need static analyzers, which will catch the errors we made early, we need linters or code formatters, which will make sure we write in the same style within the team, because keeping the code in the same styles reduces its complexity, etc.</p>
+
+<p>Luckily, Dart&rsquo;s tooling story is very good.</p>
+
+<p>There are 2 main IDEs &ndash; <a href="https://plugins.jetbrains.com/plugin/6351">Intellij IDEA</a> and <a href="https://atom.io/packages/dartlang">Github&rsquo;s Atom</a>. They are being developed simultaneously. I prefer IDEA for now, it works flawlessly, everything I need from IDE is there &ndash; go to definition, find usages, refactoring (I mostly use just renaming though), auto adding imports, integration with dartfmt, debugger, reliable search through class/method names, etc. The only missing thing for me &ndash; it doesn&rsquo;t show a propagated type (if you rely on type inference). This feature is presented in Atom, but it&rsquo;s missing other stuff, like debugger and search for class/method names. It seems like Atom is developing faster though, so we&rsquo;ll see how fast it will get the debugger and the search.</p>
+
+<p>There is dartfmt, which autoformats the code for you. It may not match your style preference, but I found it&rsquo;s just easier to give up and let it style my code for me. A lot of tools also use dartfmt under the hood (e.g. code generator tool <a href="https://pub.dartlang.org/packages/source_gen">source_gen</a>), so it kind of makes sense to use it, so your code and autogenerated code look similar.</p>
+
+<p>There is <a href="https://dart-lang.github.io/observatory/">Observatory</a>, which allows to connect to running Dart processes and debug and profile them, and monitor the metrics.</p>
+
+<p>There is my <a href="https://chrome.google.com/webstore/detail/crossdart-chrome-extensio/jmdjoliiaibifkklhipgmnciiealomhd">Crossdart Chrome plugin for Github</a>, which adds &lsquo;go to definition&rsquo; and &lsquo;find usages&rsquo; functionality to Github&rsquo;s tree views and pull requests, which is reaaally useful for code reviews.</p>
+
+<p>There is <a href="https://pub.dartlang.org/">pub</a>, Dart&rsquo;s package manager. It has pretty simple CLI API, but allows to do all the necessary things for managing dependencies. Seems to be heavily influenced by Ruby&rsquo;s Bundler. One of the neat features &ndash; allows to override dependencies with local ones or just force some version (ignoring requirements of other packages). It&rsquo;s very useful when your app is very modular, and depends on many internal packages.</p>
+
+<p>There is <a href="https://www.dartdocs.org">Dartdocs</a>, the documentation for all the packages on pub.</p>
+
+<p>And there is <a href="https://crossdart.info">Crossdart</a>, the hyperlinked source code for all the packages on pub.</p>
+
+<p>And a lot more.</p>
+
+<h2>Decent language</h2>
+
+<p>Though Dart is a bit conservative language (for my taste), it&rsquo;s a quite decent OOP language. I like how the language encourages explicitness, provides a solid and well-structured SDK, and offers pretty logical and straightforward semantics. There are also some nice new features, like implicit interfaces (basically you can use any class as an interface), factory constructors, method cascades, etc.</p>
+
+<p>There are also things that I&rsquo;d expect from a modern language and are missing at the moment, like:</p>
+
+<ul>
+<li>Method generics (you can only specify generics on a class)</li>
+<li>Non-nullable types (like in Swift or Kotlin, <code>String</code> and <code>String?</code>)</li>
+<li>Value objects and better immutability story overall. To be fair, it&rsquo;s kind of possible right now, if you just create classes where all the fields are final and use something like <a href="https://pub.dartlang.org/packages/vacuum_persistent">vacuum_persistent</a> for immutable maps/sets/vectors, but you potentially can still add mutable objects into your immutable hierarchy. You also have to implement equality, copy method, etc, every time. There are a bunch of packages, which solve that with the code generation (like <a href="https://pub.dartlang.org/packages/value_object">this one</a>), but it still looks like a workaround. I miss Scala&rsquo;s case classes and Kotlin&rsquo;s data classes :)</li>
+</ul>
+
+
+<p>I should mention though that there are DEPs for <a href="https://github.com/leafpetersen/dep-generic-methods/blob/master/proposal.md">Method Generics</a> and for <a href="https://github.com/chalin/DEP-non-null/blob/master/doc/dep-non-null-AUTOGENERATED-DO-NOT-EDIT.md">Non-Nullable Types</a>, so there is a hope they will be added eventually.</p>
+
+<h2>Summary</h2>
+
+<p>From my experience, it was a breeze to use Dart for:</p>
+
+<ul>
+<li>Developing large complex web applications working in browser. For example, <a href="https://www.montagebook.com">Montage</a>. Static typing, tools and analyzer made it way easier to create and then maintain that photo book editor.</li>
+<li>Developing single-threaded services with async IO, which use MySQL, PostgreSQL, Mongo or RethinkDB. If your service is just fetching some data from a database and network, then aggregating it somehow and returning in JSON or HTML (which seems to be a majority of use cases), you can get pretty good performance even on one thread, since all your IO will be async and non-blocking from the top to the bottom, and at the same time won&rsquo;t look like a callback hell.</li>
+</ul>
+
+
+<p>What it&rsquo;s potentially not good for:</p>
+
+<ul>
+<li>Multi-threaded services &ndash; isolates are not there yet.</li>
+<li>Something which needs MSSQL &ndash; seems like no driver for it</li>
+<li>Obviously, if you&rsquo;re tied to another platform, you may want to use something else (like, JVM)</li>
+<li>There are not many packages on pub (just about 2000), so check first if you have everything you need there.</li>
+</ul>
+
+
+<p>Choosing a language and a platform is always a tradeoff. There are some things I don&rsquo;t really like in Dart, but given the decent interpreted staticly typed language with good semantics, great tooling, and great async support &ndash; there are not many alternatives at the end.</p>
+
+<p>So, check Dart out if you haven&rsquo;t yet, maybe you&rsquo;ll find it useful too.</p>
+
