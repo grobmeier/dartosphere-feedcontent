@@ -97,9 +97,9 @@ author:
 
 <h2>Staticly typed</h2>
 
-<p>It&rsquo;s nice that the language combines interpreted language (no compile-time, yay!) with static analysis support. Despite the fact the type system is &ldquo;optional and unsound&rdquo;, not using type annotations for public methods and functions is considered a bad practice.</p>
+<p>It&rsquo;s nice that there&rsquo;s no compile-time, with there is static analysis support. Despite the fact the type system is &ldquo;optional and unsound&rdquo;, not using type annotations for public methods and functions is considered a bad practice.</p>
 
-<p>The fact the language is interpreted actually simplifies debugging a lot. Despite a decent debugger and other tools, the most convenient way of debugging programs for me is still just throwing print statements. Since the language is interpreted, you can easily throw them into the source code of any package or into SDK itself, and immediately see them on page refresh or script restart.</p>
+<p>The fact the language has source based VM actually simplifies debugging a lot. Despite a decent debugger and other tools, the most convenient way of debugging programs for me is still just throwing print statements. Here, you can easily throw them into the source code of any package or into SDK itself, and immediately see them on page refresh or script restart.</p>
 
 <p>Static analyzer is written as a <a href="https://pub.dartlang.org/packages/analyzer">package</a>, and also there is a daemon (basically headless IDE), which uses it and provides API, which could by used by the IDEs to provide Dart support. The analyzer supports autocomplete, go to definition, find usages, refactoring, etc. This is really cool, because it simplifies writing tools, which require analyzing of the source code. Like:</p>
 
@@ -176,7 +176,7 @@ author:
 </ul>
 
 
-<p>Choosing a language and a platform is always a tradeoff. There are some things I don&rsquo;t really like in Dart, but given the decent interpreted staticly typed language with good semantics, great tooling, and great async support &ndash; there are not many alternatives at the end.</p>
+<p>Choosing a language and a platform is always a tradeoff. There are some things I don&rsquo;t really like in Dart, but given the decent staticly typed language with good semantics, which feels like interpreted language (because the VM runs the source code, not the bytecode), great tooling, and great async support &ndash; there are not many alternatives at the end.</p>
 
 <p>So, check Dart out if you haven&rsquo;t yet, maybe you&rsquo;ll find it useful too.</p>
 
