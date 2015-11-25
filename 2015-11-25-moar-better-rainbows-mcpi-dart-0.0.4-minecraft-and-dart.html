@@ -1,0 +1,18 @@
+---
+title: 'Moar Better Rainbows! - mcpi_dart 0.0.4 Minecraft and Dart'
+layout: post
+published: '2015-11-25T11:06:00+00:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2015/11/moar-better-rainbows-mcpidart-004.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - GameDev
+    - Minecraft
+    - Pub
+
+---
+
+<p>I recently purchased a Raspberry Pi 2 with the snazzy 'official' case, so it was time to dust off my old <a href="https://pub.dartlang.org/packages/mcpi_dart">Dart Minecraft library</a> for an update. TLDR : Moar Better Rainbows!</p> <p><a href="http://3.bp.blogspot.com/-tTkPrP2mJ2A/VlWS1V_DOEI/AAAAAAABJqo/Lj4xwP0-t2U/s1600/2015-11-07_15.13.35.png" imageanchor="1" ><img border="0" src="http://3.bp.blogspot.com/-tTkPrP2mJ2A/VlWS1V_DOEI/AAAAAAABJqo/Lj4xwP0-t2U/s400/2015-11-07_15.13.35.png" /></a></p> <p><i>Screenshot from the PC version of Minecraft.</i><p> <p>The <b>setBlock</b> method now takes an extra parameter for data which allows the use of color on blocks such as wool. This means the rainbow can now be drawn in better colours. Yay! </p> <p>The <b>getPos</b> method now returns a list of <i>int</i>'s so the rainbow is built close to the player's position in the game. You may need to spin around to see it. Unfortunately, the Rasperry Pi version of the API does not allow us to obtain the players direction of view so this will be the case with everything we build. </p> <p>So what is next? I am starting to have fun building structures using this package. Hopefully feeding back a nice set of utility functions to <a href="https://pub.dartlang.org/packages/mcpi_dart">mcpi_dart</a>. Now that ARM builds of Dart are available, it is possible to run Dart on the Raspberry Pi itself so it would be great to get something running without a remote machine.</p> <p>Have fun and please send screenshots of anything you build!</p>
