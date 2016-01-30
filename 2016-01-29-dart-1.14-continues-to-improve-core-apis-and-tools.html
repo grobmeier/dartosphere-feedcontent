@@ -1,0 +1,17 @@
+---
+title: 'Dart 1.14 continues to improve core APIs and tools'
+layout: post
+published: '2016-01-29T17:46:00-08:00'
+feed: 'Dart News & Updates'
+link: 'http://news.dartlang.org/2016/01/dart-1.html'
+author:
+    name: 'Kevin Moore'
+    email: noreply@blogger.com
+    url: 'http://www.blogger.com/profile/08411979841477351623'
+tags:
+    - release
+    - sdk
+
+---
+
+<p>Dart 1.14 is now <a href="https://www.dartlang.org/downloads/">available</a>. This release contains a number of additions and improvements across our core libraries and our tools.</p> <h2 id="progress-towards-eliminating-symbolic-links">Progress towards eliminating symbolic links</h2> <p>Symbolic links for package resources can cause problems, especially on Windows. Since Dart 1.12, we’ve been working to support a <a href="https://github.com/dart-lang/dart_enhancement_proposals/blob/master/Accepted/0005%20-%20Package%20Specification/DEP-pkgspec.md">Package Configuration File</a>. The goal of this work is to provide a better model for package access. Dart 1.14  contains new APIs in both <strong>dart:io</strong> and <strong>dart:isolate</strong> to provide code access to the configuration file if it’s being used. You should consider these APIs <strong>experimental</strong> as we update the <a href="https://pub.dartlang.org/packages/test">test package</a> and pub to validate the implementation.</p> <h2 id="access-package-assets-easily-and-reliably">Access package assets easily and reliably</h2> <p>Developers frequently need to directly access assets within packages. In the past this has lead to confusion when supporting the many ways in which a Dart program can be executed. Along with the new Package Configuration APIs added in Dart 1.14, we’ve also released a <a href="https://pub.dartlang.org/packages/resource">resource package</a>. This package makes accessing assets within a package straightforward.</p> <pre class="prettyprint"><code class="language-dart hljs cs">import <span class="hljs-string">'package:resource/resource.dart'</span> show Resource;<br /><br />main() <span class="hljs-keyword">async</span> {  <br />  <span class="hljs-keyword">var</span> resource = <span class="hljs-keyword">new</span> Resource(<span class="hljs-string">"package:foo/foo\_data.txt"</span>);  <br />  <span class="hljs-keyword">var</span> <span class="hljs-keyword">string</span> = <span class="hljs-keyword">await</span> resource.readAsString();  <br />  print(<span class="hljs-keyword">string</span>);  <br />}</code></pre> <h2 id="and-more">And more…</h2> <p>The <a href="https://github.com/dart-lang/sdk/blob/master/CHANGELOG.md">SDK changelog</a> has details about all of the updates in Dart 1.14. <a href="https://www.dartlang.org/downloads/">Get it now</a>.</p>
