@@ -14,14 +14,14 @@ author:
 <p>One of the questions I get most often is how to implement security constraints with Redstone.dart. Some time ago, I&#39;ve published a <a href="https://github.com/luizmineo/auth_example">simple example</a> that illustrates how the Redstone.dart API can be used to implement authentication and authorization. In this post, I&#39;ll explain this example in details.</p>
 
 <p>First of all, let&#39;s download and execute it. The project is available on <a href="https://github.com/luizmineo/auth_example">github</a>, so you can just clone its repository:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$ git clone https://github.com/luizmineo/auth_example.git
+<div class="highlight"><pre><code class="language-" data-lang="">$ git clone https://github.com/luizmineo/auth_example.git
 </code></pre></div>
 <p>(Also, you can download it as a <a href="https://github.com/luizmineo/auth_example/archive/master.zip">zip file</a>)</p>
 
 <p>Before running it, be sure to have a <a href="http://www.mongodb.org/">MongoDB</a> instance available in your environment. By default, the application will try to connect to a local MongoDB instance, and create/use a database named &quot;auth_example&quot;. Take a look at the <code>bin/server.dart</code> file to change these settings.</p>
 
 <p>If you are using Ubuntu, or other Debian based linux distribution, you can just do the following to install MongoDB:</p>
-<div class="highlight"><pre><code class="language-text" data-lang="text">$ sudo apt-get install mongodb
+<div class="highlight"><pre><code class="language-" data-lang="">$ sudo apt-get install mongodb
 </code></pre></div>
 <p>Now, open up <a href="https://www.dartlang.org/tools/editor/">Dart Editor</a>, go to <code>File -&gt; Open Existing Folder...</code> and select the project folder.</p>
 
@@ -60,104 +60,112 @@ author:
 <p>Pretty cool, right? So, how does it work?</p>
 
 <p>Open up the <code>lib/authentication.dart</code> file. You&#39;ll find our <code>authenticationFilter()</code> interceptor.</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Interceptor</span><span class="p">(</span><span class="s1">r&#39;/services/private/.+&#39;</span><span class="p">)</span>
-<span class="n">authenticationFilter</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">app</span><span class="p">.</span><span class="n">chain</span><span class="p">.</span><span class="n">interrupt</span><span class="p">(</span><span class="nl">statusCode:</span> <span class="n">HttpStatus</span><span class="p">.</span><span class="n">UNAUTHORIZED</span><span class="p">,</span> <span class="nl">responseValue:</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="s2">&quot;NOT_AUTHENTICATED&quot;</span><span class="p">});</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="n">app</span><span class="p">.</span><span class="n">chain</span><span class="p">.</span><span class="n">next</span><span class="p">();</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart">
+<span class="nd">@app</span><span class="o">.</span><span class="na">Interceptor</span><span class="o">(</span><span class="sx">r'/services/private/.+'</span><span class="o">)</span>
+<span class="n">authenticationFilter</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">app</span><span class="o">.</span><span class="na">request</span><span class="o">.</span><span class="na">session</span><span class="o">[</span><span class="s">"username"</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">app</span><span class="o">.</span><span class="na">chain</span><span class="o">.</span><span class="na">interrupt</span><span class="o">(</span><span class="nl">statusCode:</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">UNAUTHORIZED</span><span class="o">,</span> <span class="nl">responseValue:</span> <span class="o">{</span><span class="s">"error"</span><span class="o">:</span> <span class="s">"NOT_AUTHENTICATED"</span><span class="o">});</span>
+  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+    <span class="n">app</span><span class="o">.</span><span class="na">chain</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
 </code></pre></div>
 <p>This interceptor is applied to any request which path starts with <code>/services/private</code>. It checks if the corresponding session has an &quot;username&quot; attribute. If so, the interceptor calls the next handler of the chain, otherwise, it returns a response with the 401 status code.</p>
 
 <p>In the same script, you&#39;ll find the login and logout services:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/services/login&quot;</span><span class="p">,</span> <span class="nl">methods:</span> <span class="kd">const</span><span class="p">[</span><span class="n">app</span><span class="p">.</span><span class="n">POST</span><span class="p">])</span>
-<span class="n">login</span><span class="p">(</span><span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Attr</span><span class="p">()</span> <span class="n">Db</span> <span class="n">conn</span><span class="p">,</span> <span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Body</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">JSON</span><span class="p">)</span> <span class="n">Map</span> <span class="n">body</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">var</span> <span class="n">userCollection</span> <span class="o">=</span> <span class="n">conn</span><span class="p">.</span><span class="n">collection</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="s2">&quot;WRONG_USER_OR_PASSWORD&quot;</span><span class="p">};</span>
-  <span class="p">}</span>
-  <span class="kd">var</span> <span class="n">pass</span> <span class="o">=</span> <span class="n">encryptPassword</span><span class="p">(</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;password&quot;</span><span class="p">].</span><span class="n">trim</span><span class="p">());</span>
-  <span class="k">return</span> <span class="n">userCollection</span><span class="p">.</span><span class="n">findOne</span><span class="p">({</span><span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="n">body</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">],</span> <span class="s2">&quot;password&quot;</span><span class="o">:</span> <span class="n">pass</span><span class="p">})</span>
-      <span class="p">.</span><span class="n">then</span><span class="p">((</span><span class="n">user</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
-          <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;success&quot;</span><span class="o">:</span> <span class="kc">false</span><span class="p">,</span>
-            <span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="s2">&quot;WRONG_USER_OR_PASSWORD&quot;</span>
-          <span class="p">};</span>
-        <span class="p">}</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart">
+<span class="nd">@app</span><span class="o">.</span><span class="na">Route</span><span class="o">(</span><span class="s">"/services/login"</span><span class="o">,</span> <span class="nl">methods:</span> <span class="kd">const</span><span class="o">[</span><span class="n">app</span><span class="o">.</span><span class="na">POST</span><span class="o">])</span>
+<span class="n">login</span><span class="o">(</span><span class="nd">@app</span><span class="o">.</span><span class="na">Attr</span><span class="o">()</span> <span class="n">Db</span> <span class="n">conn</span><span class="o">,</span> <span class="nd">@app</span><span class="o">.</span><span class="na">Body</span><span class="o">(</span><span class="n">app</span><span class="o">.</span><span class="na">JSON</span><span class="o">)</span> <span class="n">Map</span> <span class="n">body</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kd">var</span> <span class="n">userCollection</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">collection</span><span class="o">(</span><span class="s">"user"</span><span class="o">);</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">body</span><span class="o">[</span><span class="s">"username"</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">body</span><span class="o">[</span><span class="s">"password"</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">{</span><span class="s">"success"</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span> <span class="s">"error"</span><span class="o">:</span> <span class="s">"WRONG_USER_OR_PASSWORD"</span><span class="o">};</span>
+  <span class="o">}</span>
+  <span class="kd">var</span> <span class="n">pass</span> <span class="o">=</span> <span class="n">encryptPassword</span><span class="o">(</span><span class="n">body</span><span class="o">[</span><span class="s">"password"</span><span class="o">].</span><span class="na">trim</span><span class="o">());</span>
+  <span class="k">return</span> <span class="n">userCollection</span><span class="o">.</span><span class="na">findOne</span><span class="o">({</span><span class="s">"username"</span><span class="o">:</span> <span class="n">body</span><span class="o">[</span><span class="s">"username"</span><span class="o">],</span> <span class="s">"password"</span><span class="o">:</span> <span class="n">pass</span><span class="o">})</span>
+      <span class="o">.</span><span class="na">then</span><span class="o">((</span><span class="n">user</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+          <span class="k">return</span> <span class="o">{</span>
+            <span class="s">"success"</span><span class="o">:</span> <span class="kc">false</span><span class="o">,</span>
+            <span class="s">"error"</span><span class="o">:</span> <span class="s">"WRONG_USER_OR_PASSWORD"</span>
+          <span class="o">};</span>
+        <span class="o">}</span>
 
-        <span class="kd">var</span> <span class="n">session</span> <span class="o">=</span> <span class="n">app</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">session</span><span class="p">;</span>
-        <span class="n">session</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s2">&quot;username&quot;</span><span class="p">];</span>
+        <span class="kd">var</span> <span class="n">session</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="na">request</span><span class="o">.</span><span class="na">session</span><span class="o">;</span>
+        <span class="n">session</span><span class="o">[</span><span class="s">"username"</span><span class="o">]</span> <span class="o">=</span> <span class="n">user</span><span class="o">[</span><span class="s">"username"</span><span class="o">];</span>
 
-        <span class="n">Set</span> <span class="n">roles</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Set</span><span class="p">();</span>
-        <span class="kt">bool</span> <span class="n">admin</span> <span class="o">=</span> <span class="n">user</span><span class="p">[</span><span class="s2">&quot;admin&quot;</span><span class="p">];</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">admin</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">admin</span><span class="p">)</span> <span class="p">{</span>
-          <span class="n">roles</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">ADMIN</span><span class="p">);</span>
-        <span class="p">}</span>
-        <span class="n">session</span><span class="p">[</span><span class="s2">&quot;roles&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">roles</span><span class="p">;</span>
+        <span class="kt">Set</span> <span class="n">roles</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">Set</span><span class="o">();</span>
+        <span class="kt">bool</span> <span class="n">admin</span> <span class="o">=</span> <span class="n">user</span><span class="o">[</span><span class="s">"admin"</span><span class="o">];</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">admin</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">admin</span><span class="o">)</span> <span class="o">{</span>
+          <span class="n">roles</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">ADMIN</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">session</span><span class="o">[</span><span class="s">"roles"</span><span class="o">]</span> <span class="o">=</span> <span class="n">roles</span><span class="o">;</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">};</span>
-      <span class="p">});</span>
-<span class="p">}</span>
+        <span class="k">return</span> <span class="o">{</span><span class="s">"success"</span><span class="o">:</span> <span class="kc">true</span><span class="o">};</span>
+      <span class="o">});</span>
+<span class="o">}</span>
 
-<span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/services/logout&quot;</span><span class="p">)</span>
-<span class="n">logout</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">app</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">session</span><span class="p">.</span><span class="n">destroy</span><span class="p">();</span>
-  <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">};</span>
-<span class="p">}</span>
+<span class="nd">@app</span><span class="o">.</span><span class="na">Route</span><span class="o">(</span><span class="s">"/services/logout"</span><span class="o">)</span>
+<span class="n">logout</span><span class="o">()</span> <span class="o">{</span>
+  <span class="n">app</span><span class="o">.</span><span class="na">request</span><span class="o">.</span><span class="na">session</span><span class="o">.</span><span class="na">destroy</span><span class="o">();</span>
+  <span class="k">return</span> <span class="o">{</span><span class="s">"success"</span><span class="o">:</span> <span class="kc">true</span><span class="o">};</span>
+<span class="o">}</span>
+
 </code></pre></div>
 <p>The login service verifies if the provided user exists in the database. If it does, it creates the &quot;username&quot; and &quot;roles&quot; attributes in the corresponding http session. The logout service just destroy the current session.</p>
 
 <p>To create a private service, which can be executed only by authenticated users, we can just put it under the <code>/services/private</code> path. If you open the <code>lib/services.dart</code> file, you&#39;ll see the echo service implementation:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="c1">//A private service. Any authenticated user can execute &#39;echo&#39;</span>
-<span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/services/private/echo/:arg&quot;</span><span class="p">)</span>
-<span class="n">echo</span><span class="p">(</span><span class="kt">String</span> <span class="n">arg</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="n">arg</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart">
+<span class="c1">//A private service. Any authenticated user can execute 'echo'</span>
+<span class="nd">@app</span><span class="o">.</span><span class="na">Route</span><span class="o">(</span><span class="s">"/services/private/echo/:arg"</span><span class="o">)</span>
+<span class="n">echo</span><span class="o">(</span><span class="kt">String</span> <span class="n">arg</span><span class="o">)</span> <span class="o">=&gt;</span> <span class="n">arg</span><span class="o">;</span>
+
 </code></pre></div>
 <p>Now we need a way to define services that can be executed only by admin users. We can just define another interceptor to the <code>/services/private/admin/.+</code> path pattern, but that wouldn&#39;t be an ideal solution. Some applications can have a lot of roles (or user types), and associate each role with a path can be impractical. Instead, we will create an authorization plugin.</p>
 
 <p>Open up the <code>lib/authorization.dart</code> file:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">const</span> <span class="kt">String</span> <span class="n">ADMIN</span> <span class="o">=</span> <span class="s2">&quot;ADMIN&quot;</span><span class="p">;</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart">
+<span class="kd">const</span> <span class="kt">String</span> <span class="n">ADMIN</span> <span class="o">=</span> <span class="s">"ADMIN"</span><span class="o">;</span>
 
-<span class="kd">class</span> <span class="nc">Secure</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">Secure</span> <span class="o">{</span>
 
-  <span class="kd">final</span> <span class="kt">String</span> <span class="n">role</span><span class="p">;</span>
+  <span class="kd">final</span> <span class="kt">String</span> <span class="n">role</span><span class="o">;</span>
 
-  <span class="kd">const</span> <span class="n">Secure</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">role</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="n">Secure</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">role</span><span class="o">);</span>
 
-<span class="p">}</span>
+<span class="o">}</span>
 
-<span class="kt">void</span> <span class="n">AuthorizationPlugin</span><span class="p">(</span><span class="n">app</span><span class="p">.</span><span class="n">Manager</span> <span class="n">manager</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">void</span> <span class="nf">AuthorizationPlugin</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="na">Manager</span> <span class="n">manager</span><span class="o">)</span> <span class="o">{</span>
 
-  <span class="n">manager</span><span class="p">.</span><span class="n">addRouteWrapper</span><span class="p">(</span><span class="n">Secure</span><span class="p">,</span> <span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">pathSegments</span><span class="p">,</span> <span class="n">injector</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">route</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">manager</span><span class="o">.</span><span class="na">addRouteWrapper</span><span class="o">(</span><span class="n">Secure</span><span class="o">,</span> <span class="o">(</span><span class="n">metadata</span><span class="o">,</span> <span class="n">pathSegments</span><span class="o">,</span> <span class="n">injector</span><span class="o">,</span> <span class="n">request</span><span class="o">,</span> <span class="n">route</span><span class="o">)</span> <span class="o">{</span>
 
-    <span class="kt">String</span> <span class="n">role</span> <span class="o">=</span> <span class="p">(</span><span class="n">metadata</span> <span class="o">as</span> <span class="n">Secure</span><span class="p">).</span><span class="n">role</span><span class="p">;</span>
-    <span class="n">Set</span> <span class="n">userRoles</span> <span class="o">=</span> <span class="n">app</span><span class="p">.</span><span class="n">request</span><span class="p">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;roles&quot;</span><span class="p">];</span>
-    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">userRoles</span><span class="p">.</span><span class="n">contains</span><span class="p">(</span><span class="n">role</span><span class="p">))</span> <span class="p">{</span>
-      <span class="k">throw</span> <span class="k">new</span> <span class="n">app</span><span class="p">.</span><span class="n">ErrorResponse</span><span class="p">(</span><span class="m">403</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="s2">&quot;NOT_AUTHORIZED&quot;</span><span class="p">});</span>
-    <span class="p">}</span>
+    <span class="kt">String</span> <span class="n">role</span> <span class="o">=</span> <span class="o">(</span><span class="n">metadata</span> <span class="k">as</span> <span class="n">Secure</span><span class="o">).</span><span class="na">role</span><span class="o">;</span>
+    <span class="kt">Set</span> <span class="n">userRoles</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="na">request</span><span class="o">.</span><span class="na">session</span><span class="o">[</span><span class="s">"roles"</span><span class="o">];</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">userRoles</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">role</span><span class="o">))</span> <span class="o">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="n">app</span><span class="o">.</span><span class="na">ErrorResponse</span><span class="o">(</span><span class="mi">403</span><span class="o">,</span> <span class="o">{</span><span class="s">"error"</span><span class="o">:</span> <span class="s">"NOT_AUTHORIZED"</span><span class="o">});</span>
+    <span class="o">}</span>
 
-    <span class="k">return</span> <span class="n">route</span><span class="p">(</span><span class="n">pathSegments</span><span class="p">,</span> <span class="n">injector</span><span class="p">,</span> <span class="n">request</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">route</span><span class="o">(</span><span class="n">pathSegments</span><span class="o">,</span> <span class="n">injector</span><span class="o">,</span> <span class="n">request</span><span class="o">);</span>
 
-  <span class="p">},</span> <span class="nl">includeGroups:</span> <span class="kc">true</span><span class="p">);</span>
+  <span class="o">},</span> <span class="nl">includeGroups:</span> <span class="kc">true</span><span class="o">);</span>
 
-<span class="p">}</span>
+<span class="o">}</span>
+
 </code></pre></div>
 <p>A Redstone.dart plugin is just a function that receives a <code>Manager</code> object. The manager allows a plugin to inspect the current server structure (installed routes, interceptors, error handlers and groups) and modify it. Our authorization plugin defines a <code>Secure</code> annotation, and then add a wrapper to any route that is annotated with it. You can see a wrapper as a <a href="https://github.com/dart-lang/bleeding_edge/tree/master/dart/pkg/shelf#handlers-and-middleware">Shelf middleware</a>, it&#39;s a function that receives the target route as an argument, and may or may not forward the request to it.</p>
 
 <p>If you open the <code>bin/server.dart</code> file, you&#39;ll see that the <code>addPlugin()</code> function is used to install our authorization plugin:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">app</span><span class="p">.</span><span class="n">addPlugin</span><span class="p">(</span><span class="n">AuthorizationPlugin</span><span class="p">);</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">app</span><span class="o">.</span><span class="na">addPlugin</span><span class="o">(</span><span class="n">AuthorizationPlugin</span><span class="o">);</span>
 </code></pre></div>
 <p>Now, to create a service that can be executed only by authenticated users that are admin, we can just put it under the <code>/services/private</code> path, and annotate it with <code>@Secure</code>:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="c1">//A private service. Only authenticated users with the &#39;ADMIN&#39; role</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="c1">//A private service. Only authenticated users with the 'ADMIN' role</span>
 <span class="c1">//can view the list of registered users</span>
-<span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Route</span><span class="p">(</span><span class="s2">&quot;/services/private/listusers&quot;</span><span class="p">)</span>
-<span class="err">@</span><span class="n">Secure</span><span class="p">(</span><span class="n">ADMIN</span><span class="p">)</span>
-<span class="n">listUsers</span><span class="p">(</span><span class="err">@</span><span class="n">app</span><span class="p">.</span><span class="n">Attr</span><span class="p">()</span> <span class="n">Db</span> <span class="n">conn</span><span class="p">)</span> <span class="p">{</span>
+<span class="nd">@app</span><span class="o">.</span><span class="na">Route</span><span class="o">(</span><span class="s">"/services/private/listusers"</span><span class="o">)</span>
+<span class="nd">@Secure</span><span class="o">(</span><span class="n">ADMIN</span><span class="o">)</span>
+<span class="n">listUsers</span><span class="o">(</span><span class="nd">@app</span><span class="o">.</span><span class="na">Attr</span><span class="o">()</span> <span class="n">Db</span> <span class="n">conn</span><span class="o">)</span> <span class="o">{</span>
 
-  <span class="kd">var</span> <span class="n">userCollection</span> <span class="o">=</span> <span class="n">conn</span><span class="p">.</span><span class="n">collection</span><span class="p">(</span><span class="s2">&quot;user&quot;</span><span class="p">);</span>
-  <span class="k">return</span> <span class="n">userCollection</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">where</span><span class="p">.</span><span class="n">excludeFields</span><span class="p">(</span><span class="kd">const</span> <span class="p">[</span><span class="s2">&quot;_id&quot;</span><span class="p">,</span> <span class="s2">&quot;password&quot;</span><span class="p">])).</span><span class="n">toList</span><span class="p">();</span>
+  <span class="kd">var</span> <span class="n">userCollection</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">collection</span><span class="o">(</span><span class="s">"user"</span><span class="o">);</span>
+  <span class="k">return</span> <span class="n">userCollection</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">where</span><span class="o">.</span><span class="na">excludeFields</span><span class="o">(</span><span class="kd">const</span> <span class="o">[</span><span class="s">"_id"</span><span class="o">,</span> <span class="s">"password"</span><span class="o">])).</span><span class="na">toList</span><span class="o">();</span>
 
-<span class="p">}</span>
+<span class="o">}</span>
 </code></pre></div>
