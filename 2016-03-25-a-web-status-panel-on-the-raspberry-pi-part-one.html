@@ -1,0 +1,21 @@
+---
+title: 'A Web Status Panel On The Raspberry Pi - Part One'
+layout: post
+published: '2016-03-25T19:55:00+00:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2016/03/a-web-status-panel-on-raspberry-pi-part.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - '1.15'
+    - ARMv7
+    - Dart
+    - 'Dart SDK'
+    - DartVM
+    - RaspberryPi
+
+---
+
+<p>I purchased a RaspberryPi 2 late last year and it has been sadly underused. Time to change all that - let's use Dart to build a simple web status panel! Of course, it will run on any platform that runs the Dart VM so don't worry if you don't have a Pi!</p> <p>The ARMv7 version of Dart is available from <a href="https://www.dartlang.org/downloads/archive/">here</a> - select Linux from the OS dropdown if it is not shown automatically. [<i>Really should be a little more obvious guys :-)</i>]</p> <p>The code for the web status panel is available from <a href="https://github.com/daftspaniel/webstatuspanel">GitHub</a>. There's not a great deal to write up about it! The code just interrogates various system details via the <a href="https://api.dartlang.org/1.15.0/dart-io/Platform-class.html">Platform</a> class an pops them into a simple template.</p> <a href="https://1.bp.blogspot.com/-LP3KaZAVVZA/VvWUYeH50pI/AAAAAAABL2Y/9eqJP-9M3c8FYeHLE1c3fmkIMIkDD4j0Q/s1600/Screenshot.png" imageanchor="1" ><img border="0" src="https://1.bp.blogspot.com/-LP3KaZAVVZA/VvWUYeH50pI/AAAAAAABL2Y/9eqJP-9M3c8FYeHLE1c3fmkIMIkDD4j0Q/s1600/Screenshot.png" /></a> <p>A couple of configuration points. Firstly, you will need to set you own IP on the server. Secondly, depending on the version of Linux you are using on the system, you may need to open up the port through the firewall software.</p> <p>The current panel works cross-platform as it only relies on details exposed via the dart:io package. To get more useful information we will look at running external commands and feeding them back to the web status pane. Have fun!</p>
