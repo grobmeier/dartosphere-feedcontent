@@ -1,0 +1,18 @@
+---
+title: 'A Web Status Panel On The Raspberry Pi - Part Two'
+layout: post
+published: '2016-05-03T20:18:00+01:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2016/05/a-web-status-panel-on-raspberry-pi-part.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Dart
+    - RaspberryPi
+    - SDK
+
+---
+
+<p>In part one of this series, the status panel on details exposed via the dart:io package. To get more useful information we will look at running external commands and feeding them back to the web status panel. This version of the panel will be Linux (may work on a Mac!) only though could be easily modified for other platforms.</p> <p>The dart:io package has a useful command to execute a process with arguments and collect the results. This is unsurprisingly asychronous. I chose to wrap the command into a little helper: </p><pre><br />  runCommand(String command, List<String> args) async {<br />    ProcessResult results = await Process.run(command, args);<br />    return results.stdout;<br />  }<br /></pre> <p>One of the commands I wrapped was free to get memory usage:</p><pre><br />  get memoryUsage async {<br />    return await runCommand("free", ['-o', '-h']);<br />  }<br /></pre> <p><a href="https://4.bp.blogspot.com/-0X0x4UGDoA8/Vyj5Bwf8vfI/AAAAAAABNjI/Rp3EvxJ8blw_km-CSGkNiMQtLxJxPahXACLcB/s1600/Screenshot%2Bat%2B2016-05-03%2B20%253A12%253A21.png" imageanchor="1" ><img border="0" src="https://4.bp.blogspot.com/-0X0x4UGDoA8/Vyj5Bwf8vfI/AAAAAAABNjI/Rp3EvxJ8blw_km-CSGkNiMQtLxJxPahXACLcB/s1600/Screenshot%2Bat%2B2016-05-03%2B20%253A12%253A21.png" /></a></p> <p>The code for the web status panel is available from <a href="https://github.com/daftspaniel/webstatuspanel/tree/pinative">GitHub</a>. A couple of configuration points. Firstly, you will need to set you own IP on the server. Secondly, depending on the version of Linux you are using on the system, you may need to open up the port through the firewall software.</p> <p>The ARMv7 version of Dart is available from <a href="https://www.dartlang.org/downloads/archive/">here</a> - select Linux from the OS dropdown if it is not shown automatically. I am finding Dart is a good environment to run on the Raspberry Pi. Small, lightweight, fast and has certainly been less bother that running Python at times.</p> <p>Please leave a comment if you have created anything interesting on the Pi with Dart!</p>
