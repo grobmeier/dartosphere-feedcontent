@@ -79,8 +79,7 @@ author:
 <p>The <code>dbManager()</code> interceptor creates a new connection, save it in the <code>request.attributes</code> map, and uses the <code>chain</code> object to call the next handler of the current request (which can be a route or another interceptor). When the next handler finishes its execution, the interceptor closes the connection. </p>
 
 <p>To access a database connection in a route, you can annotate a paratemer with <code>@Attr</code>. Also, if you don&#39;t want to create an extra parameter for every route, you can define a getter that retrieves the connection of the current request:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart">
-<span class="n">Db</span> <span class="kd">get</span> <span class="n">conn</span> <span class="o">=&gt;</span> <span class="n">app</span><span class="o">.</span><span class="na">request</span><span class="o">.</span><span class="na">attributes</span><span class="o">.</span><span class="na">conn</span><span class="o">;</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="n">Db</span> <span class="kd">get</span> <span class="n">conn</span> <span class="o">=&gt;</span> <span class="n">app</span><span class="o">.</span><span class="na">request</span><span class="o">.</span><span class="na">attributes</span><span class="o">.</span><span class="na">conn</span><span class="o">;</span>
 
 <span class="nd">@app</span><span class="o">.</span><span class="na">Route</span><span class="o">(</span><span class="s">'/services/users/list'</span><span class="o">)</span>
 <span class="n">listUsers</span><span class="o">()</span> <span class="o">=&gt;</span>

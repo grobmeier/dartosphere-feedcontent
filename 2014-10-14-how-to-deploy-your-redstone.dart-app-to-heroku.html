@@ -14,8 +14,7 @@ author:
 <p>Today I&#39;ve got some time to play with the new <a href="https://blog.heroku.com/archives/2014/8/19/cedar-14-public-beta">cedar-14</a> stack and the <a href="https://github.com/igrigorik/heroku-buildpack-dart">Dart buildpack</a>, and I&#39;m impressed on how easy it is now to deploy Dart apps on <a href="http://heroku.com">Heroku</a>. </p>
 
 <p>Basically, to run on Heroku, your app must be configurable through environment variables. The minimal configuration that every heroku application must handle is the port number, where the server is allowed to bind to. Let&#39;s see an example:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart">
-<span class="kn">import</span> <span class="s">"dart:io"</span><span class="o">;</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kn">import</span> <span class="s">"dart:io"</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="s">"package:redstone/redstone.dart"</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 

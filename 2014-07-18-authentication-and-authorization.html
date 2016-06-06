@@ -60,8 +60,7 @@ author:
 <p>Pretty cool, right? So, how does it work?</p>
 
 <p>Open up the <code>lib/authentication.dart</code> file. You&#39;ll find our <code>authenticationFilter()</code> interceptor.</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart">
-<span class="nd">@app</span><span class="o">.</span><span class="na">Interceptor</span><span class="o">(</span><span class="sx">r'/services/private/.+'</span><span class="o">)</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="nd">@app</span><span class="o">.</span><span class="na">Interceptor</span><span class="o">(</span><span class="sx">r'/services/private/.+'</span><span class="o">)</span>
 <span class="n">authenticationFilter</span><span class="o">()</span> <span class="o">{</span>
   <span class="k">if</span> <span class="o">(</span><span class="n">app</span><span class="o">.</span><span class="na">request</span><span class="o">.</span><span class="na">session</span><span class="o">[</span><span class="s">"username"</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">app</span><span class="o">.</span><span class="na">chain</span><span class="o">.</span><span class="na">interrupt</span><span class="o">(</span><span class="nl">statusCode:</span> <span class="n">HttpStatus</span><span class="o">.</span><span class="na">UNAUTHORIZED</span><span class="o">,</span> <span class="nl">responseValue:</span> <span class="o">{</span><span class="s">"error"</span><span class="o">:</span> <span class="s">"NOT_AUTHENTICATED"</span><span class="o">});</span>
@@ -74,8 +73,7 @@ author:
 <p>This interceptor is applied to any request which path starts with <code>/services/private</code>. It checks if the corresponding session has an &quot;username&quot; attribute. If so, the interceptor calls the next handler of the chain, otherwise, it returns a response with the 401 status code.</p>
 
 <p>In the same script, you&#39;ll find the login and logout services:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart">
-<span class="nd">@app</span><span class="o">.</span><span class="na">Route</span><span class="o">(</span><span class="s">"/services/login"</span><span class="o">,</span> <span class="nl">methods:</span> <span class="kd">const</span><span class="o">[</span><span class="n">app</span><span class="o">.</span><span class="na">POST</span><span class="o">])</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="nd">@app</span><span class="o">.</span><span class="na">Route</span><span class="o">(</span><span class="s">"/services/login"</span><span class="o">,</span> <span class="nl">methods:</span> <span class="kd">const</span><span class="o">[</span><span class="n">app</span><span class="o">.</span><span class="na">POST</span><span class="o">])</span>
 <span class="n">login</span><span class="o">(</span><span class="nd">@app</span><span class="o">.</span><span class="na">Attr</span><span class="o">()</span> <span class="n">Db</span> <span class="n">conn</span><span class="o">,</span> <span class="nd">@app</span><span class="o">.</span><span class="na">Body</span><span class="o">(</span><span class="n">app</span><span class="o">.</span><span class="na">JSON</span><span class="o">)</span> <span class="n">Map</span> <span class="n">body</span><span class="o">)</span> <span class="o">{</span>
   <span class="kd">var</span> <span class="n">userCollection</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="na">collection</span><span class="o">(</span><span class="s">"user"</span><span class="o">);</span>
   <span class="k">if</span> <span class="o">(</span><span class="n">body</span><span class="o">[</span><span class="s">"username"</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">body</span><span class="o">[</span><span class="s">"password"</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
@@ -115,8 +113,7 @@ author:
 <p>The login service verifies if the provided user exists in the database. If it does, it creates the &quot;username&quot; and &quot;roles&quot; attributes in the corresponding http session. The logout service just destroy the current session.</p>
 
 <p>To create a private service, which can be executed only by authenticated users, we can just put it under the <code>/services/private</code> path. If you open the <code>lib/services.dart</code> file, you&#39;ll see the echo service implementation:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart">
-<span class="c1">//A private service. Any authenticated user can execute 'echo'</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="c1">//A private service. Any authenticated user can execute 'echo'</span>
 <span class="nd">@app</span><span class="o">.</span><span class="na">Route</span><span class="o">(</span><span class="s">"/services/private/echo/:arg"</span><span class="o">)</span>
 <span class="n">echo</span><span class="o">(</span><span class="kt">String</span> <span class="n">arg</span><span class="o">)</span> <span class="o">=&gt;</span> <span class="n">arg</span><span class="o">;</span>
 
@@ -124,8 +121,7 @@ author:
 <p>Now we need a way to define services that can be executed only by admin users. We can just define another interceptor to the <code>/services/private/admin/.+</code> path pattern, but that wouldn&#39;t be an ideal solution. Some applications can have a lot of roles (or user types), and associate each role with a path can be impractical. Instead, we will create an authorization plugin.</p>
 
 <p>Open up the <code>lib/authorization.dart</code> file:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart">
-<span class="kd">const</span> <span class="kt">String</span> <span class="n">ADMIN</span> <span class="o">=</span> <span class="s">"ADMIN"</span><span class="o">;</span>
+<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kd">const</span> <span class="kt">String</span> <span class="n">ADMIN</span> <span class="o">=</span> <span class="s">"ADMIN"</span><span class="o">;</span>
 
 <span class="kd">class</span> <span class="nc">Secure</span> <span class="o">{</span>
 
