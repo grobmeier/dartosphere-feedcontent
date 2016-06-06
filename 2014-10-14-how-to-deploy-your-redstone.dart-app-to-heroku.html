@@ -11,10 +11,11 @@ author:
 
 ---
 
-<p>Today I&#39;ve got some time to play with the new <a href="https://blog.heroku.com/archives/2014/8/19/cedar-14-public-beta">cedar-14</a> stack and the <a href="https://github.com/igrigorik/heroku-buildpack-dart">Dart buildpack</a>, and I&#39;m impressed on how easy it is now to deploy Dart apps on <a href="http://heroku.com">Heroku</a>. </p>
+<p>Today I’ve got some time to play with the new <a href="https://blog.heroku.com/archives/2014/8/19/cedar-14-public-beta">cedar-14</a> stack and the <a href="https://github.com/igrigorik/heroku-buildpack-dart">Dart buildpack</a>, and I’m impressed on how easy it is now to deploy Dart apps on <a href="http://heroku.com">Heroku</a>.</p>
 
-<p>Basically, to run on Heroku, your app must be configurable through environment variables. The minimal configuration that every heroku application must handle is the port number, where the server is allowed to bind to. Let&#39;s see an example:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kn">import</span> <span class="s">"dart:io"</span><span class="o">;</span>
+<p>Basically, to run on Heroku, your app must be configurable through environment variables. The minimal configuration that every heroku application must handle is the port number, where the server is allowed to bind to. Let’s see an example:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">"dart:io"</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="s">"package:redstone/redstone.dart"</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 
@@ -39,9 +40,12 @@ author:
   <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
 <span class="o">}</span>
 
-</code></pre></div>
-<p>If your app also has client code, it&#39;s a good idea to make the path to the web folder configurable too.</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kn">import</span> <span class="s">"dart:io"</span><span class="o">;</span>
+</code></pre>
+</div>
+
+<p>If your app also has client code, it’s a good idea to make the path to the web folder configurable too.</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">"dart:io"</span><span class="o">;</span>
 
 <span class="kn">import</span> <span class="s">"package:redstone/redstone.dart"</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">"package:shelf_static/shelf_static.dart"</span><span class="o">;</span>
@@ -71,35 +75,58 @@ author:
 <span class="o">}</span>
 
 
-</code></pre></div>
-<p>When you push your Dart application to Heroku, it uses the <code>pub build</code> command to compile the client code, and then starts the server. To allow Heroku to run your server, you need to create a <code>Procfile</code> file with the command to start it. For example, if your server entry-point is defined in the bin/server.dart file, the Procfile can have the following content:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">web: ./dart-sdk/bin/dart bin/server.dart
-</code></pre></div>
+</code></pre>
+</div>
+
+<p>When you push your Dart application to Heroku, it uses the <code class="highlighter-rouge">pub build</code> command to compile the client code, and then starts the server. To allow Heroku to run your server, you need to create a <code class="highlighter-rouge">Procfile</code> file with the command to start it. For example, if your server entry-point is defined in the bin/server.dart file, the Procfile can have the following content:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>web: ./dart-sdk/bin/dart bin/server.dart
+</code></pre>
+</div>
+
 <p>With everything set up, you can use the <a href="https://toolbelt.heroku.com/">Heroku Toolbelt</a> to deploy your app. To do so, just run the following commands
 from the application root folder.</p>
 
 <p>First, you need a git repository to transfer your app to Heroku. If you already have one, you can ignore this step:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ git init
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ git init
 $ git add .
 $ git commit -am "first commit"
-</code></pre></div>
+</code></pre>
+</div>
+
 <p>Create a Heroku application using the cedar-14 stack:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ heroku create -s cedar-14
-</code></pre></div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ heroku create -s cedar-14
+</code></pre>
+</div>
+
 <p>Configure a Dart SDK archive. The following link points to Dart SDK 1.7-dev.4.6, but you can get another version 
 <a href="https://www.dartlang.org/tools/download_archive/">here</a> (be sure to get a Linux 64-bit build):</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ heroku config:set DART_SDK_URL=https://storage.googleapis.com/dart-archive/channels/dev/release/41090/sdk/dartsdk-linux-x64-release.zip
-</code></pre></div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ heroku config:set DART_SDK_URL=https://storage.googleapis.com/dart-archive/channels/dev/release/41090/sdk/dartsdk-linux-x64-release.zip
+</code></pre>
+</div>
+
 <p>Configure the Dart buildpack:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ heroku config:add BUILDPACK_URL=https://github.com/igrigorik/heroku-buildpack-dart.git
-</code></pre></div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ heroku config:add BUILDPACK_URL=https://github.com/igrigorik/heroku-buildpack-dart.git
+</code></pre>
+</div>
+
 <p>Configure the path to the client code:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ heroku config:set WEB_FOLDER=build/web
-</code></pre></div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ heroku config:set WEB_FOLDER=build/web
+</code></pre>
+</div>
+
 <p>And finally, push the application to Heroku:</p>
-<div class="highlight"><pre><code class="language-" data-lang="">$ git push heroku master
-</code></pre></div>
-<p>If everything goes right, your app will be ready for use! You can see its URL in the output of the <code>git push</code> command. It&#39;s also possible to access it through the Heroku Dashboard. </p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ git push heroku master
+</code></pre>
+</div>
+
+<p>If everything goes right, your app will be ready for use! You can see its URL in the output of the <code class="highlighter-rouge">git push</code> command. It’s also possible to access it through the Heroku Dashboard.</p>
 
 <p>For more information, take a look at the <a href="https://devcenter.heroku.com/articles/how-heroku-works">Heroku</a> and <a href="https://github.com/igrigorik/heroku-buildpack-dart">Dart buildpack</a> documentations. You can also see a more complete example <a href="https://github.com/luizmineo/io_2014_contacts_demo">here</a>.</p>
 

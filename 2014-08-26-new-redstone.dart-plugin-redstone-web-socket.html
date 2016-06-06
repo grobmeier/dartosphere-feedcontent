@@ -13,16 +13,20 @@ author:
 
 <p>A new Redstone.dart plugin is available on pub: <a href="http://pub.dartlang.org/packages/redstone_web_socket">redstone_web_socket</a>.</p>
 
-<p>This plugin is a wrapper to the <a href="http://pub.dartlang.org/packages/shelf_web_socket">shelf_web_socket</a> package. It provides a <code>@WebSocketHandler</code> annotation, which can be used to define web socket handlers:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="nd">@WebSocketHandler</span><span class="o">(</span><span class="s">"/ws"</span><span class="o">)</span>
+<p>This plugin is a wrapper to the <a href="http://pub.dartlang.org/packages/shelf_web_socket">shelf_web_socket</a> package. It provides a <code class="highlighter-rouge">@WebSocketHandler</code> annotation, which can be used to define web socket handlers:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nd">@WebSocketHandler</span><span class="o">(</span><span class="s">"/ws"</span><span class="o">)</span>
 <span class="n">onConnection</span><span class="o">(</span><span class="n">websocket</span><span class="o">)</span> <span class="o">{</span>
   <span class="n">websocket</span><span class="o">.</span><span class="na">listen</span><span class="o">((</span><span class="n">message</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">websocket</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"echo </span><span class="si">$message</span><span class="s">"</span><span class="o">);</span>
   <span class="o">});</span>
 <span class="o">}</span>
-</code></pre></div>
-<p>The <code>@WebSocketHandler</code> annotation can also be used with classes:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="nd">@WebSocketHandler</span><span class="o">(</span><span class="s">"/ws"</span><span class="o">)</span>
+</code></pre>
+</div>
+
+<p>The <code class="highlighter-rouge">@WebSocketHandler</code> annotation can also be used with classes:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="nd">@WebSocketHandler</span><span class="o">(</span><span class="s">"/ws"</span><span class="o">)</span>
 <span class="kd">class</span> <span class="nc">ServerEndPoint</span> <span class="o">{</span>
 
   <span class="nd">@OnOpen</span><span class="o">()</span>
@@ -47,9 +51,12 @@ author:
   <span class="o">}</span>
 
 <span class="o">}</span>
-</code></pre></div>
+</code></pre>
+</div>
+
 <p>The plugin also provides a simple mock client, which can be used to test web socket handlers:</p>
-<div class="highlight"><pre><code class="language-dart" data-lang="dart"><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:redstone_web_socket/redstone_web_socket.dart'</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:unittest/unittest.dart'</span><span class="o">;</span>
 
@@ -76,6 +83,8 @@ author:
   <span class="o">});</span>
 
 <span class="o">}</span>
-</code></pre></div>
-<p>For more details, please take a look at the <a href="http://redstonedart.org/doc/redstone_web_socket.html">documentation</a>. </p>
+</code></pre>
+</div>
+
+<p>For more details, please take a look at the <a href="http://redstonedart.org/doc/redstone_web_socket.html">documentation</a>.</p>
 
