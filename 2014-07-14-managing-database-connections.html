@@ -15,7 +15,7 @@ author:
 
 <p>Let’s start with a simple example:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
+<div class="language-dart highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:mongo_dart/mongo_dart.dart'</span><span class="o">;</span>
 
 <span class="kd">final</span> <span class="n">DB_URI</span> <span class="o">=</span> <span class="s">"mongodb://localhost/dbname"</span><span class="o">;</span>
@@ -50,7 +50,7 @@ author:
 
 <p>So, let’s see how we can improve our script:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
+<div class="language-dart highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:mongo_dart/mongo_dart.dart'</span><span class="o">;</span>
 
 <span class="kd">final</span> <span class="n">DB_URI</span> <span class="o">=</span> <span class="s">"mongodb://localhost/dbname"</span><span class="o">;</span>
@@ -86,7 +86,7 @@ author:
 
 <p>To access a database connection in a route, you can annotate a paratemer with <code class="highlighter-rouge">@Attr</code>. Also, if you don’t want to create an extra parameter for every route, you can define a getter that retrieves the connection of the current request:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="n">Db</span> <span class="kd">get</span> <span class="n">conn</span> <span class="o">=&gt;</span> <span class="n">app</span><span class="o">.</span><span class="na">request</span><span class="o">.</span><span class="na">attributes</span><span class="o">.</span><span class="na">conn</span><span class="o">;</span>
+<div class="language-dart highlighter-rouge"><pre class="highlight"><code><span class="n">Db</span> <span class="kd">get</span> <span class="n">conn</span> <span class="o">=&gt;</span> <span class="n">app</span><span class="o">.</span><span class="na">request</span><span class="o">.</span><span class="na">attributes</span><span class="o">.</span><span class="na">conn</span><span class="o">;</span>
 
 <span class="nd">@app</span><span class="o">.</span><span class="na">Route</span><span class="o">(</span><span class="s">'/services/users/list'</span><span class="o">)</span>
 <span class="n">listUsers</span><span class="o">()</span> <span class="o">=&gt;</span>
@@ -101,7 +101,7 @@ author:
 
 <p>Unfortunately, the MongoDB driver for Dart doesn’t provide a connection pool yet, but we can use the <a href="http://pub.dartlang.org/packages/connection_pool">connection_pool</a> package to build one:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
+<div class="language-dart highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:mongo_dart/mongo_dart.dart'</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:connection_pool/connection_pool.dart'</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:di/di.dart'</span><span class="o">;</span>
@@ -172,7 +172,7 @@ author:
 
 <p>Moreover, if you don’t want to create a connection pool and a database interceptor for every application, you can take a look at the <a href="http://pub.dartlang.org/packages/redstone_mapper">redstone_mapper</a> plugin. When used with a database extension (see <a href="http://pub.dartlang.org/packages/redstone_mapper_pg">redstone_mapper_pg</a> and <a href="http://pub.dartlang.org/packages/redstone_mapper_mongo">redstone_mapper_mongo</a>) the plugin does this job for you. Example:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
+<div class="language-dart highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:redstone_mapper/plugin.dart'</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:redstone_mapper_mongo/manager.dart'</span><span class="o">;</span>
 
@@ -201,7 +201,7 @@ author:
 
 <p>You can change that behaivor with an error handler:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
+<div class="language-dart highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 
 <span class="nd">@app</span><span class="o">.</span><span class="na">ErrorHandler</span><span class="o">(</span><span class="mi">500</span><span class="o">)</span>
 <span class="n">onInternalError</span><span class="o">()</span> <span class="o">=&gt;</span> <span class="n">app</span><span class="o">.</span><span class="na">redirect</span><span class="o">(</span><span class="s">"/internal_error.html"</span><span class="o">);</span>
@@ -211,7 +211,7 @@ author:
 
 <p>You can also define an error handler for static content, and other for services:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
+<div class="language-dart highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:shelf/shelf.dart as shelf'</span><span class="o">;</span>
 
 <span class="c1">//redirect to the default error page</span>
@@ -226,7 +226,7 @@ author:
 
 <p>It’s also possible to inspect the exception, so you can build a specific error message for each error:</p>
 
-<div class="highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
+<div class="language-dart highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="s">'package:redstone/redstone.dart'</span> <span class="k">as</span> <span class="n">app</span><span class="o">;</span>
 <span class="kn">import</span> <span class="s">'package:mongo_dart/mongo_dart.dart'</span><span class="o">;</span>
 
 <span class="nd">@app</span><span class="o">.</span><span class="na">ErrorHandler</span><span class="o">(</span><span class="mi">500</span><span class="o">)</span>
