@@ -1,0 +1,18 @@
+---
+title: 'Building A Notepad with Dart Angular 2 '
+layout: post
+published: '2016-08-20T19:11:00+01:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2016/08/building-notepad-with-dart-angular-2.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Angular
+    - Angular2
+    - Dart
+
+---
+
+<p>Angular 2 is looking very new and shiny, isn't it? There's not a tonne of example code out there so I thought it was about time to pop some on the DID blog. So let's write a text notepad for the web (and use local storage for saving).</p> <p>This is an Angular 2 application with a component for the Editor. The Editor has a sub-component that provides a couple of stats. There's not a huge amount to write up on the code. It's interesting to see how Angular 2 differs from the previous version - I found some of the syntax far more readable. For more detal, see the <a href="https://angular.io/docs/dart/latest/quickstart.html">Angular 2 Quickstart </a>- though not complete, it has some great demos.</p> <a href="https://2.bp.blogspot.com/-jvHLjId2mKU/V7iX4xyZSBI/AAAAAAABSME/3fDUALcRy6w59Rdh9gyOnutauYd2dekLACLcB/s1600/Screenshot%2Bat%2B2016-08-20%2B17%253A57%253A48.png" imageanchor="1" ><img border="0" src="https://2.bp.blogspot.com/-jvHLjId2mKU/V7iX4xyZSBI/AAAAAAABSME/3fDUALcRy6w59Rdh9gyOnutauYd2dekLACLcB/s400/Screenshot%2Bat%2B2016-08-20%2B17%253A57%253A48.png" width="400" height="237" /></a> <pre style="padding: 3px 5px; border: 3px double silver;"><br /><br />import 'package:angular2/core.dart';<br /><br />import 'status_component.dart';<br />import 'textdocument.dart';<br /><br />@Component(<br />    selector: 'plain-editor',<br />    templateUrl: 'editor_component.html',<br />    directives: const [StatusComponent])<br />class EditorComponent {<br />  @Input()<br />  TextDocument note;<br /><br />  void changeHandler() {<br />    note.save();<br />  }<br />}<br /><br /></pre> <pre style="padding: 3px 5px; border: 3px double silver;"><br />import 'package:angular2/core.dart';<br /><br />@Component(<br />    selector: 'text-status',<br />    templateUrl: 'status_component.html')<br />class StatusComponent {<br />  @Input('text')<br />  String text;<br /><br />  String get length => text.length.toString();<br />  String get wordCount => text.split(' ').length.toString();<br />}<br /></pre> <p>The editor loads in less than 1 second - not bad! And this is a debug build.</p> <p>Code is on <a href="https://github.com/daftspaniel/np8080">GitHub</a> and you can try it out <a href="http://daftspaniel.github.io/demos/np8080/">here</a>. Feedback and suggestions welcome!</p>
