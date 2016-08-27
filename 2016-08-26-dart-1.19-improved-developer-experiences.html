@@ -1,0 +1,16 @@
+---
+title: 'Dart 1.19: Improved developer experiences'
+layout: post
+published: '2016-08-26T16:11:00-07:00'
+feed: 'Dart News & Updates'
+link: 'http://news.dartlang.org/2016/08/dart-119-improved-developer-experiences.html'
+author:
+    name: 'Filip Hráček'
+    email: noreply@blogger.com
+    url: 'http://www.blogger.com/profile/11956836702424010051'
+tags:
+    - release
+
+---
+
+<div class="separator" style="clear: both; text-align: center;"><a href="https://4.bp.blogspot.com/-k4t6VQornXs/V8DLh_aLO2I/AAAAAAAANeg/GIPnbSe3jC8ceSr04hFO8l2rAjqugY46wCLcB/s1600/dart-1.19.png" imageanchor="1" style="clear: right; float: right; margin-bottom: 1em; margin-left: 2em; border: none"><img style="border: none; box-shadow: none" border="0" height="64" src="https://4.bp.blogspot.com/-k4t6VQornXs/V8DLh_aLO2I/AAAAAAAANeg/GIPnbSe3jC8ceSr04hFO8l2rAjqugY46wCLcB/s200/dart-1.19.png" width="200" /></a></div>Dart 1.19 is now available. <a href="https://www.dartlang.org/install">Get it now!</a><br /><br />We closely collaborate with the <a href="https://flutter.io/">Flutter</a> team on providing the best developer experience for Dart for Mobile. This includes language changes that optimize the Flutter development experience. Dart code for Flutter apps commonly have long argument lists. Before 1.19, a trailing comma was not allowed after the last argument. This made it really tedious when removing the last argument, or when reordering the arguments. With 1.19 we introduce support for an optional trailing comma after the last argument of a call and the last parameter of a function declaration. This makes code editing much easier:<br /><br /><a href="https://2.bp.blogspot.com/-kVBJlnXby54/V8DJqaZsvwI/AAAAAAAANeU/suPDhaZcdsEvN1DuYy8669JJ-W6x1zX1wCLcB/s1600/ReorderCode.gif" imageanchor="1"><img border="0" src="https://2.bp.blogspot.com/-kVBJlnXby54/V8DJqaZsvwI/AAAAAAAANeU/suPDhaZcdsEvN1DuYy8669JJ-W6x1zX1wCLcB/s1600/ReorderCode.gif" /></a><br /><br />If you've struggled with package directory symlinks, you're in luck. You can now opt-out of creating a package directory and the associated symlinks scattered around your project directories. The flag to provide to pub get and pub upgrade is <code>--no-package-dir</code>. We've posted a <a href="http://news.dartlang.org/2016/08/so-long-symlinks.html">detailed writeup</a> of the changes if you'd like more information. Please test your code with this flag. We intend to make <code>--no-package-dir</code> the default behavior in an upcoming release.<br /><br />See full changelog <a href="https://github.com/dart-lang/sdk/blob/master/CHANGELOG.md#1190">here</a>.<br /><br /><a href="https://www.dartlang.org/install">Download the latest release</a>, and <a href="https://www.dartlang.org/community">let us know</a> what you think!
