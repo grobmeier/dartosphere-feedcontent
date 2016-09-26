@@ -1,0 +1,17 @@
+---
+title: 'Building A Notepad with Dart Angular 2 : Part Three'
+layout: post
+published: '2016-09-26T21:35:00+01:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2016/09/building-notepad-with-dart-angular-2_26.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Angular2
+    - Dart
+
+---
+
+<i>Continuing on with my personal 'Learn Angular 2' project... Here's some details of what made it into v0.03.</i> <p>Change of plan - we are going to look at pipes! Pipes are the renamed 'Filters' from Angular 1. They work in pretty much the same way. A last modified DateTime object is now stored part of the TextDocument class. Let's add it onto the status component.</p> <a href="https://4.bp.blogspot.com/-Nqe_Ok2El2M/V-l9xZzbZCI/AAAAAAABTS0/9nWu2WuMNSQWQKB4gI1NVZcHpn97um2DwCLcB/s1600/Screenshot%2Bat%2B2016-09-26%2B20%253A54%253A23.png" imageanchor="1" ><img border="0" src="https://4.bp.blogspot.com/-Nqe_Ok2El2M/V-l9xZzbZCI/AAAAAAABTS0/9nWu2WuMNSQWQKB4gI1NVZcHpn97um2DwCLcB/s1600/Screenshot%2Bat%2B2016-09-26%2B20%253A54%253A23.png" /></a> <p>Let's use the built-in filters to show the full date in upper case:</p><pre><br /><span *ngIf="modified!=null">Last modified: {{modified |  date:'fullDate' | uppercase}}</span><br /></pre><p>Notice the * before ngIf. This is critical for ng2 to identify the target element. If omitted, you will get an error as Angular will search for a template.</p> <p>Angular 2 is keen to mark attributes more clearly on components. For the updated status bar the square brackets denote an input. Round brackets are for outputs and both types denote 2 way binding as on the TextArea.</p><pre><br />    HTML<br />    text-status [text]="note.text" [modified]="note.lastModified"<br /><br />    CODE<br />    @Input('modified')<br />    DateTime modified;<br /></pre> <p>Check the app out <b><a href="http://np8080.win">np8080.win</a></b> (I though it was worth the $1 to get a domain!) and the code is on <a href="https://github.com/daftspaniel/np8080">GitHub</a>.</p>
