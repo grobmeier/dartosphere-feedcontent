@@ -1,0 +1,18 @@
+---
+title: 'Installing Dart on Linux - Bash Script'
+layout: post
+published: '2016-10-01T19:57:00+01:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2016/10/installing-dart-on-linux-bash-script.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Bash
+    - 'Dart SDK'
+    - Linux
+
+---
+
+<p>Dart moves rather quickly with releases every 6 weeks or so. Lots of posts on this blog are for Chocolatey which is fine for Windows but I spend most of my Dart time on Linux so how do I update? There are a few methods but I decided to roll my own Bash shell script which downloads and unzips the SDK and Dartium to the current folder.</p> <p>Hope someone finds this useful!</p> <p>P.S. The first wget download is the ARM version which I use on my Raspberry Pi.</p> <pre style="width:500px;overflow-x:scroll;border:3px double silver"><br />#!/bin/bash<br />VERSION="1.19.1"<br />wget https://storage.googleapis.com/dart-archive/channels/stable/release/$VERSION/sdk/dartsdk-linux-arm-release.zip<br />wget https://storage.googleapis.com/dart-archive/channels/stable/release/$VERSION/sdk/dartsdk-linux-x64-release.zip<br />wget https://storage.googleapis.com/dart-archive/channels/stable/release/$VERSION/dartium/dartium-linux-x64-release.zip<br />unzip -qq -o dartsdk-linux-x64-release.zip<br />unzip -qq -o dartium-linux-x64-release.zip<br />rm dartsdk-linux-x64-release.zip<br />rm dartium-linux-x64-release.zip<br />dart --version <br /></pre>
