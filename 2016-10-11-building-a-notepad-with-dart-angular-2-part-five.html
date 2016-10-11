@@ -1,0 +1,18 @@
+---
+title: 'Building A Notepad with Dart Angular 2 : Part Five'
+layout: post
+published: '2016-10-11T08:04:00+01:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2016/10/building-notepad-with-dart-angular-2.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Angular
+    - Dart
+    - Web
+
+---
+
+<i>Another step in my personal 'Learn Angular 2' project... Here's some details of what made it into v0.05. I'd recommend looking at  <a href="https://github.com/daftspaniel/np8080">the entire project</a> alongside this post.</i> <p>It's time we added a proper dialog. I put off doing this as I thought it wouldn't involve much Angular 2. Turns out it covers some very important ground!</p> <div class="separator" style="clear: both; text-align: center;"><a href="https://1.bp.blogspot.com/-lZFZSAgiZ2E/V_VUrD9VPgI/AAAAAAABTcc/CUNXD_487_09F1qGaMiHJpMIUzLw5mQxgCLcB/s1600/Screenshot%2Bat%2B2016-10-05%2B20%253A03%253A27.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="https://1.bp.blogspot.com/-lZFZSAgiZ2E/V_VUrD9VPgI/AAAAAAABTcc/CUNXD_487_09F1qGaMiHJpMIUzLw5mQxgCLcB/s400/Screenshot%2Bat%2B2016-10-05%2B20%253A03%253A27.png" width="400" height="221" /></a></div> <p>So let's plan out what we need to do. The Editor component will have a flag to show/hide the About dialog. The toolbar will have to be able to set it to True so that it appears and the dialog itself will have to set it to False so that it closes. So we need to bind this flag to the two components and be able to update it.</p> <p>The dialog can be shown or hidden using [hidden] (about_component.html). This value is from the scope of the Editor.</p><pre style="padding: 3px 5px; border: 3px double silver;"><br />div id="overlay" [hidden]="!showDialog"<br /></pre> <p>The components get the value easily enough but there is a little bit more work to let the Editor know it has been updated. An @Output property fires and event based on showDialog changing.</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />import 'package:angular2/core.dart';<br /><br />@Component(<br />    selector: 'about-dialog',<br />    templateUrl: 'about_component.html')<br />class AboutDialogComponent {<br />  @Input()<br />  bool showDialog = false;<br /><br />  @Output()<br />  EventEmitter<bool> showDialogChange = new EventEmitter<bool>();<br /><br />  void closeTheDialog() {<br />    showDialog = false;<br />    showDialogChange.emit(showDialog);<br />  }<br />}<br /></pre> <p>This does seem more complicated than Angular 1 doesn't it? However the default two way binding of version 1 has performance implications and can easily lead to some tricky dependencies. The payoff of more control and clearer code makes sense to me - though perhaps hard to see in this simple example.</p>  <p>The toolbar has a similar way to announce the change of value.</p><pre style="padding: 3px 5px; border: 3px double silver;"><br />  void aboutHandler() {<br />    showDialog = true;<br />    showDialogChange.emit(showDialog);<br />  }<br /></pre>  <p>That's it for this time. Check the app out <b><a href="http://np8080.win">np8080.win</a></b> and the code is on <a href="https://github.com/daftspaniel/np8080">GitHub</a>.</p>
