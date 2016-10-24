@@ -1,0 +1,16 @@
+---
+title: 'Building A Notepad with Dart Angular 2 : Part Six'
+layout: post
+published: '2016-10-24T17:57:00+01:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2016/10/building-notepad-with-dart-angular-2_24.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+tags:
+    - Angular2
+
+---
+
+<i>Another step in my personal 'Learn Angular 2' project... Here's some details of what made it into v0.06. I'd recommend looking at  <a href="https://github.com/daftspaniel/np8080">the entire project</a> alongside this post.</i> <p>Let's quickly add another function to the Text processing service:</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />  String getRepeatedString(String textToRepeat, num count) {<br />    count ??= 1;<br />    return textToRepeat * count.toInt();<br />  }<br /></pre> <p> We use a null aware operator to set count to a default value and then use the string multiplication operator to do the required repeating.</p> <a href="https://1.bp.blogspot.com/-U32v1uOc9XE/WAUlHkOk_EI/AAAAAAABUaU/jFNM8oKN8_479O1oLNYGQjER3SzBZZ2VgCLcB/s1600/Screenshot%2Bat%2B2016-10-17%2B20-16-46.png" imageanchor="1" ><img border="0" src="https://1.bp.blogspot.com/-U32v1uOc9XE/WAUlHkOk_EI/AAAAAAABUaU/jFNM8oKN8_479O1oLNYGQjER3SzBZZ2VgCLcB/s400/Screenshot%2Bat%2B2016-10-17%2B20-16-46.png" width="400" height="172" /></a> <p>The generate dialog is pretty much the same as the About dialog. It would be useful to have a base dialog class - alas I have not got this to work yet but I hope to follow it up.</p> <p>There some more event stuff going on with the toolbar which now has a drop down menu (toolbar_component.html):</p> <pre style="padding: 3px 5px; border: 3px double silver;"><br />div (mouseenter)="show()" (mouseleave)="hide()" class="toolbarButton" <br /></pre> The menu contents are hidden and shown with ngStyle: <pre style="padding: 3px 5px; border: 3px double silver;"><br />[ngStyle]="{'display':  display}<br /></pre> <p>Again, not too different to Angular 1 - just different syntax.</p> <p>That's it for this time. Check the app out <b><a href="http://np8080.win">np8080.win</a></b> and the code is on <a href="https://github.com/daftspaniel/np8080">GitHub</a>.</p>
