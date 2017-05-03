@@ -1,0 +1,14 @@
+---
+title: 'Moving To AngularDart 3 '
+layout: post
+published: '2017-05-03T06:30:00+01:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2017/05/moving-to-angulardart-3.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+
+---
+
+<p><a href="https://webdev.dartlang.org/angular/">Angular Dart 3</a> final was released and <a href="https://daftspaniel.github.io/demos/np8080/">NP8080</a> (simple web based text editor) has been built with the latest version. It has been a fun little project and I have found myself using it daily as a scratchpad.</p> <a href="https://2.bp.blogspot.com/--3UDMxPH5uM/WQlqg0CEOLI/AAAAAAABYyo/uMveiVH2UkI8RdLjQQxQkFizxjxU272PQCLcB/s1600/Screenshot%2Bat%2B2017-05-03%2B06-27-22.png" imageanchor="1" ><img border="0" src="https://2.bp.blogspot.com/--3UDMxPH5uM/WQlqg0CEOLI/AAAAAAABYyo/uMveiVH2UkI8RdLjQQxQkFizxjxU272PQCLcB/s400/Screenshot%2Bat%2B2017-05-03%2B06-27-22.png" width="400" height="157" /></a> <p>Not a massive amount to report - Angular very stable since the Betas. Certainly feeling a bit more Dart-y. The most disruptive change was the deprecation of EventEmitter but as this was a thin wrapper around a standard Dart Stream it wasn't much of a loss though I had 20 occurrences to update!</p> <p>The code is straightforward as:</p><pre><br />  final StreamController onShowDialogChange = new StreamController();<br />  ...<br />  @Output()<br />  Stream<bool> get showDialogChange => onShowDialogChange.stream;<br />  ...<br />  void closeTheDialog() {<br />    showDialog = false;<br />    onShowDialogChange.add(showDialog);<br />  }<br /></pre><p>Of course, another option is to copy the EventEmitter class into your own project. Interesting to see AngularDart using core Dart classes, perhaps the start of a larger divergence of the two codebases. </p>   <p>Looking back to the first build of NP8080, the output JS was 300k(ish). The current build is around 200k JS which is great improvement considering the increase of application code over that time. When you consider a basic Dart web app is around 110k, it is even more impressive to have Angular framework squeezed into &lt;90k.</p> <p>Please raise an issue if you have a feature request. PRs welcome too!</p>
