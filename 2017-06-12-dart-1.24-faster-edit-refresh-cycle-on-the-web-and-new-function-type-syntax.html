@@ -1,0 +1,18 @@
+---
+title: "Dart 1.24: Faster edit-refresh cycle on the web\_& new function type syntax"
+layout: post
+published: '2017-06-12T16:31:00-07:00'
+feed: 'Dart News & Updates'
+link: 'http://news.dartlang.org/2017/06/dart-124-faster-edit-refresh-cycle-on.html'
+author:
+    name: 'Filip Hráček'
+    email: noreply@blogger.com
+    url: 'http://www.blogger.com/profile/11956836702424010051'
+tags:
+    - pub
+    - release
+    - sdk
+
+---
+
+Dart 1.24 is now available. It includes the Dart Development Compiler and supports a new generic function type syntax. <a href="https://www.dartlang.org/install">Get it now</a>!<br /><br /><div class="separator" style="clear: both; text-align: center;"><iframe width="560" height="315" src="https://www.youtube.com/embed/rafSe6lqawg?rel=0" frameborder="0" allowfullscreen></iframe><br />Figure 1: DDC debugging in Chrome.<br /></div><br />Some notable changes&nbsp;in this release:<br /><ul><li><code>pub serve</code> now has support for the Dart Development Compiler. Unlike dart2js, this new compiler is modular, which allows pub to do incremental re-builds for pub serve.</li><ul><li>In practice what that means is you can edit your Dart files, refresh in Chrome (or other supported browsers), and see your edits almost immediately. This is because pub is only recompiling your package, not all packages that you depend on.</li><li>There is one caveat with the new compiler, which is that your package and your dependencies must all be <a href="https://www.dartlang.org/guides/language/sound-dart">strong mode</a>&nbsp;clean.</li><li>You can also use the new compiler to run your tests in Chrome much more quickly than you can with dart2js.</li><li><a href="https://github.com/dart-lang/sdk/blob/master/CHANGELOG.md#tool-changes-1">Read more</a>&nbsp;in the changelog.</li></ul></ul><ul><li>You can now publish packages that depend on the Flutter SDK to pub. Moreover, <a href="https://pub.dartlang.org/">pub.dartlang.org</a>&nbsp;has started tagging Flutter plugins with an icon, and there is a new landing page — <a href="https://pub.dartlang.org/flutter/plugins">pub.dartlang.org/flutter/plugins</a>&nbsp;— that lists all of them.</li><li>Generic function type syntax allows developers to specify generic function types everywhere a type is expected, including type annotations, return types, actual type arguments, and formal type parameter bounds. </li><ul><li>Example: <code>typedef F = List&lt;T&gt; Function&lt;T&gt;(T);</code>. </li><li>Read more in the <a href="https://gist.github.com/eernstg/ffc7bd281974e9018f10f0cb6cfee4aa">spec</a>.</li></ul></ul><ul><li>It is now type correct to have <code>void f() =&gt; ++x;</code> (functions and setter declared using <code>=&gt;</code> with return type <code>void</code> now allow the returned expression to have any type).</li><li>The deprecated ChunkedConverter class has been removed.</li><li>Dartium was updated to align with Chrome v50 (versus v45), which brings support of <code>window.isSecureContext</code> and <code>window.requestIdleCallback</code>, among other things.</li><li>As of this release, we&#39;ll show a warning when using the MIPS architecture. Unless we learn about any critical use of Dart on MIPS in the meantime, we&#39;re planning to deprecate support for MIPS starting with the next stable release.</li></ul>For more information, see the <a href="https://github.com/dart-lang/sdk/blob/master/CHANGELOG.md#1240">changelog</a>.<br /><br />Please&nbsp;<a href="https://www.dartlang.org/install">download the latest release</a>&nbsp;and <a href="https://www.dartlang.org/community">let us know</a>&nbsp;what you think!<br />
