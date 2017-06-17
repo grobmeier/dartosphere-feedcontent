@@ -1,0 +1,14 @@
+---
+title: 'A Multiplicity of Singleton Services'
+layout: post
+published: '2017-06-17T07:10:00+01:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2017/06/a-multiplicity-of-singleton-services.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+
+---
+
+<p>Angular Services are singletons right? Google it and you will get plenty of pages saying they are. Well sometimes they are and sometimes they are not!</p> <p>I was working on a service that didn't seem to be working. To debug, I put a print statement in the constructor and I received 2 messages. So what's happening? Turns out to be down to Providers</p> <p>Suppose you have a component and you want to use a service, you may have declared it <b>in each component</b> like this: </p><pre><br />providers: const [TextProcessingService]<br /></pre><p>This actually creates a new instance before injecting it into your component.</p> <p>So say we only want one instance ever? How do we do it? First step, delete that Providers declaration. Next declare at the bootstrap level:</p><pre><br />  bootstrap(<br />      AppComponent, [TextProcessingService]<br />  );<br /></pre><p></p> <p>Hope this blog post clears up confusion for anyone else. It is actually quite a powerful feature, allowing you to keep services and components totally separate.</p>
