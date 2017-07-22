@@ -1,0 +1,14 @@
+---
+title: 'Diving Into Angular 4 Dart Alpha 1'
+layout: post
+published: '2017-07-22T18:55:00+01:00'
+feed: 'Diving Into Dart'
+link: 'http://divingintodart.blogspot.com/2017/07/diving-into-angular-4-dart-alpha-1.html'
+author:
+    name: 'Davy Mitchell'
+    email: noreply@blogger.com
+    url: 'https://plus.google.com/112216803316701197594'
+
+---
+
+<p>Angular Dart 4 Alpha was recently released and I was keen to try it out. There's quite a few changes as it becomes increasingly more Dart-ified and broken away from its Typescript heritage.</p> <p>My hobby project NP8080, as ever, is my guinea pig for such upgrades. It was almost entirely painless - we can forgive the one time rename of the package from Angular2 to plain Angular! Building is slightly slower/heavier (there's a lot going on) but this is being worked on.</p> <p>The standout feature for me is the component inheritance of attributes such as @input. There's a lot of components in my app that have common functions (dialogs mainly) but being unable to have a hierarchy to share stuff meant that... well things got a bit messy and copy-pastey!</p> <p>With the new release I spent a happy time creating my base classes and shifting the functionality around. The joy of deleting hundreds of lines of code!</p> <p>So the class structure ended up something like this:</p><pre><br />     Base Component Class                    Base Component Class <br />             ||                                       ||<br />     Editor Component Class                Another GUI Control Class<br />             ||<br />   1 Particular Dialog Class<br /></pre><p>Even better was the Dependency Injection, the base classes could have services injected into them from the derived classed and they could still be marked <b>final</b> too. Very nice! Slight downside is the declarations:</p><pre><br />  GenerateDialogComponent(<br />      TextProcessingService newTextProcessingService,<br />      TextareaDomService newTextareaDomService,<br />      ThemeService newThemeService,<br />      EventBusService newEventBusService)<br />      : super(newTextProcessingService, newTextareaDomService, newThemeService,<br />            newEventBusService) {<br />   ...<br />  }<br /></pre><p>It's a bit cluttering annoying to declare a variable like newTextProcessingService that gets passed immediately to the super call and never referenced again. I wonder if the following would be a possible language change? Seems a lot cleaner and clearer to me and should cover most cases.</p><pre><br />  @InjectSuperParameters<br />  GenerateDialogComponent() : super(textProcessingService, <br />              textareaDomService, <br />              themeService,<br />              eventBusService) {<br />   ...<br />  }<br /></pre><p>Anyway, going forward creating a new dialog or control should be half the work. Sounds good! Look forward to the next Alpha/Beta.</p> 
