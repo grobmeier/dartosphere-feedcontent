@@ -1,0 +1,19 @@
+---
+title: 'Dart 2.0 pre-releases: What they mean to you'
+layout: post
+published: '2017-09-25T10:51:00-07:00'
+feed: 'Dart News & Updates'
+link: 'http://news.dartlang.org/2017/09/dart-20-pre-releases-what-they-mean-to.html'
+author:
+    name: Kathy
+    email: noreply@blogger.com
+    url: ''
+tags:
+    - '2.0'
+    - pub
+    - release
+    - sdk
+
+---
+
+<p>If you publish Dart packages or like to use early releases of the Dart SDK, the next few months are going to be interesting, as apps and packages adapt to the <a href="https://www.dartlang.org/dart-2.0">changes required by Dart 2.0</a>. To make the process smoother, the pub tool that’s in Dart 2.0 pre-releases allows developers to download (and attempt to use) packages that don’t explicitly support Dart 2.0. </p> <p><b>The upshot:</b></p> <ul>  <li> Use a <b>stable Dart SDK</b> if you need <b>reliability</b>.</li>  <li> Use a <b>pre-release Dart 2.0 SDK</b> if you’d like to <b>test</b> published packages with Dart 2.0. Report any issues you find to the package maintainer.</li>  <li> If you <b>publish packages</b>, be careful about SDK constraints, and <b>expect feedback</b> from developers trying your packages with Dart 2.0.</li></ul> <p>The <a href="https://www.dartlang.org/dart-2.0">Dart 2.0 update page</a> has all the details, but here’s an overview of what to expect, based on your development environment and the kind of code you write. </p> <p><b>If you use Flutter:</b> In the short term, your Flutter code isn’t affected. When Flutter updates its Dart SDK to a Dart 2.0 pre-release, the Flutter team will tell you how to manage your dependencies. </p> <p><b>If you use a stable Dart SDK:</b> When running <code>pub upgrade</code>, you might notice that you aren’t getting the latest releases of some packages. This might happen because the packages have versions that require a Dart 2.0 feature. Consider checking the release notes of critical packages to see whether the packages have important fixes or new features. </p> <p><b>If you use a dev channel Dart SDK:</b> When running <code>pub get</code>, <code>pub upgrade</code>, or other pub commands from a 2.0 pre-release, you might get packages that haven’t been verified to work with 2.0. If you find a package that has 2.0 issues, please report those issues immediately to the package maintainer, and let the Dart community know about any workarounds you find. </p> <p><b>If you publish packages:</b> Don’t change your already-published packages just to add SDK constraints to the pubspec. If you do need to change a package, try to make your changes backward compatible with Dart 1.x. Before publishing a package, make sure that the pubspec has correct lower and upper SDK constraints. <b>Use <2.0.0 as the upper constraint</b>, for now. Examples: </p> <pre><br /># Works in 1.20.1+; might work in 2.0.0-dev:<br />sdk: '>=1.20.1 <2.0.0'       <br /><br /># Backward incompatible change requires at least 2.0.0-dev.1.2:<br />sdk: '>=2.0.0-dev.1.2 <2.0.0'<br /></pre> <p>For more information about how to adapt your code for Dart 2.0, see the <a href="https://www.dartlang.org/dart-2.0">Dart 2.0 update page</a>. </p>
